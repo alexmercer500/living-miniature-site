@@ -1,26 +1,26 @@
 /* Living Miniature — design tokens (from planning/DESIGN_TOKENS.md, extended) */
 :root {
   /* Core palette */
-  --color-midnight: #17172C;
-  --color-indigo: #252744;
-  --color-plum: #4B243E;
-  --color-dusk-rose: #A95860;
-  --color-sunset: #EAA17E;
-  --color-ivory: #FFF3E2;
-  --color-parchment: #EAD6B7;
-  --color-antique-gold: #C49A55;
-  --color-gold-highlight: #F2D59A;
-  --color-vermilion: #9C3540;
-  --color-garden: #314B3E;
+  --color-midnight: #21140F;
+  --color-indigo: #321B20;
+  --color-plum: #4B1020;
+  --color-dusk-rose: #8F3D3A;
+  --color-sunset: #D67A50;
+  --color-ivory: #FFF1D8;
+  --color-parchment: #E7C49A;
+  --color-antique-gold: #B88945;
+  --color-gold-highlight: #E6C27B;
+  --color-vermilion: #B83A32;
+  --color-garden: #40533A;
   --color-text-light: #FFF7EC;
-  --color-text-dark: #3A2630;
+  --color-text-dark: #3A211B;
 
   /* Extensions */
-  --color-bloom: #C8326B;          /* bougainvillea accent from the concept boards */
+  --color-bloom: #C8324B;          /* maroon rose accent for the haveli world */
   --color-text-light-muted: #F3DCC9;
-  --color-text-dark-muted: #6B4A55;
-  --color-line-gold: rgb(196 154 85 / 0.55);
-  --color-scrim: rgb(23 23 44 / 0.55);
+  --color-text-dark-muted: #6B4A3D;
+  --color-line-gold: rgb(184 137 69 / 0.55);
+  --color-scrim: rgb(33 20 15 / 0.55);
 
   /* Typography */
   --font-display: 'Cormorant Garamond', 'Tiro Devanagari Hindi', Georgia, serif;

@@ -1,7 +1,7 @@
 ---
 /**
- * Scene 1 — "A little world, a beautiful beginning".
- * A layered static poster (sky → sun → hills → palace → water → foreground → framing)
+ * Scene 1 — Royal Heritage Haveli welcome.
+ * A layered static poster (twilight → courtyard → haveli → floor → foreground → framing)
  * that paints with zero JS. Each layer carries data-layer so Milestone 2 can drive
  * parallax from scroll without restructuring markup.
  */
@@ -23,8 +23,8 @@ const amp = lang === 'hi' ? 'एवं' : '&';
     <div class="sun" data-layer="sun"></div>
 
     <svg class="hills" data-layer="hills" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice">
-      <path d="M0,170 C120,120 220,150 320,112 S520,62 640,118 S860,168 980,104 S1200,46 1320,108 S1500,148 1600,96 V300 H0Z" fill="#9A5870" opacity=".55" />
-      <path d="M0,232 C160,192 260,222 400,184 S650,204 800,218 S1050,172 1200,202 S1450,232 1600,192 V300 H0Z" fill="#6E3A57" />
+      <path d="M0,190 H160 V142 H280 V190 H410 V126 H520 V190 H660 V148 H790 V190 H920 V132 H1040 V190 H1190 V144 H1320 V190 H1450 V126 H1600 V300 H0Z" fill="#5D302C" opacity=".9" />
+      <path d="M0,232 H1600 V300 H0Z" fill="#3A201F" />
       <g fill="#FFD98A" opacity=".75">
         <circle cx="1180" cy="206" r="1.4" /><circle cx="1214" cy="203" r="1.2" /><circle cx="1262" cy="210" r="1.4" /><circle cx="1330" cy="214" r="1.2" />
         <circle cx="214" cy="214" r="1.3" /><circle cx="262" cy="208" r="1.1" /><circle cx="330" cy="200" r="1.3" />
@@ -38,10 +38,10 @@ const amp = lang === 'hi' ? 'एवं' : '&';
       </defs>
     </svg>
 
-    <svg class="palace" data-layer="palace" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg>
+    <svg class="palace" data-layer="palace" viewBox="0 0 1000 420"><use href="#lm-haveli" /></svg>
 
     <div class="water" data-layer="water">
-      <svg class="reflection" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg>
+      <svg class="reflection" viewBox="0 0 1000 420"><use href="#lm-haveli" /></svg>
       <div class="sun-glint"></div>
       <div class="ripples"></div>
     </div>
@@ -116,12 +116,11 @@ const amp = lang === 'hi' ? 'एवं' : '&';
     inset: 0;
     background: linear-gradient(
       to bottom,
-      var(--color-midnight) 0%,
-      var(--color-indigo) 18%,
-      var(--color-plum) 40%,
-      var(--color-dusk-rose) 58%,
-      var(--color-sunset) 68%,
-      #F6C9A0 calc(100% - var(--horizon))
+      #21140F 0%,
+      #321B20 22%,
+      #4B1020 48%,
+      #8F3D3A 68%,
+      #D67A50 calc(100% - var(--horizon))
     );
   }
   .stars {
@@ -166,7 +165,10 @@ const amp = lang === 'hi' ? 'एवं' : '&';
     inset: auto 0 0;
     height: var(--horizon);
     overflow: hidden;
-    background: linear-gradient(to bottom, #7A4560 0%, #4B2E4D 30%, #2A2240 65%, var(--color-midnight) 100%);
+    background:
+      radial-gradient(45% 80% at 50% 0%, rgb(230 194 123 / .22), transparent 70%),
+      repeating-linear-gradient(90deg, rgb(230 194 123 / .05) 0 1px, transparent 1px 80px),
+      linear-gradient(to bottom, #5A2F2C 0%, #321B20 45%, var(--color-midnight) 100%);
   }
   .reflection {
     position: absolute;
@@ -176,7 +178,7 @@ const amp = lang === 'hi' ? 'एवं' : '&';
     translate: -50% 0;
     scale: 1 -1;
     transform-origin: top;
-    opacity: 0.4;
+    opacity: 0.16;
     filter: blur(1.5px);
     mask-image: linear-gradient(to top, #000 0%, transparent 70%);
   }
