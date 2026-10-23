@@ -1,0 +1,11 @@
+{
+  "package": "Living Miniature Wedding Website Kit",
+  "purpose": "Design and implementation handoff",
+  "placeholder_policy": "All personal names, dates, venues, contacts, and URLs are placeholders.",
+  "reference_images": [
+    "assets/reference-concepts/living-miniature-interactive-concept.png",
+    "assets/reference-concepts/living-miniature-cinematic-storyboard.png"
+  ],
+  "production_assets_included": false,
+  "production_assets_note": "Concept boards only. Individual production art / 3D models should be generated or commissioned using the prompts and specification."
+}

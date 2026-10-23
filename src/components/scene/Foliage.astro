@@ -1,0 +1,18 @@
+---
+/**
+ * Bougainvillea cascade. Two variants are drawn once as symbols in SceneDefs and reused,
+ * which keeps the HTML small; mirroring/rotation per placement hides the repetition.
+ */
+interface Props { side: 'left' | 'right'; variant?: 'a' | 'b'; class?: string }
+const { side, variant = side === 'left' ? 'a' : 'b', class: cls = '' } = Astro.props;
+---
+<svg class:list={['foliage', `foliage--${side}`, cls]} viewBox="-20 -20 440 400" aria-hidden="true" focusable="false">
+  <use href={`#lm-foliage-${variant}`} />
+</svg>
+
+<style>
+  .foliage { position: absolute; top: 0; pointer-events: none; overflow: visible; }
+  .foliage--left { left: 0; }
+  /* Mirror with the individual `scale` property so `transform` stays free for scroll animation. */
+  .foliage--right { right: 0; scale: -1 1; }
+</style>

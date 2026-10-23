@@ -1,0 +1,32 @@
+---
+/** Dev-only gallery of every event vignette, to pick a `visualKey` per event. Production redirects home. */
+import Base from '../../layouts/Base.astro';
+import ArchFrame from '../../components/scene/ArchFrame.astro';
+import Vignette from '../../components/scene/Vignette.astro';
+if (!import.meta.env.DEV) return Astro.redirect('/');
+const keys = ['floral-courtyard', 'lantern-garden', 'mandap-courtyard', 'haldi', 'mehndi', 'sangeet', 'baraat', 'reception'];
+---
+<Base lang="en" title="Vignette preview">
+  <main class="gallery">
+    <h1>Event vignettes</h1>
+    <p>Set <code>visualKey</code> on each event in <code>src/data/site-content.json</code>.</p>
+    <ul>
+      {keys.map((k) => (
+        <li>
+          <ArchFrame class="win" tone="night"><Vignette slot="art" visualKey={k} /></ArchFrame>
+          <code>{k}</code>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>
+
+<style>
+  .gallery { padding: var(--space-7) var(--gutter); max-width: var(--content-wide); margin: 0 auto; }
+  h1 { font-size: var(--fs-h2); margin-bottom: var(--space-3); }
+  p { color: var(--color-text-light-muted); margin-bottom: var(--space-6); }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+  li { display: grid; justify-items: center; gap: var(--space-3); }
+  li :global(.win) { width: 100%; max-width: 15rem; aspect-ratio: 5 / 6; }
+  code { color: var(--color-gold-highlight); }
+</style>

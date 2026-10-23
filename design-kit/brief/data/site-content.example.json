@@ -1,0 +1,126 @@
+{
+  "site": {
+    "title": "Partner One & Partner Two — Wedding Celebration",
+    "description": "Join us for a celebration of love, family, and new beginnings.",
+    "defaultLocale": "en",
+    "availableLocales": ["en", "hi"],
+    "weddingDate": "YYYY-MM-DD",
+    "weddingDateLabel": {
+      "en": "Wedding date to be confirmed",
+      "hi": "विवाह की तिथि शीघ्र घोषित होगी"
+    }
+  },
+  "couple": {
+    "partnerOne": "Partner One",
+    "partnerTwo": "Partner Two",
+    "displayName": {
+      "en": "Partner One & Partner Two",
+      "hi": "साथी एक एवं साथी दो"
+    },
+    "tagline": {
+      "en": "Two paths, one beautiful celebration.",
+      "hi": "दो राहें, एक सुंदर उत्सव।"
+    }
+  },
+  "venue": {
+    "name": "Venue Name Placeholder",
+    "address": "Full venue address placeholder",
+    "mapUrl": "",
+    "directionsLabel": {
+      "en": "Get directions",
+      "hi": "रास्ता देखें"
+    }
+  },
+  "rsvp": {
+    "enabled": false,
+    "url": "",
+    "deadline": "",
+    "label": {
+      "en": "RSVP",
+      "hi": "अपनी उपस्थिति बताएं"
+    }
+  },
+  "invitation": {
+    "route": "/invitation",
+    "downloadUrl": "",
+    "label": {
+      "en": "View full invitation",
+      "hi": "पूरा निमंत्रण देखें"
+    }
+  },
+  "events": [
+    {
+      "id": "event-one",
+      "date": "YYYY-MM-DD",
+      "time": "",
+      "title": {
+        "en": "Celebration One",
+        "hi": "समारोह एक"
+      },
+      "shortDescription": {
+        "en": "A joyful gathering before the wedding.",
+        "hi": "विवाह से पहले एक आनंदमय मिलन।"
+      },
+      "visualKey": "floral-courtyard",
+      "venueName": "Venue Name Placeholder"
+    },
+    {
+      "id": "event-two",
+      "date": "YYYY-MM-DD",
+      "time": "",
+      "title": {
+        "en": "Celebration Two",
+        "hi": "समारोह दो"
+      },
+      "shortDescription": {
+        "en": "An evening of color and celebration.",
+        "hi": "रंगों और उत्सव से भरी एक शाम।"
+      },
+      "visualKey": "lantern-garden",
+      "venueName": "Venue Name Placeholder"
+    },
+    {
+      "id": "event-three",
+      "date": "YYYY-MM-DD",
+      "time": "",
+      "title": {
+        "en": "Wedding Celebration",
+        "hi": "विवाह समारोह"
+      },
+      "shortDescription": {
+        "en": "The beginning of a new chapter.",
+        "hi": "एक नए अध्याय की शुरुआत।"
+      },
+      "visualKey": "mandap-courtyard",
+      "venueName": "Venue Name Placeholder"
+    }
+  ],
+  "ui": {
+    "en": {
+      "scrollToBegin": "Scroll to begin",
+      "skipIntro": "Skip intro",
+      "jumpToDetails": "Jump to details",
+      "viewMap": "View map",
+      "backToTop": "Back to beginning",
+      "loading": "Preparing the celebration…",
+      "close": "Close"
+    },
+    "hi": {
+      "scrollToBegin": "आगे बढ़ने के लिए स्क्रॉल करें",
+      "skipIntro": "प्रारंभिक दृश्य छोड़ें",
+      "jumpToDetails": "विवरण देखें",
+      "viewMap": "मानचित्र देखें",
+      "backToTop": "शुरुआत पर लौटें",
+      "loading": "उत्सव तैयार हो रहा है…",
+      "close": "बंद करें"
+    }
+  },
+  "music": {
+    "enabled": false,
+    "src": "",
+    "label": {
+      "en": "Play ambient music",
+      "hi": "संगीत चलाएं"
+    }
+  }
+}

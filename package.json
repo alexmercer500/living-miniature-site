@@ -1,0 +1,23 @@
+{
+  "name": "living-miniature-wedding",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/mukta": "5.3.0",
+    "@fontsource/tiro-devanagari-hindi": "5.3.0",
+    "astro": "7.4.2",
+    "gsap": "3.15.0"
+  },
+  "description": "Living Miniature — a private, bilingual (EN/हिंदी) Indian wedding invitation website.",
+  "engines": {
+    "node": ">=22.23.4",
+    "npm": ">=9.6.5"
+  }
+}

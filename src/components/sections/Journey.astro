@@ -1,0 +1,253 @@
+---
+/**
+ * Scene 4 — "Two paths, one celebration".
+ * A charbagh garden in a 1000×800 box: two lamp-lined paths rise from the lower corners
+ * and meet before a lotus pool and pavilion. Markup is the final, fully-lit state;
+ * the story script rewinds it and lights it with scroll.
+ */
+import { type Lang, content, loc, t } from '../../lib/content';
+import { onion, arch, bloomPath, Buckets } from '../../lib/art';
+import { seeded } from '../../lib/random';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+type Pt = [number, number];
+const f = (n: number) => Math.round(n * 10) / 10;
+const bez = (p: Pt[], t: number): Pt => {
+  const u = 1 - t;
+  return [0, 1].map((k) => u ** 3 * p[0][k] + 3 * u * u * t * p[1][k] + 3 * u * t * t * p[2][k] + t ** 3 * p[3][k]) as Pt;
+};
+const bezD = (p: Pt[], t: number): Pt => {
+  const u = 1 - t;
+  return [0, 1].map((k) => 3 * u * u * (p[1][k] - p[0][k]) + 6 * u * t * (p[2][k] - p[1][k]) + 3 * t * t * (p[3][k] - p[2][k])) as Pt;
+};
+const mirror = (p: Pt[]): Pt[] => p.map(([x, y]) => [1000 - x, y]);
+
+const leftCurve: Pt[] = [[150, 830], [230, 700], [370, 600], [492, 552]];
+const curves = [leftCurve, mirror(leftCurve)];
+const width = (t: number) => 92 * (1 - t) + 16 * t;
+
+function ribbon(c: Pt[]) {
+  const L: Pt[] = [];
+  const R: Pt[] = [];
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24;
+    const [x, y] = bez(c, t);
+    const [dx, dy] = bezD(c, t);
+    const len = Math.hypot(dx, dy);
+    const nx = -dy / len, ny = dx / len;
+    const w = width(t) / 2;
+    L.push([x + nx * w, y + ny * w]);
+    R.push([x - nx * w, y - ny * w]);
+  }
+  return 'M' + [...L, ...R.reverse()].map(([x, y]) => `${f(x)},${f(y)}`).join(' L') + ' Z';
+}
+
+const centerline = (c: Pt[]) => `M${c[0]} C${c[1]} ${c[2]} ${c[3]}`;
+
+// Lamps line both edges of each path, shrinking with distance.
+const lamps = curves.map((c) => {
+  const out: { x: number; y: number; s: number; i: number }[] = [];
+  const n = 8;
+  for (let i = 0; i < n; i++) {
+    const t = 0.06 + (i / (n - 1)) * 0.84;
+    const [x, y] = bez(c, t);
+    const [dx, dy] = bezD(c, t);
+    const len = Math.hypot(dx, dy);
+    const side = i % 2 ? 1 : -1;
+    const off = (width(t) / 2 + 8) * side;
+    out.push({ x: x + (-dy / len) * off, y: y + (dx / len) * off, s: 0.75 * (1 - t) + 0.28 * t, i });
+  }
+  return out;
+});
+
+// Flowerbeds hugging the outer edges of the paths.
+const r = seeded(17);
+const BLOOMS = ['#D9406F', '#E8648C', '#F29A2E', '#F7B538', '#C42E5E'];
+const beds = curves.flatMap((c, ci) =>
+  Array.from({ length: 34 }, () => {
+    const t = r() * 0.9;
+    const [x, y] = bez(c, t);
+    const [dx, dy] = bezD(c, t);
+    const len = Math.hypot(dx, dy);
+    const outward = ci === 0 ? 1 : -1;
+    const off = (width(t) / 2 + 20 + r() * 26) * outward;
+    return { x: x + (-dy / len) * off, y: y + (dx / len) * off, s: (0.55 * (1 - t) + 0.22 * t) * (0.8 + r() * 0.4), c: BLOOMS[Math.floor(r() * BLOOMS.length)], rot: r() * 120 };
+  }),
+);
+
+const bedPetals = new Buckets();
+const bedCentres: string[] = [];
+for (const b of beds) {
+  const bloom = bloomPath(b.x, b.y, b.rot, b.s);
+  bedPetals.add(b.c, bloom.petals);
+  bedCentres.push(bloom.centre);
+}
+
+const cypress = (cx: number, base: number, w: number, h: number) =>
+  `M${cx},${base - h} C${cx + w * 0.62},${base - h * 0.68} ${cx + w * 0.55},${base - h * 0.18} ${cx + w * 0.28},${base} L${cx - w * 0.28},${base} C${cx - w * 0.55},${base - h * 0.18} ${cx - w * 0.62},${base - h * 0.68} ${cx},${base - h} Z`;
+const trees = [[-330, 760, 64, 320], [1330, 760, 64, 320], [-170, 720, 56, 280], [1170, 720, 56, 280], [662, 470, 22, 90], [262, 520, 30, 128], [738, 520, 30, 128], [150, 610, 40, 190], [850, 610, 40, 190], [40, 700, 50, 250], [960, 700, 50, 250]];
+const ropeBeads = Array.from({ length: 9 }, (_, i) => ({ y: 8 + i * 9, c: ['#F29A2E', '#F7B538', '#E9822A'][i % 3] }));
+const canopy = [[-420, 360, 80], [-300, 350, 70], [-180, 362, 64], [1180, 362, 64], [1300, 350, 70], [1420, 360, 80], [60, 360, 70], [170, 340, 60], [270, 352, 48], [830, 340, 60], [940, 360, 70], [730, 352, 48]];
+---
+<section id="journey" class="journey" aria-labelledby="journey-title">
+  <div class="j-copy">
+    <h2 id="journey-title" data-journey-title>{loc(content.journey.title, lang)}</h2>
+    <div class="ornament"><span></span></div>
+  </div>
+
+  <svg class="garden" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMax slice" data-garden focusable="false">
+    <g aria-hidden="true">
+    <defs>
+      <linearGradient id="j-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#17172C" /><stop offset=".55" stop-color="#4B243E" /><stop offset="1" stop-color="#A95860" />
+      </linearGradient>
+      <linearGradient id="j-ground" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2A4134" /><stop offset=".5" stop-color="#22352C" /><stop offset="1" stop-color="#17231D" />
+      </linearGradient>
+      <linearGradient id="j-path" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#EAD6B7" /><stop offset="1" stop-color="#C98C86" />
+      </linearGradient>
+      <linearGradient id="j-pool" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6E3A57" /><stop offset="1" stop-color="#252744" />
+      </linearGradient>
+    </defs>
+
+    <rect x="-500" width="2000" height="345" fill="url(#j-sky)" />
+    <rect x="-500" y="340" width="2000" height="460" fill="url(#j-ground)" />
+
+    <!-- Garden wall with merlons and distant chhatris -->
+    <rect x="-500" y="318" width="2000" height="26" fill="#5A2F4A" />
+    {Array.from({ length: 100 }, (_, i) => <rect x={i * 20 - 496} y="311" width="10" height="8" fill="#5A2F4A" />)}
+    {[-250, 110, 890, 1250].map((cx) => (
+      <g fill="#5A2F4A">
+        <rect x={cx - 18} y="286" width="36" height="32" /><path d={onion(cx, 288, 40, 34)} />
+      </g>
+    ))}
+    {canopy.map(([cx, cy, rad]) => <circle cx={cx} cy={cy} r={rad} fill="#22352C" />)}
+
+    <!-- Pavilion (baradari) -->
+    <g class="pavilion">
+      <rect x="392" y="430" width="216" height="22" fill="#B87C80" />
+      <rect x="400" y="330" width="200" height="10" fill="url(#lm-stone)" />
+      <path d="M390,350 L610,350 L600,340 L400,340 Z" fill="#8F5A6C" />
+      <rect x="455" y="314" width="90" height="16" fill="url(#lm-stone)" />
+      <path d={onion(500, 314, 120, 86)} fill="url(#lm-dome)" />
+      <path d={onion(412, 330, 28, 26)} fill="url(#lm-dome)" />
+      <path d={onion(588, 330, 28, 26)} fill="url(#lm-dome)" />
+      <line x1="500" y1="228" x2="500" y2="212" stroke="#F2D59A" stroke-width="2" />
+      <rect x="400" y="350" width="200" height="80" fill="#5A2F4A" />
+      <g class="pav-lit" filter="url(#lm-glow)">
+        {[0, 1, 2, 3].map((i) => <path d={arch(412 + i * 48, 362, 32, 68)} fill="url(#lm-lit)" />)}
+      </g>
+      {[0, 1, 2, 3, 4].map((i) => <rect x={400 + i * 48} y="350" width="8" height="80" fill="url(#lm-stone)" />)}
+    </g>
+
+    <!-- Lotus pool and fountain -->
+    <path d="M425,462 L575,462 L612,548 L388,548 Z" fill="#C98C86" />
+    <path d="M434,468 L566,468 L598,542 L402,542 Z" fill="url(#j-pool)" />
+    <g class="fountain" stroke="#FFF3E2" stroke-opacity=".7" stroke-width="1.4" fill="none">
+      <path d="M500,505 Q492,484 482,494 M500,505 Q508,484 518,494 M500,505 V478" />
+    </g>
+    <ellipse cx="456" cy="526" rx="16" ry="4" fill="#314B3E" /><ellipse cx="548" cy="520" rx="18" ry="4.5" fill="#314B3E" />
+    <path d="M456,523 c-5,-6 -3,-12 0,-14 c3,2 5,8 0,14z M548,517 c-5,-6 -3,-12 0,-14 c3,2 5,8 0,14z" fill="url(#lm-lotus)" />
+
+    <!-- Paths -->
+    {curves.map((c) => <path d={ribbon(c)} fill="url(#j-path)" />)}
+    {curves.map((c) => <path d={ribbon(c)} fill="none" stroke="#8F5A6C" stroke-opacity=".5" stroke-width="1.5" />)}
+
+    <!-- Rangoli parterre between the paths -->
+    <g transform="translate(500 700)">
+      <ellipse rx="120" ry="34" fill="none" stroke="#FFF3E2" stroke-opacity=".6" stroke-width="2" />
+      <ellipse rx="92" ry="26" fill="none" stroke="#F7B538" stroke-width="7" stroke-dasharray="2 9" stroke-linecap="round" />
+      <ellipse rx="64" ry="18" fill="none" stroke="#D9406F" stroke-width="7" stroke-dasharray="2 8" stroke-linecap="round" />
+      <ellipse rx="34" ry="10" fill="#9C3540" />
+      <ellipse rx="14" ry="4" fill="#F2D59A" />
+    </g>
+
+    <Fragment set:html={String(bedPetals)} />
+    <path d={bedCentres.join('')} fill="#FFF3E2" />
+    {trees.map(([cx, base, w, h]) => (
+      <g><path d={cypress(cx, base, w, h)} fill="#1E2F27" /><path d={cypress(cx - 3, base, w * 0.55, h * 0.86)} fill="#2B4337" opacity=".8" /></g>
+    ))}
+
+    <!-- Neem tree whose branch carries the jhoola -->
+    <path d="M252,520 C256,460 266,410 274,352 L284,354 C278,412 272,462 270,520 Z" fill="#3B2A2C" />
+    <path d="M276,382 C300,370 336,366 374,370 L374,376 C336,374 302,378 278,392 Z" fill="#3B2A2C" />
+    {[[265, 318, 46, '#22352C'], [310, 334, 34, '#2A4134'], [222, 338, 38, '#22352C'], [350, 352, 22, '#2A4134']].map(([cx, cy, rad, c]) => <circle cx={cx} cy={cy} r={rad} fill={String(c)} />)}
+
+    <!-- Light trails that become one -->
+    {curves.map((c, i) => (
+      <path class="trail" data-trail={i} d={centerline(c)} pathLength="1" fill="none" stroke="#FFD98A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="0" filter="url(#lm-glow-small)" />
+    ))}
+    <circle class="meet" cx="500" cy="552" r="60" fill="url(#lm-halo)" />
+
+    {lamps.map((side, si) => side.map((l) => (
+      <g class="lamp" data-side={si} data-step={l.i} transform={`translate(${f(l.x - 30 * l.s)} ${f(l.y - 40 * l.s)}) scale(${f(l.s)})`}>
+        <g class="lamp-light">
+          <circle cx="30" cy="22" r="26" fill="url(#lm-halo)" />
+          <path d="M30,6 C36,16 37,24 30,30 C23,24 24,16 30,6Z" fill="url(#lm-flame)" />
+        </g>
+        <path d="M5,31 C10,46 50,46 55,31 C46,35 14,35 5,31Z" fill="url(#lm-brass)" />
+      </g>
+    )))}
+    </g>
+
+    <!-- Jhoola: drag, tap or press Enter to push. Rotated by scripts/story.ts. -->
+    <g class="swing" transform="translate(350 372)" role="button" tabindex="0" aria-label={t(lang, 'pushSwing')} data-swing>
+      <g class="swing-arm">
+        <rect x="-36" y="-2" width="72" height="108" fill="transparent" />
+        <g stroke="#C49A55" stroke-width="1.4"><line x1="-17" y1="0" x2="-20" y2="86" /><line x1="17" y1="0" x2="20" y2="86" /></g>
+        {ropeBeads.map((b) => <><circle cx={-17 - b.y * 0.035} cy={b.y} r="3" fill={b.c} /><circle cx={17 + b.y * 0.035} cy={b.y} r="3" fill={b.c} /></>)}
+        <rect x="-28" y="86" width="56" height="7" rx="2" fill="#9C3540" stroke="#F2D59A" stroke-width=".8" />
+        <path d="M-22,86 C-14,79 14,79 22,86 Z" fill="#C8326B" />
+        <path d="M-28,93 l-2,10 l4,0 Z M28,93 l2,10 l-4,0 Z" fill="#F7B538" />
+      </g>
+      <circle cx="-17" cy="0" r="2.4" fill="#C49A55" /><circle cx="17" cy="0" r="2.4" fill="#C49A55" />
+    </g>
+  </svg>
+</section>
+
+<script>
+  // Phones crop the garden to its centre (slice); wide screens show all of it plus the extended margins (meet).
+  const garden = document.querySelector<SVGSVGElement>('[data-garden]');
+  const wide = matchMedia('(min-aspect-ratio: 5/4)');
+  const fit = () => garden?.setAttribute('preserveAspectRatio', wide.matches ? 'xMidYMax meet' : 'xMidYMax slice');
+  fit();
+  wide.addEventListener('change', fit);
+</script>
+
+<style>
+  .journey {
+    position: relative;
+    display: grid;
+    background: linear-gradient(to bottom, #5E2C48, var(--color-midnight) 18%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .j-copy {
+    position: absolute;
+    z-index: 1;
+    inset: 0 0 auto;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    padding: clamp(3rem, 9vw, 5.5rem) var(--gutter) 0;
+    text-align: center;
+  }
+  .j-copy h2 {
+    max-width: 18ch;
+    font-size: var(--fs-h2);
+    text-shadow: 0 2px 20px rgb(23 23 44 / 0.7);
+  }
+  .swing { cursor: grab; touch-action: none; outline: none; }
+  .swing:active { cursor: grabbing; }
+  .swing:focus-visible .swing-arm { filter: drop-shadow(0 0 6px #F2D59A); }
+  .garden {
+    width: 100%;
+    height: clamp(560px, 100svh, 900px);
+  }
+  @media (min-aspect-ratio: 5/4) {
+    .garden { height: clamp(560px, 100svh, 1000px); }
+  }
+</style>

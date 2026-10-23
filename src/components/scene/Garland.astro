@@ -1,0 +1,50 @@
+---
+/**
+ * Marigold toran: a swag across the top with hanging strands, in a W×H box.
+ * Strands end in a single rose bud. Purely decorative.
+ */
+import { seeded } from '../../lib/random';
+import { dot, Buckets } from '../../lib/art';
+interface Props { width?: number; strands?: number; class?: string; seed?: number }
+const { width = 600, strands = 9, class: cls = '', seed = 5 } = Astro.props;
+const r = seeded(seed);
+const MARIGOLD = ['#F29A2E', '#F7B538', '#E9822A', '#FFC24B'];
+const pick = () => MARIGOLD[Math.floor(r() * MARIGOLD.length)];
+const H = 220;
+const swag: { x: number; y: number; c: string }[] = [];
+const swags = Math.max(2, Math.round(strands / 2));
+for (let s = 0; s < swags; s++) {
+  const x0 = (width / swags) * s;
+  const x1 = (width / swags) * (s + 1);
+  for (let i = 0; i <= 14; i++) {
+    const t = i / 14;
+    swag.push({ x: x0 + (x1 - x0) * t, y: 10 + Math.sin(Math.PI * t) * 34, c: pick() });
+  }
+}
+const hang = Array.from({ length: strands }, (_, i) => {
+  const x = (width / (strands - 1)) * i;
+  const len = 70 + (i % 2 ? 40 : 90) + r() * 20;
+  const beads = Array.from({ length: Math.round(len / 9) }, (_, k) => ({ y: 14 + k * 9, c: pick() }));
+  return { x, len, beads };
+});
+// Beads merged into one path per colour (see Buckets in lib/art.ts).
+const strandBeads = new Buckets();
+const buds: string[] = [];
+const stems: string[] = [];
+for (const h of hang) {
+  for (const b of h.beads) strandBeads.add(b.c, dot(h.x, b.y, 5));
+  const end = h.beads.length * 9;
+  buds.push(dot(h.x, end + 18, 6.5));
+  stems.push(`M${h.x - 3},${end + 23} L${h.x},${end + 34} L${h.x + 3},${end + 23}Z`);
+}
+const swagBeads = new Buckets();
+for (const b of swag) swagBeads.add(b.c, dot(b.x, b.y, 6.5));
+const roses = swag.filter((_, i) => i % 5 === 0).map((b) => dot(b.x, b.y + 2, 4)).join('');
+---
+<svg class:list={['garland', cls]} viewBox={`-10 0 ${width + 20} ${H}`} preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+  <Fragment set:html={String(strandBeads)} />
+  <path d={buds.join('')} fill="#B8285A" />
+  <path d={stems.join('')} fill="#2E4A3A" />
+  <Fragment set:html={String(swagBeads)} />
+  <path d={roses} fill="#9C3540" />
+</svg>

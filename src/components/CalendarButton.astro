@@ -1,0 +1,47 @@
+---
+/** Renders only for a real ISO date; the .ics is generated on the guest's device. */
+import { type Lang, content, loc, t, parseDate } from '../lib/content';
+import Icon from './Icon.astro';
+interface Props { lang: Lang; event: (typeof content.events)[number]; tone?: 'light' | 'dark' }
+const { lang, event, tone = 'light' } = Astro.props;
+const valid = parseDate(event.date);
+const payload = JSON.stringify({
+  id: event.id,
+  title: `${loc(event.title, lang)} — ${loc(content.couple.displayName, lang)}`,
+  date: event.date,
+  time: event.time,
+  location: [event.venueName, content.venue.address].filter(Boolean).join(', '),
+  description: loc(event.shortDescription, lang),
+});
+---
+{valid && (
+  <button class:list={['cal-btn', `cal-btn--${tone}`]} type="button" data-ics={payload}>
+    <Icon name="calendar-plus" />{t(lang, 'addToCalendar')}
+  </button>
+)}
+
+<script>
+  import '../scripts/calendar';
+</script>
+
+<style>
+  .cal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-self: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-line-gold);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    font: 500 var(--fs-small)/1 var(--font-ui);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .cal-btn :global(svg) { width: 1.1rem; height: 1.1rem; }
+  .cal-btn--light { color: var(--color-text-light); }
+  .cal-btn--light:hover { background: rgb(242 213 154 / 0.12); }
+  .cal-btn--dark { color: var(--color-vermilion); border-color: rgb(156 53 64 / 0.4); }
+  .cal-btn--dark:hover { background: rgb(156 53 64 / 0.08); }
+</style>

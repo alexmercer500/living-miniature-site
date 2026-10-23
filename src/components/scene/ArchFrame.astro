@@ -1,0 +1,43 @@
+---
+/**
+ * A cusped (multifoil) jharokha arch that stretches to its container.
+ * The fill is clipped with an objectBoundingBox clipPath; the gold outlines are
+ * drawn with non-scaling strokes so they stay hairline at any size.
+ * Optional `over` slot sits above the content inside the same arch clip (e.g. gateway doors).
+ */
+import { CUSPED_ARCH } from '../../lib/art';
+interface Props { class?: string; tone?: 'ivory' | 'night' }
+const { class: cls = '', tone = 'ivory' } = Astro.props;
+---
+<div class:list={['arch-frame', `arch-frame--${tone}`, cls]}>
+  <div class="arch-fill"><slot name="art" /></div>
+  <div class="arch-content"><slot /></div>
+  {Astro.slots.has('over') && <div class="arch-over"><slot name="over" /></div>}
+  <svg class="arch-lines" viewBox="-3 -3 106 126" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d={CUSPED_ARCH} />
+    <path d={CUSPED_ARCH} transform="translate(3.2 4.4) scale(.936 .94)" />
+  </svg>
+</div>
+
+<style>
+  .arch-frame { position: relative; isolation: isolate; }
+  .arch-fill { position: absolute; inset: 0; z-index: -1; clip-path: url(#lm-arch-clip); overflow: hidden; }
+  .arch-frame--ivory .arch-fill {
+    background:
+      radial-gradient(120% 70% at 50% 30%, #FFF9F0, var(--color-ivory) 55%, var(--color-parchment));
+  }
+  .arch-frame--night .arch-fill { background: var(--color-indigo); }
+  .arch-over { position: absolute; inset: 0; clip-path: url(#lm-arch-clip); pointer-events: none; }
+  .arch-over > :global(*) { pointer-events: auto; }
+  .arch-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .arch-lines path { fill: none; stroke: var(--color-antique-gold); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .arch-lines path + path { stroke-width: 0.75; stroke-opacity: 0.7; }
+  .arch-content { position: relative; height: 100%; }
+</style>

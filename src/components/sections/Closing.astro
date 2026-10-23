@@ -1,0 +1,132 @@
+---
+/** Scene 8 — the sun returns over the lake; a short thank-you and the essential actions. */
+import { type Lang, content, loc, t, href, mapConfigured } from '../../lib/content';
+import Foliage from '../scene/Foliage.astro';
+import Diya from '../scene/Diya.astro';
+import Lotus from '../scene/Lotus.astro';
+import Peacock from '../scene/Peacock.astro';
+import Monogram from '../Monogram.astro';
+import Icon from '../Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<section id="closing" class="closing" aria-labelledby="closing-title">
+  <div class="c-stage" aria-hidden="true">
+    <div class="c-sun"></div>
+    <svg class="c-palace" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg>
+    <div class="c-water">
+      <Lotus class="c-lotus" />
+      <Diya class="c-diya a" /><Diya class="c-diya b" /><Diya class="c-diya c" />
+    </div>
+    <Foliage side="right" variant="a" class="c-foliage" />
+  </div>
+  <Peacock class="c-peacock" />
+  <span hidden data-peacock-label>{t(lang, 'peacock')}</span>
+
+  <div class="c-copy">
+    <p id="closing-title" class="line">{loc(content.closing.line, lang)}</p>
+    <div class="ornament"><span></span></div>
+    <Monogram class="c-mono" />
+    <p class="couple">{loc(content.couple.displayName, lang)}</p>
+    <div class="actions">
+      <a class="btn btn--solid" href={href(lang, '/invitation')}>{loc(content.invitation.label, lang)}</a>
+      {mapConfigured() && (
+        <a class="btn btn--ghost-dark" href={content.venue.mapUrl} target="_blank" rel="noopener"><Icon name="pin" />{loc(content.venue.directionsLabel, lang)}</a>
+      )}
+    </div>
+    <a class="top-link" href="#welcome"><Icon name="up" />{t(lang, 'backToTop')}</a>
+  </div>
+</section>
+
+<style>
+  .closing {
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    align-content: start;
+    padding: var(--space-9) var(--gutter) 0;
+    color: var(--color-text-dark);
+    background: linear-gradient(to bottom, var(--color-plum), var(--color-dusk-rose) 14%, var(--color-sunset) 34%, #F8D9BC 52%, var(--color-ivory) 66%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .c-stage { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .c-stage > * { position: absolute; }
+  .c-sun {
+    left: 50%;
+    bottom: 31%;
+    width: clamp(90px, 18vw, 180px);
+    aspect-ratio: 1;
+    translate: -50% 40%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FFF8E8 0 50%, #FFE2BC 62%, transparent 71%);
+    box-shadow: 0 0 120px 60px rgb(255 226 188 / 0.5);
+  }
+  .c-palace {
+    right: -18%;
+    bottom: 26%;
+    width: clamp(380px, 70vw, 760px);
+    opacity: 0.55;
+    filter: saturate(0.6) brightness(1.15);
+  }
+  .c-water {
+    inset: auto 0 0;
+    height: 27%;
+    background:
+      repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.12) 0 1px, transparent 1px 8px),
+      linear-gradient(to bottom, #E9B79E, #A95860 70%, var(--color-plum));
+  }
+  .c-water :global(.c-lotus) { position: absolute; left: -2%; bottom: 18%; width: clamp(160px, 30vw, 300px); }
+  .c-water :global(.c-diya) { position: absolute; width: clamp(32px, 6vw, 52px); }
+  .c-water :global(.a) { left: 34%; top: 22%; }
+  .c-water :global(.b) { left: 56%; top: 48%; }
+  .c-water :global(.c) { left: 76%; top: 16%; width: clamp(26px, 4.5vw, 40px); }
+  .c-stage :global(.c-foliage) { width: clamp(170px, 34vw, 400px); }
+
+  .closing :global(.c-peacock) {
+    position: absolute;
+    z-index: 0;
+    left: max(0px, 3vw);
+    bottom: 25%;
+    width: clamp(150px, 24vw, 270px);
+  }
+  .c-copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    max-width: 30rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .line {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem);
+    line-height: 1.2;
+    color: var(--color-text-light);
+    text-shadow: 0 1px 18px rgb(75 36 62 / 0.6);
+    text-wrap: balance;
+  }
+  .closing :global(.c-mono) { font-size: 2.75rem; color: var(--color-ivory); filter: drop-shadow(0 1px 8px rgb(75 36 62 / 0.6)); }
+  .ornament { color: var(--color-ivory); }
+  .couple {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-plum);
+  }
+  :lang(hi) .couple { letter-spacing: 0.04em; text-transform: none; font-size: var(--fs-body); }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); margin-top: var(--space-2); }
+  .top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    font-size: var(--fs-small);
+    color: var(--color-plum);
+    text-underline-offset: 4px;
+  }
+  .top-link :global(svg) { width: 1rem; }
+</style>

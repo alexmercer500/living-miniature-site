@@ -1,0 +1,76 @@
+---
+/**
+ * Scene 2 — carved lacquer doors with brass studs and jaali panels, sitting inside the arch.
+ * Hidden by default (no-JS and reduced motion see the open arch); the story script
+ * reveals it, opens it with scroll or tap, and makes it inert once open.
+ */
+import { type Lang, t } from '../../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+const studs: string[] = [];
+for (let y = 10; y <= 132; y += 8) studs.push(`<circle cx="5" cy="${y}" r=".9"/><circle cx="45" cy="${y}" r=".9"/>`);
+for (const y of [47, 89]) for (let x = 9; x <= 41; x += 4) studs.push(`<circle cx="${x}" cy="${y}" r=".8"/>`);
+const jaali: string[] = [];
+for (let y = 58; y <= 80; y += 5.5) for (let x = 14.5; x <= 35.5; x += 5.25) jaali.push(`<circle cx="${x}" cy="${y}" r="2"/>`);
+
+const leaf = `
+  <rect width="50" height="140" fill="url(#lm-door)"/>
+  <rect width="50" height="140" fill="url(#lm-door-shade)"/>
+  <g fill="none" stroke="#C49A55">
+    <rect x="2.5" y="2.5" width="45" height="135" stroke-width="1.2"/>
+    <rect x="6.5" y="6.5" width="37" height="127" stroke-opacity=".5"/>
+    <rect x="10" y="52" width="30" height="33"/>
+    <rect x="10" y="94" width="30" height="36"/>
+    <g stroke-opacity=".75">${jaali.join('')}</g>
+    <path d="M25,99 L35,112 L25,125 L15,112 Z M25,105 L30,112 L25,119 L20,112 Z"/>
+    <circle cx="44" cy="90" r="3.2" stroke-width="1.2"/>
+  </g>
+  <g fill="#F2D59A">${studs.join('')}</g>`;
+---
+<div class="gate" data-gate hidden>
+  <button class="gate-btn" type="button" data-gate-open aria-label={t(lang, 'openGateway')}>
+    <svg class="leaf leaf--l" viewBox="0 0 50 140" preserveAspectRatio="none" aria-hidden="true" focusable="false" set:html={leaf} />
+    <svg class="leaf leaf--r" viewBox="0 0 50 140" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+      set:html={`<g transform="translate(50 0) scale(-1 1)">${leaf}</g>`} />
+    <span class="gate-hint" aria-hidden="true">{t(lang, 'tapToOpen')}</span>
+  </button>
+</div>
+
+<style>
+  .gate { position: absolute; inset: 0; perspective: 1400px; }
+  .gate[hidden] { display: none; }
+  .gate-btn {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .leaf { position: absolute; top: 0; width: 50.4%; height: 100%; backface-visibility: hidden; }
+  .leaf :global(*) { vector-effect: non-scaling-stroke; }
+  .leaf--l { left: 0; transform-origin: 0 50%; }
+  .leaf--r { right: 0; transform-origin: 100% 50%; }
+  .gate-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 9%;
+    translate: -50% 0;
+    padding: var(--space-1) var(--space-4);
+    border: 1px solid var(--color-gold-highlight);
+    border-radius: var(--radius-pill);
+    background: rgb(23 23 44 / 0.7);
+    color: var(--color-ivory);
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .gate-btn:focus-visible { outline: none; }
+  .gate-btn:focus-visible .gate-hint { outline: 2px solid var(--color-gold-highlight); outline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gate-hint { animation: hint 2.4s var(--ease-in-out) infinite; }
+  }
+  @keyframes hint { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+</style>

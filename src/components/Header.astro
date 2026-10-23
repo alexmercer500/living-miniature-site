@@ -1,0 +1,191 @@
+---
+import { type Lang, t, href, rsvpConfigured, content } from '../lib/content';
+import Icon from './Icon.astro';
+import Monogram from './Monogram.astro';
+interface Props { lang: Lang; page?: 'home' | 'invitation' }
+const { lang, page = 'home' } = Astro.props;
+const path = page === 'invitation' ? '/invitation' : '/';
+const home = href(lang, '/');
+const links = [
+  { id: 'welcome', label: t(lang, 'welcome') },
+  { id: 'celebrations', label: t(lang, 'celebrations') },
+  { id: 'venue', label: t(lang, 'venue') },
+  ...(rsvpConfigured() ? [{ id: 'rsvp', label: t(lang, 'rsvpNav') }] : []),
+];
+---
+<header class="site-header" data-header>
+  <a class="brand" href={home} aria-label={t(lang, 'backToTop')}><Monogram /></a>
+
+  <div class="header-actions">
+    <nav class="lang-toggle" aria-label={t(lang, 'language')}>
+      <a href={href('en', path)} lang="en" hreflang="en" aria-current={lang === 'en' ? 'true' : undefined} data-lang-link>EN</a>
+      <span aria-hidden="true"></span>
+      <a href={href('hi', path)} lang="hi" hreflang="hi" aria-current={lang === 'hi' ? 'true' : undefined} data-lang-link>हिंदी</a>
+    </nav>
+
+    {page === 'home' && content.music.enabled && (
+      <button class="sound-btn" type="button" data-sound data-src={content.music.src} aria-pressed="false"
+        aria-label={t(lang, 'musicOn')} data-label-on={t(lang, 'musicOn')} data-label-off={t(lang, 'musicOff')} hidden>
+        <span class="on"><Icon name="sound" /></span><span class="off"><Icon name="mute" /></span>
+      </button>
+    )}
+
+    <button class="menu-btn" type="button" popovertarget="site-menu" aria-label={t(lang, 'menu')}>
+      <Icon name="menu" />
+    </button>
+  </div>
+
+  <nav id="site-menu" class="menu" popover aria-label={t(lang, 'menu')}>
+    <button class="menu-close" type="button" popovertarget="site-menu" popovertargetaction="hide" aria-label={t(lang, 'close')}>
+      <Icon name="close" />
+    </button>
+    <ol>
+      {links.map((l) => <li><a href={`${home}#${l.id}`} data-menu-link>{l.label}</a></li>)}
+      <li><a href={href(lang, '/invitation')}>{t(lang, 'invitation')}</a></li>
+    </ol>
+  </nav>
+</header>
+
+<script>
+  // Keep the guest's place when switching language: carry the section in view as a hash.
+  document.querySelectorAll<HTMLAnchorElement>('[data-lang-link]').forEach((a) => {
+    a.addEventListener('click', () => {
+      const sections = [...document.querySelectorAll<HTMLElement>('main section[id]')];
+      const mid = window.innerHeight / 2;
+      const current = sections.find((s) => {
+        const r = s.getBoundingClientRect();
+        return r.top <= mid && r.bottom >= mid;
+      });
+      if (current && current.id !== 'welcome') a.hash = current.id;
+    });
+  });
+  // Close the popover menu after choosing a destination.
+  const menu = document.getElementById('site-menu');
+  menu?.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => menu.hidePopover?.()));
+  // Solidify the header once the hero has scrolled away.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const sentinel = document.querySelector('[data-hero-end]');
+  if (header && sentinel) {
+    new IntersectionObserver(([e]) => header.toggleAttribute('data-solid', !e.isIntersecting && e.boundingClientRect.top < 0)).observe(sentinel);
+  } else header?.setAttribute('data-solid', '');
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+    transition: background-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base);
+  }
+  .site-header[data-solid] {
+    background: rgb(23 23 44 / 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 1px 0 rgb(196 154 85 / 0.25);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    min-width: var(--tap);
+    font-size: 1.5rem;
+    text-decoration: none;
+    filter: drop-shadow(0 1px 6px rgb(23 23 44 / 0.6));
+  }
+  .header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    padding: 0 1px;
+    border: 1px solid var(--color-line-gold);
+    border-radius: var(--radius-pill);
+    background: rgb(23 23 44 / 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .lang-toggle a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    min-width: 3rem;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    color: var(--color-text-light-muted);
+  }
+  .lang-toggle a[aria-current] { background: var(--color-ivory); color: var(--color-text-dark); }
+  /* On English pages this one word would pull ~200 KB of Devanagari webfont; the OS font is fine here. */
+  :global(html[lang='en']) .lang-toggle a[lang='hi'] { font-family: system-ui, 'Nirmala UI', 'Noto Sans Devanagari', sans-serif; }
+  .lang-toggle span { width: 1px; height: 1rem; background: var(--color-line-gold); margin: 0 1px; }
+  .lang-toggle a[aria-current] + span, .lang-toggle span:has(+ a[aria-current]) { opacity: 0; }
+
+  .sound-btn[hidden] { display: none; }
+  .sound-btn .on { display: none; }
+  .sound-btn[aria-pressed='true'] .on { display: contents; }
+  .sound-btn[aria-pressed='true'] .off { display: none; }
+  .sound-btn[aria-pressed='true'] { border-color: var(--color-gold-highlight); color: var(--color-gold-highlight); }
+  .menu-btn, .menu-close, .sound-btn {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 1px solid var(--color-line-gold);
+    border-radius: 50%;
+    background: rgb(23 23 44 / 0.45);
+    color: var(--color-text-light);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .menu-btn :global(svg), .menu-close :global(svg), .sound-btn :global(svg) { width: 1.25rem; height: 1.25rem; }
+
+  .menu {
+    margin: 0;
+    inset: 0 0 0 auto;
+    width: min(22rem, 100%);
+    height: 100%;
+    max-height: none;
+    padding: calc(var(--header-h) + var(--space-6)) var(--space-6) var(--space-6);
+    border: 0;
+    border-left: 1px solid var(--color-line-gold);
+    background: linear-gradient(170deg, var(--color-indigo), var(--color-plum));
+    color: var(--color-text-light);
+  }
+  .menu::backdrop { background: rgb(23 23 44 / 0.6); }
+  .menu-close { position: absolute; top: calc((var(--header-h) - var(--tap)) / 2); right: var(--gutter); }
+  .menu ol { list-style: none; margin: 0; padding: 0; counter-reset: m; }
+  .menu li { counter-increment: m; border-bottom: 1px solid rgb(196 154 85 / 0.2); }
+  .menu a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    text-decoration: none;
+  }
+  .menu a::before {
+    content: counter(m, decimal-leading-zero);
+    font: 500 var(--fs-eyebrow) var(--font-ui);
+    letter-spacing: 0.15em;
+    color: var(--color-antique-gold);
+  }
+  .menu a:hover { color: var(--color-gold-highlight); }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu {
+      transition: translate var(--dur-base) var(--ease-out), opacity var(--dur-base), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete;
+    }
+    .menu:not(:popover-open) { translate: 30% 0; opacity: 0; }
+    @starting-style { .menu:popover-open { translate: 30% 0; opacity: 0; } }
+  }
+</style>

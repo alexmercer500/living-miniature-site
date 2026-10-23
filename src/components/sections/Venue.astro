@@ -1,0 +1,124 @@
+---
+/** Scene 6 — venue reveal. Details are real HTML beside the art, never inside it. */
+import { type Lang, content, loc, t, mapConfigured } from '../../lib/content';
+import Lantern from '../scene/Lantern.astro';
+import Icon from '../Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hasMap = mapConfigured();
+---
+<section id="venue" class="venue" aria-labelledby="venue-title">
+  <div class="venue-art" aria-hidden="true">
+    <div class="v-sky"></div>
+    <svg class="v-palace" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg>
+    <div class="v-water"><svg class="v-reflection" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg></div>
+    <div class="v-lanterns">
+      <Lantern cord={10} /><Lantern cord={46} /><Lantern cord={24} /><Lantern cord={60} /><Lantern cord={18} />
+    </div>
+  </div>
+
+  <div class="venue-card">
+    <span class="pin"><Icon name="pin" /></span>
+    <p class="eyebrow">{t(lang, 'venueHeading')}</p>
+    <h2 id="venue-title">{content.venue.name}</h2>
+    <address>{content.venue.address}</address>
+    {hasMap ? (
+      <div class="actions">
+        <a class="btn btn--solid" href={content.venue.mapUrl} target="_blank" rel="noopener">
+          <Icon name="pin" />{loc(content.venue.directionsLabel, lang)}
+        </a>
+        <a class="btn btn--ghost-light" href={content.venue.mapUrl} target="_blank" rel="noopener">{t(lang, 'viewMap')}</a>
+      </div>
+    ) : import.meta.env.DEV && (
+      <p class="dev-note">Dev only: set <code>venue.mapUrl</code> to show “View map / Get directions”.</p>
+    )}
+  </div>
+</section>
+
+<style>
+  .venue {
+    position: relative;
+    display: grid;
+    background: var(--color-midnight);
+  }
+  .venue-art {
+    position: relative;
+    height: clamp(300px, 62vw, 560px);
+    overflow: hidden;
+  }
+  .venue-art > * { position: absolute; }
+  .v-sky {
+    inset: 0;
+    background:
+      radial-gradient(50% 40% at 50% 70%, rgb(234 161 126 / 0.35), transparent),
+      linear-gradient(to bottom, var(--color-midnight), var(--color-indigo) 35%, var(--color-plum) 62%, var(--color-dusk-rose) 72%);
+  }
+  .v-palace {
+    left: 50%;
+    bottom: 26%;
+    width: clamp(460px, 120vw, 820px);
+    translate: -50% 0;
+    overflow: visible;
+    filter: saturate(0.9) brightness(0.92);
+  }
+  .v-water {
+    inset: auto 0 0;
+    height: 26%;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #4B2E4D, var(--color-midnight));
+  }
+  .v-reflection {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: clamp(460px, 120vw, 820px);
+    translate: -50% 0;
+    scale: 1 -1;
+    transform-origin: top;
+    opacity: 0.35;
+    filter: blur(2px);
+    mask-image: linear-gradient(to top, #000, transparent 75%);
+  }
+  .v-lanterns {
+    inset: 0 0 auto;
+    display: flex;
+    justify-content: space-around;
+    padding-inline: 4%;
+  }
+  .v-lanterns :global(.lantern) { width: clamp(22px, 4vw, 40px); height: auto; }
+
+  .venue-card {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    width: min(100% - 2 * var(--gutter), 34rem);
+    margin: calc(var(--space-7) * -1) auto var(--space-8);
+    padding: var(--space-7) var(--space-6) var(--space-6);
+    text-align: center;
+    background: linear-gradient(to bottom, rgb(37 39 68 / 0.92), rgb(23 23 44 / 0.96));
+    border: 1px solid var(--color-line-gold);
+    border-radius: 2px;
+    box-shadow: 0 20px 50px rgb(0 0 0 / 0.4);
+  }
+  .pin {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--color-midnight);
+    border: 1px solid var(--color-antique-gold);
+    color: var(--color-gold-highlight);
+  }
+  .pin :global(svg) { width: 1.4rem; }
+  .eyebrow { color: var(--color-antique-gold); }
+  h2 { font-size: var(--fs-h2); }
+  address { font-style: normal; color: var(--color-text-light-muted); max-width: 26rem; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); margin-top: var(--space-3); }
+  .dev-note { margin-top: var(--space-3); color: var(--color-text-light-muted); }
+</style>

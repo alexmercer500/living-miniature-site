@@ -1,0 +1,23 @@
+---
+import { initials } from '../lib/content';
+interface Props { class?: string }
+const [a, b] = initials();
+---
+<span class:list={['monogram', Astro.props.class]} aria-hidden="true"><span>{a}</span><i></i><span>{b}</span></span>
+
+<style>
+  .monogram {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-gold-highlight);
+  }
+  .monogram i {
+    width: 1px;
+    height: 1.15em;
+    background: linear-gradient(transparent, currentColor 25%, currentColor 75%, transparent);
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+/**
+ * Brass diya. Halo, flame and bowl are separate layers so the flicker and glow
+ * animate with transform/opacity on the compositor instead of repainting the SVG.
+ */
+interface Props { class?: string; style?: string }
+const { class: cls = '', style } = Astro.props;
+---
+<span class:list={['diya', cls]} style={style} aria-hidden="true">
+  <svg class="diya-halo" viewBox="0 0 60 56" focusable="false"><circle cx="30" cy="22" r="26" fill="url(#lm-halo)" /></svg>
+  <svg class="diya-flame" viewBox="0 0 60 56" focusable="false"><path d="M30,6 C36,16 37,24 30,30 C23,24 24,16 30,6Z" fill="url(#lm-flame)" /></svg>
+  <svg class="diya-body" viewBox="0 0 60 56" focusable="false">
+    <path d="M5,31 C10,46 50,46 55,31 C46,35 14,35 5,31Z" fill="url(#lm-brass)" />
+    <ellipse cx="30" cy="31.5" rx="25" ry="3.2" fill="#F2D59A" opacity=".7" />
+    <path d="M50,31 L58,27 L55,33 Z" fill="#C49A55" />
+  </svg>
+</span>
+
+<style>
+  .diya { display: block; aspect-ratio: 60 / 56; }
+  .diya > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .diya { position: relative; }
+  .diya-halo { transform-origin: 50% 39%; }
+  .diya-flame { transform-origin: 50% 54%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .diya-halo, .diya-flame { will-change: transform, opacity; }
+  }
+</style>

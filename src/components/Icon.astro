@@ -1,0 +1,22 @@
+---
+// Minimal line icons (24×24, stroke = currentColor). Decorative: labels live in the HTML.
+interface Props { name: 'pin' | 'calendar' | 'arrow-down' | 'arrow-right' | 'scroll' | 'menu' | 'close' | 'heart' | 'printer' | 'download' | 'up' | 'sound' | 'mute' | 'calendar-plus' }
+const { name } = Astro.props;
+const d: Record<Props['name'], string> = {
+  pin: 'M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21Z M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+  calendar: 'M4.5 6.5h15v13h-15z M4.5 10.5h15 M8.5 4v4 M15.5 4v4',
+  'arrow-down': 'M12 5v14 M6 13l6 6 6-6',
+  'arrow-right': 'M5 12h14 M13 6l6 6-6 6',
+  scroll: 'M12 3.5v17 M8 7l4-3.5L16 7 M8 17l4 3.5 4-3.5',
+  menu: 'M4 8h16 M4 16h16',
+  close: 'M6 6l12 12 M18 6L6 18',
+  heart: 'M12 19.5s-7.5-4.6-7.5-10a4.2 4.2 0 0 1 7.5-2.6 4.2 4.2 0 0 1 7.5 2.6c0 5.4-7.5 10-7.5 10Z',
+  printer: 'M7 9V4h10v5 M7 17H4.5v-8h15v8H17 M7 14h10v6H7z',
+  download: 'M12 4v11 M7 10.5l5 5 5-5 M5 20h14',
+  up: 'M12 19V5 M6 11l6-6 6 6',
+  sound: 'M4.5 9.5h3l4-3.5v12l-4-3.5h-3z M15 9.5a3.5 3.5 0 0 1 0 5 M17.5 7a7 7 0 0 1 0 10',
+  mute: 'M4.5 9.5h3l4-3.5v12l-4-3.5h-3z M15.5 9.5l5 5 M20.5 9.5l-5 5',
+  'calendar-plus': 'M4.5 6.5h15v13h-15z M4.5 10.5h15 M8.5 4v4 M15.5 4v4 M12 13v4.5 M9.75 15.25h4.5',
+};
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={d[name]} /></svg>

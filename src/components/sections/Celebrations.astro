@@ -1,0 +1,79 @@
+---
+/** Scene 5 — celebration vignettes: windows into the same miniature world, details always visible. */
+import { type Lang, content, loc, t, formatDate } from '../../lib/content';
+import ArchFrame from '../scene/ArchFrame.astro';
+import Vignette from '../scene/Vignette.astro';
+import CalendarButton from '../CalendarButton.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<section id="celebrations" class="celebrations" aria-labelledby="celebrations-title">
+  <header class="section-head">
+    <h2 id="celebrations-title">{t(lang, 'celebrations')}</h2>
+    <div class="ornament"><span></span></div>
+  </header>
+
+  <ol class="events">
+    {content.events.map((e) => (
+      <li class="event">
+        <ArchFrame class="window" tone="night">
+          <Vignette slot="art" visualKey={e.visualKey} />
+        </ArchFrame>
+        <div class="event-copy">
+          <p class="event-date">{formatDate(e.date, lang, true) ?? t(lang, 'dateTbc')}{e.time && <> · {e.time}</>}</p>
+          <h3>{loc(e.title, lang)}</h3>
+          <p class="event-desc">{loc(e.shortDescription, lang)}</p>
+          <CalendarButton lang={lang} event={e} />
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .celebrations {
+    padding: var(--space-9) var(--gutter) var(--space-8);
+    background:
+      linear-gradient(to bottom, #17231D, var(--color-indigo) 35%, var(--color-midnight));
+  }
+  .section-head {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+    text-align: center;
+  }
+  .section-head .eyebrow { color: var(--color-antique-gold); }
+  .section-head h2 { font-size: var(--fs-h2); }
+
+  .events {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: var(--content-wide);
+    display: grid;
+    gap: var(--space-7) var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
+  .event { display: grid; justify-items: center; gap: var(--space-5); text-align: center; }
+  .event :global(.window) {
+    width: min(100%, 17rem);
+    aspect-ratio: 5 / 6;
+  }
+  .event-copy { display: grid; gap: var(--space-2); max-width: 20rem; }
+  .event-date {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gold-highlight);
+  }
+  :lang(hi) .event-date { letter-spacing: 0.02em; text-transform: none; font-size: var(--fs-body); }
+  .event h3 { font-size: var(--fs-h3); }
+  .event-desc { color: var(--color-text-light-muted); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .event :global(.window) { transition: translate var(--dur-base) var(--ease-out); }
+    @media (hover: hover) { .event:hover :global(.window) { translate: 0 -6px; } }
+  }
+</style>

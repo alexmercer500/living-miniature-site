@@ -1,0 +1,102 @@
+---
+/**
+ * Opt-in welcome: "Open with music" / "Open quietly". The tap is what unlocks audio,
+ * so nothing ever autoplays. Shown once per session, never on deep links, never without JS.
+ */
+import { type Lang, content, loc, t } from '../lib/content';
+import LotusMark from './LotusMark.astro';
+import Icon from './Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+{content.music.enabled && (
+  <div class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" data-intro data-src={content.music.src} hidden>
+    <div class="intro-card">
+      <LotusMark class="intro-mark" />
+      <p id="intro-title" class="intro-names">{loc(content.couple.displayName, lang)}</p>
+      <div class="ornament"><span></span></div>
+      <p class="intro-hint">{t(lang, 'introHint')}</p>
+      <div class="intro-actions">
+        <button class="btn btn--solid" type="button" data-intro-music><Icon name="sound" />{t(lang, 'openWithMusic')}</button>
+        <button class="btn btn--ghost-light" type="button" data-intro-quiet>{t(lang, 'openQuietly')}</button>
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  import { getPlayer } from '../scripts/music';
+
+  const intro = document.querySelector<HTMLElement>('[data-intro]');
+  const soundBtn = document.querySelector<HTMLButtonElement>('[data-sound]');
+  const src = intro?.dataset.src ?? soundBtn?.dataset.src ?? '';
+
+  const syncButton = (on: boolean) => {
+    if (!soundBtn) return;
+    soundBtn.setAttribute('aria-pressed', String(on));
+    soundBtn.setAttribute('aria-label', (on ? soundBtn.dataset.labelOff : soundBtn.dataset.labelOn) ?? '');
+  };
+  const start = async () => { await getPlayer(src).play(); syncButton(true); };
+
+  if (soundBtn) {
+    soundBtn.hidden = false;
+    soundBtn.addEventListener('click', () => {
+      const p = getPlayer(src);
+      if (p.playing) { p.stop(); syncButton(false); } else start();
+    });
+  }
+
+  let seen = false;
+  try { seen = sessionStorage.getItem('lm-intro') === '1'; } catch {}
+  if (intro && !seen && !location.hash) {
+    intro.hidden = false;
+    document.documentElement.classList.add('intro-open');
+    intro.querySelector<HTMLButtonElement>('[data-intro-music]')?.focus();
+    const close = () => {
+      try { sessionStorage.setItem('lm-intro', '1'); } catch {}
+      intro.dataset.closing = '';
+      document.documentElement.classList.remove('intro-open');
+      window.setTimeout(() => intro.remove(), 700);
+    };
+    intro.querySelector('[data-intro-music]')?.addEventListener('click', () => { start(); close(); });
+    intro.querySelector('[data-intro-quiet]')?.addEventListener('click', close);
+    intro.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  }
+</script>
+
+<style>
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: var(--gutter);
+    background: radial-gradient(80% 60% at 50% 45%, rgb(23 23 44 / 0.55), rgb(23 23 44 / 0.92));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: opacity 0.6s var(--ease-out), visibility 0.6s;
+  }
+  .intro[hidden] { display: none; }
+  .intro[data-closing] { opacity: 0; visibility: hidden; }
+  .intro-card {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    width: min(100%, 26rem);
+    padding: var(--space-7) var(--space-6);
+    text-align: center;
+    border: 1px solid var(--color-line-gold);
+    background: linear-gradient(170deg, rgb(37 39 68 / 0.9), rgb(75 36 62 / 0.9));
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+  }
+  .intro-card :global(.intro-mark) { width: 3rem; color: var(--color-gold-highlight); }
+  .intro-names { font-family: var(--font-display); font-size: clamp(1.75rem, 4vw + 1rem, 2.5rem); line-height: 1.15; }
+  .intro-hint { font-size: var(--fs-small); color: var(--color-text-light-muted); }
+  .intro-actions { display: grid; gap: var(--space-3); width: 100%; margin-top: var(--space-2); }
+  :global(html.intro-open) { overflow: hidden; }
+  @media (prefers-reduced-motion: no-preference) {
+    .intro-card { animation: rise 0.9s var(--ease-out) both; }
+  }
+  @keyframes rise { from { opacity: 0; translate: 0 16px; } }
+</style>
