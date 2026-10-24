@@ -1,5 +1,5 @@
 ---
-/** Scene 8 — the sun returns over the lake; a short thank-you and the essential actions. */
+/** Scene 8 — the sun returns over the haveli courtyard; a short thank-you and the essential actions. */
 import { type Lang, content, loc, t, href, mapConfigured } from '../../lib/content';
 import Foliage from '../scene/Foliage.astro';
 import Diya from '../scene/Diya.astro';
@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 <section id="closing" class="closing" aria-labelledby="closing-title">
   <div class="c-stage" aria-hidden="true">
     <div class="c-sun"></div>
-    <svg class="c-palace" viewBox="0 0 1000 420"><use href="#lm-palace" /></svg>
+    <svg class="c-palace c-haveli" viewBox="0 0 1000 420"><use href="#lm-haveli" /></svg>
     <div class="c-water">
       <Lotus class="c-lotus" />
       <Diya class="c-diya a" /><Diya class="c-diya b" /><Diya class="c-diya c" />
@@ -74,7 +74,7 @@ const { lang } = Astro.props;
     height: 27%;
     background:
       repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.12) 0 1px, transparent 1px 8px),
-      linear-gradient(to bottom, #E9B79E, #A95860 70%, var(--color-plum));
+    linear-gradient(to bottom, #D79A6D, #8F3D3A 70%, var(--color-plum));
   }
   .c-water :global(.c-lotus) { position: absolute; left: -2%; bottom: 18%; width: clamp(160px, 30vw, 300px); }
   .c-water :global(.c-diya) { position: absolute; width: clamp(32px, 6vw, 52px); }

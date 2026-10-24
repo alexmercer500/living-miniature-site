@@ -3,10 +3,9 @@
  * Small miniature scenes seen through each event's jharokha window (300×360 box).
  * Keyed by `visualKey` from the content model; unknown keys fall back to the courtyard.
  */
-import { onion } from '../../lib/art';
 interface Props { visualKey: string }
 const { visualKey } = Astro.props;
-const VISUAL_KEYS = ['floral-courtyard', 'lantern-garden', 'mandap-courtyard', 'haldi', 'mehndi', 'sangeet', 'baraat', 'reception'];
+const VISUAL_KEYS = ['floral-courtyard', 'varmala', 'lantern-garden', 'mandap-courtyard', 'haldi', 'mehndi', 'sangeet', 'baraat', 'reception'];
 const key = VISUAL_KEYS.includes(visualKey) ? visualKey : 'floral-courtyard';
 const MARIGOLD = ['#F29A2E', '#F7B538', '#E9822A'];
 const strand = (x: number, n: number) => Array.from({ length: n }, (_, i) => ({ x, y: 8 + i * 9, c: MARIGOLD[(i + x) % 3] }));
@@ -27,14 +26,18 @@ const lights = Array.from({ length: 26 }, (_, i) => {
 });
 ---
 <svg class="vignette" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-  {key === 'floral-courtyard' && (
+  {(key === 'floral-courtyard' || key === 'varmala') && (
     <>
       <rect width="300" height="360" fill="url(#vg-dusk)" />
       <circle cx="150" cy="200" r="70" fill="url(#lm-halo)" opacity=".6" />
-      <path d={onion(150, 210, 110, 80)} fill="#E7B79E" opacity=".55" />
+      <rect x="94" y="116" width="112" height="112" fill="#5B201E" stroke="#E6C27B" stroke-width="2" />
+      <rect x="110" y="132" width="80" height="96" fill="#B87950" opacity=".65" />
+      <path d="M104,126 H196 M104,138 H196 M104,150 H196" stroke="#E6C27B" stroke-opacity=".6" stroke-width="2" />
+      <path d="M116,118 Q150,96 184,118" fill="none" stroke="#40533A" stroke-width="4" />
+      {[122, 138, 154, 170].map((x) => <circle cx={x} cy="108" r="5" fill="#F29A2E" />)}
       <rect x="0" y="230" width="300" height="130" fill="#C98C86" />
       <rect x="0" y="230" width="300" height="6" fill="#8F5A6C" />
-      <rect x="18" y="70" width="26" height="160" fill="url(#lm-stone)" /><rect x="256" y="70" width="26" height="160" fill="url(#lm-stone)" />
+      <rect x="18" y="70" width="26" height="160" fill="url(#lm-sandstone)" /><rect x="256" y="70" width="26" height="160" fill="url(#lm-sandstone)" />
       <rect x="12" y="60" width="38" height="12" fill="#8F5A6C" /><rect x="250" y="60" width="38" height="12" fill="#8F5A6C" />
       <ellipse cx="150" cy="300" rx="90" ry="26" fill="none" stroke="#FFF3E2" stroke-width="2" opacity=".75" />
       <ellipse cx="150" cy="300" rx="62" ry="17" fill="none" stroke="#F7B538" stroke-width="5" stroke-dasharray="2 7" stroke-linecap="round" />
@@ -43,6 +46,13 @@ const lights = Array.from({ length: 26 }, (_, i) => {
         <g transform={`translate(${x - 12} 318) scale(.4)`}><circle cx="30" cy="22" r="26" fill="url(#lm-halo)" /><path d="M30,6 C36,16 37,24 30,30 C23,24 24,16 30,6Z" fill="url(#lm-flame)" /><path d="M5,31 C10,46 50,46 55,31 C46,35 14,35 5,31Z" fill="url(#lm-brass)" /></g>
       ))}
       {torans.map((b) => <circle cx={b.x} cy={b.y} r="4.6" fill={b.c} />)}
+      {key === 'varmala' && (
+        <>
+          <circle cx="132" cy="214" r="10" fill="#2B1717" /><path d="M119,228 Q132,212 145,228 L145,252 H119Z" fill="#B83A32" />
+          <circle cx="168" cy="214" r="10" fill="#2B1717" /><path d="M155,228 Q168,212 181,228 L181,252 H155Z" fill="#40533A" />
+          <path d="M128,230 Q150,250 172,230" fill="none" stroke="#F7B538" stroke-width="5" stroke-dasharray="2 5" />
+        </>
+      )}
     </>
   )}
   {key === 'lantern-garden' && (
@@ -69,8 +79,9 @@ const lights = Array.from({ length: 26 }, (_, i) => {
       <rect x="0" y="262" width="300" height="98" fill="#8F5A6C" />
       <rect x="0" y="262" width="300" height="4" fill="#C49A55" opacity=".7" />
       <rect x="62" y="248" width="176" height="18" fill="#F3CBAE" />
-      <path d={onion(150, 108, 176, 70)} fill="url(#lm-dome)" />
-      <rect x="58" y="104" width="184" height="10" fill="#C49A55" />
+      <rect x="58" y="104" width="184" height="18" fill="url(#lm-wood)" stroke="#E6C27B" stroke-width="2" />
+      <path d="M70,104 H230 L214,84 H86Z" fill="#7A1F2B" />
+      <path d="M78,102 Q150,132 222,102" fill="none" stroke="#E6C27B" stroke-width="2" />
       {[70, 116, 176, 222].map((x) => <rect x={x} y="114" width="8" height="134" fill="#F2D59A" />)}
       <path d="M78,114 Q96,170 78,248 L70,248 L70,114Z" fill="#9C3540" opacity=".9" />
       <path d="M222,114 Q204,170 222,248 L230,248 L230,114Z" fill="#9C3540" opacity=".9" />
@@ -155,7 +166,7 @@ const lights = Array.from({ length: 26 }, (_, i) => {
           {rays(cx, cy, rad).map((r) => <line x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2} />)}
         </g>
       ))}
-      <use href="#lm-palace" x="0" y="150" width="300" height="126" opacity=".55" />
+      <use href="#lm-haveli" x="0" y="150" width="300" height="126" opacity=".55" />
       <rect y="272" width="300" height="88" fill="#2A2240" />
       <path d="M0,300 L300,286 L300,300 L0,316Z" fill="#3B2A40" />
       {walkers.map(([x, y, s]) => (
@@ -172,7 +183,7 @@ const lights = Array.from({ length: 26 }, (_, i) => {
   {key === 'reception' && (
     <>
       <rect width="300" height="360" fill="url(#vg-rose)" />
-      <path d="M58,268 V168 A92,104 0 0 1 242,168 V268" fill="none" stroke="#F2D59A" stroke-width="2" opacity=".7" />
+      <path d="M58,268 V168 H242 V268 M76,168 V132 H224 V168" fill="none" stroke="#F2D59A" stroke-width="2" opacity=".7" />
       {archBlooms.map((b) => <use href="#lm-bloom" fill={b.c} transform={`translate(${b.x} ${b.y}) scale(.9)`} />)}
       <line x1="150" y1="0" x2="150" y2="44" stroke="#C49A55" stroke-width="1.2" />
       <circle cx="150" cy="64" r="44" fill="url(#lm-halo)" opacity=".7" />

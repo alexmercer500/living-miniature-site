@@ -1,27 +1,12 @@
 ---
-import { palaceMarkup, haveliMarkup, foliageMarkup, CUSPED_ARCH } from '../../lib/art';
+import { haveliMarkup, foliageMarkup, CUSPED_ARCH } from '../../lib/art';
 
-// Normalise the 100×120 cusped arch to objectBoundingBox units for responsive clipping.
+// Normalise the 100×120 stepped doorway to objectBoundingBox units for responsive clipping.
 const cuspedBox = CUSPED_ARCH.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_, x, y) => `${+x / 100},${+y / 120}`)
   .replace(/V(\d+)/g, (_, y) => `V${+y / 120}`);
 ---
 <svg class="scene-defs" width="0" height="0" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="lm-stone" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="420">
-      <stop offset="0" stop-color="#F6D3B6" />
-      <stop offset=".45" stop-color="#DFA593" />
-      <stop offset=".8" stop-color="#A86C78" />
-      <stop offset="1" stop-color="#7E4D63" />
-    </linearGradient>
-    <linearGradient id="lm-stone-dark" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#8F5A6C" />
-      <stop offset="1" stop-color="#55304A" />
-    </linearGradient>
-    <linearGradient id="lm-dome" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#FCE6CF" />
-      <stop offset=".42" stop-color="#F0BCA3" />
-      <stop offset="1" stop-color="#A9687A" />
-    </linearGradient>
     <linearGradient id="lm-sandstone" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#D79A6D" /><stop offset=".55" stop-color="#B87950" /><stop offset="1" stop-color="#7E4938" />
     </linearGradient>
@@ -72,12 +57,12 @@ const cuspedBox = CUSPED_ARCH.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_
       <stop offset="1" stop-color="#D9567C" />
     </linearGradient>
 
-      <linearGradient id="vg-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4B243E" /><stop offset=".55" stop-color="#A95860" /><stop offset="1" stop-color="#EAA17E" /></linearGradient>
-      <linearGradient id="vg-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17172C" /><stop offset=".7" stop-color="#252744" /><stop offset="1" stop-color="#314B3E" /></linearGradient>
-      <linearGradient id="vg-rose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#252744" /><stop offset=".5" stop-color="#4B243E" /><stop offset="1" stop-color="#A95860" /></linearGradient>
+      <linearGradient id="vg-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".55" stop-color="#4B1020" /><stop offset="1" stop-color="#D67A50" /></linearGradient>
+      <linearGradient id="vg-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".7" stop-color="#321B20" /><stop offset="1" stop-color="#40533A" /></linearGradient>
+      <linearGradient id="vg-rose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#321B20" /><stop offset=".5" stop-color="#4B1020" /><stop offset="1" stop-color="#8F3D3A" /></linearGradient>
 
     <linearGradient id="vg-haldi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7AE" /><stop offset=".55" stop-color="#F7B538" /><stop offset="1" stop-color="#E9822A" /></linearGradient>
-    <linearGradient id="vg-mehndi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17231D" /><stop offset=".6" stop-color="#314B3E" /><stop offset="1" stop-color="#4E6B45" /></linearGradient>
+    <linearGradient id="vg-mehndi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".6" stop-color="#40533A" /><stop offset="1" stop-color="#6A7A4A" /></linearGradient>
     <linearGradient id="lm-door" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#B8404F" />
       <stop offset=".55" stop-color="#9C3540" />
@@ -113,7 +98,8 @@ const cuspedBox = CUSPED_ARCH.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_
 
     <symbol id="lm-foliage-a" viewBox="-20 -20 440 400" overflow="visible" set:html={foliageMarkup(3)} />
     <symbol id="lm-foliage-b" viewBox="-20 -20 440 400" overflow="visible" set:html={foliageMarkup(11)} />
-    <symbol id="lm-palace" viewBox="0 0 1000 420" set:html={palaceMarkup()} />
+    <!-- Compatibility id retained for existing consumers; the rendered world is now the haveli. -->
+    <symbol id="lm-palace" viewBox="0 0 1000 420" set:html={haveliMarkup()} />
     <symbol id="lm-haveli" viewBox="0 0 1000 420" set:html={haveliMarkup()} />
   </defs>
 </svg>
