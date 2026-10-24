@@ -12,8 +12,25 @@ import Diya from '../scene/Diya.astro';
 import Lotus from '../scene/Lotus.astro';
 import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
+import { getImage } from 'astro:assets';
+import mobilePoster from '../../../design-kit/assets/royal-heritage/candidates/hero-mobile-v1.png';
+import desktopPoster from '../../../design-kit/assets/royal-heritage/candidates/hero-desktop-v1.png';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
+// Built at compile time; source PNGs never become page requests.
+const sources = await Promise.all(['avif', 'webp'].map(async (format) => {
+  const variant = async (src: typeof mobilePoster, widths: number[]) =>
+    (await Promise.all(widths.map(async (width) => {
+      const image = await getImage({ src, width, format: format as 'avif' | 'webp', quality: format === 'avif' ? 55 : 76 });
+      return `${image.src} ${width}w`;
+    }))).join(', ');
+  return {
+    type: `image/${format}`,
+    mobile: await variant(mobilePoster, [480, 768, 1024]),
+    desktop: await variant(desktopPoster, [1280, 1672]),
+  };
+}));
+const posterFallback = await getImage({ src: mobilePoster, width: 768, format: 'webp', quality: 76 });
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
 const amp = lang === 'hi' ? 'एवं' : '&';
 ---
@@ -62,6 +79,17 @@ const amp = lang === 'hi' ? 'एवं' : '&';
       <Lantern class="hang l3" cord={44} />
     </div>
 
+    <div class="hero-art" data-layer="poster">
+      <picture>
+        {sources.map((source) => <>
+          <source media="(min-width: 768px) and (min-aspect-ratio: 1/1)" type={source.type} srcset={source.desktop} sizes="(max-aspect-ratio: 16/9) 178svh, 100vw" />
+          <source type={source.type} srcset={source.mobile} sizes="(max-aspect-ratio: 2/3) 67svh, 100vw" />
+        </>)}
+        <img src={posterFallback.src} width={mobilePoster.width} height={mobilePoster.height}
+          alt="" loading="eager" fetchpriority="high" decoding="async" />
+      </picture>
+    </div>
+    <div class="hero-shade"></div>
     <div class="petals">
       {Array.from({ length: 7 }, (_, i) => <i style={`--i:${i}`}></i>)}
     </div>
@@ -340,5 +368,61 @@ const amp = lang === 'hi' ? 'एवं' : '&';
     10% { opacity: 0.85; }
     85% { opacity: 0.7; }
     100% { opacity: 0; transform: translate(-18vw, 105svh) rotate(540deg); }
+  }
+
+  /* Approved Royal Heritage artwork. SVG layers remain beneath the image. */
+  .hero { min-height: max(42rem, 100svh); }
+  .hero-art { inset: -1px; z-index: 1; pointer-events: none; }
+  .hero-art picture, .hero-art img { display: block; width: 100%; height: 100%; }
+  .hero-art img { object-fit: cover; object-position: 50% 50%; }
+  .hero-shade {
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgb(33 20 15 / .3), transparent 18% 64%, rgb(33 20 15 / .2) 76%, #21140f 100%);
+  }
+  .petals { z-index: 3; }
+  .hero-copy {
+    position: absolute;
+    top: 24%;
+    left: 50%;
+    width: 65%;
+    translate: -50% 0;
+    gap: .4rem;
+    padding: 0;
+    color: #4b1020;
+  }
+  .hero-copy::before {
+    inset: -1rem -1rem -1.5rem;
+    background: radial-gradient(ellipse, rgb(255 225 179 / .88), rgb(255 225 179 / .4) 48%, transparent 72%);
+  }
+  .hero-copy :global(.hero-mark) { width: 1.8rem; color: #6a361f; }
+  .names { font-size: clamp(1.8rem, 7.5vw, 3rem); line-height: 1.03; text-shadow: 0 1px 14px #ffe1b3; }
+  .names .amp { font-size: .55em; color: #713323; }
+  .tagline {
+    max-width: 18rem;
+    font-size: clamp(.9rem, 2.7vw, 1.1rem);
+    line-height: 1.3;
+    color: #4c281d;
+    text-shadow: 0 1px 8px #ffe1b3;
+  }
+  .hero-foot { grid-row: 2; position: relative; z-index: 1; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+  .scroll-cue { text-shadow: 0 2px 8px #21140f; }
+  .cue-ring { background: rgb(33 20 15 / .7); border-color: #e6c27b; }
+  .skip { color: #fff1d8; text-shadow: 0 1px 6px #21140f; }
+  :lang(hi) .names { font-size: clamp(1.7rem, 6.5vw, 2.6rem); }
+  @media (min-width: 768px) {
+    .hero { min-height: max(44rem, 100svh); }
+    .hero-copy { top: 23%; width: 62%; gap: .6rem; }
+    .hero-copy :global(.hero-mark) { width: 2rem; }
+    .names { font-size: clamp(2.3rem, 4.4vw, 4.5rem); }
+    .tagline { max-width: 30rem; font-size: clamp(1rem, 1.5vw, 1.3rem); }
+    :lang(hi) .names { font-size: clamp(2rem, 3.7vw, 3.75rem); }
+  }
+  @media (min-width: 1100px) {
+    .hero-copy { top: 26%; }
+  }
+  @media (max-height: 540px) and (min-width: 768px) {
+    .hero { min-height: 38rem; }
   }
 </style>

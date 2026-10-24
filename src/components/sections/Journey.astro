@@ -8,6 +8,20 @@
 import { type Lang, content, loc, t } from '../../lib/content';
 import { bloomPath, Buckets } from '../../lib/art';
 import { seeded } from '../../lib/random';
+import { getImage } from 'astro:assets';
+import mobileCourtyard from '../../assets/royal-heritage/journey-mobile-clean-v1.png';
+import desktopCourtyard from '../../assets/royal-heritage/journey-desktop-clean-v1.png';
+import swingSource from '../../assets/royal-heritage/journey-swing-v1.png';
+const courtyardSources = await Promise.all(['avif', 'webp'].map(async (format) => {
+  const variants = async (src: typeof mobileCourtyard, widths: number[]) =>
+    (await Promise.all(widths.map(async (width) => {
+      const img = await getImage({ src, width, format: format as 'avif' | 'webp', quality: format === 'avif' ? 55 : 76 });
+      return `${img.src} ${width}w`;
+    }))).join(', ');
+  return { type: `image/${format}`, mobile: await variants(mobileCourtyard, [480, 768, 1024]), desktop: await variants(desktopCourtyard, [1280, 1672]) };
+}));
+const courtyardFallback = await getImage({ src: mobileCourtyard, width: 768, format: 'webp', quality: 76 });
+const swingImage = await getImage({ src: swingSource, width: 640, format: 'webp', quality: 85 });
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 
@@ -196,7 +210,7 @@ const canopy = [[-420, 360, 80], [-300, 350, 70], [-180, 362, 64], [1180, 362, 6
     </g>
 
     <!-- Jhoola: drag, tap or press Enter to push. Rotated by scripts/story.ts. -->
-    <g class="swing" transform="translate(350 372)" role="button" tabindex="0" aria-label={t(lang, 'pushSwing')} data-swing>
+    <g class="swing" transform="translate(350 372)" role="button" tabindex="0" aria-label={t(lang, 'pushSwing')} data-swing data-fallback-swing>
       <g class="swing-arm">
         <rect x="-36" y="-2" width="72" height="108" fill="transparent" />
         <g stroke="#C49A55" stroke-width="1.4"><line x1="-17" y1="0" x2="-20" y2="86" /><line x1="17" y1="0" x2="20" y2="86" /></g>
@@ -208,6 +222,38 @@ const canopy = [[-420, 360, 80], [-300, 350, 70], [-180, 362, 64], [1180, 362, 6
       <circle cx="-17" cy="0" r="2.4" fill="#C49A55" /><circle cx="17" cy="0" r="2.4" fill="#C49A55" />
     </g>
   </svg>
+  <!-- Separate compositions keep the entire courtyard visible rather than cropping the swing. -->
+  <div class="courtyard-art" data-courtyard-art>
+    <picture>
+      {courtyardSources.map((source) => <>
+        <source media="(min-width: 768px) and (min-aspect-ratio: 1/1)" type={source.type} srcset={source.desktop} sizes="100vw" />
+        <source type={source.type} srcset={source.mobile} sizes="100vw" />
+      </>)}
+      <img data-courtyard-image src={courtyardFallback.src} width={mobileCourtyard.width} height={mobileCourtyard.height} alt="" loading="lazy" decoding="async" />
+    </picture>
+    {['portrait', 'landscape'].map((layout) => (
+      <svg class={`courtyard-lights ${layout}`} viewBox={layout === 'portrait' ? '0 0 1024 1536' : '0 0 1672 941'} aria-hidden="true" focusable="false">
+        {Array.from({ length: 8 }, (_, step) => {
+          const u = step / 7;
+          const y = layout === 'portrait' ? 1300 - u * 435 : 890 - u * 225;
+          const left = layout === 'portrait' ? 120 + u * 350 : 300 + u * 440;
+          const right = layout === 'portrait' ? 935 - u * 160 : 1470 - u * 490;
+          return [left, right].map((x) => <g class="courtyard-lamp" data-courtyard-step={step}>
+            <ellipse cx={x} cy={y} rx={22 - u * 12} ry={11 - u * 6} fill="url(#lm-halo)" />
+            <circle cx={x} cy={y - 4} r={15 - u * 8} fill="url(#lm-halo)" />
+          </g>);
+        })}
+        <ellipse class="courtyard-meet" cx={layout === 'portrait' ? 550 : 870} cy={layout === 'portrait' ? 1090 : 765} rx="90" ry="20" fill="url(#lm-halo)" />
+      </svg>
+    ))}
+    <div class="courtyard-shade" aria-hidden="true"></div>
+    <div class="courtyard-swing-anchor">
+      <div class="swing-arm" data-courtyard-arm>
+        <img src={swingImage.src} width={swingSource.width} height={swingSource.height} loading="lazy" decoding="async" alt="" />
+        <button class="courtyard-swing-control" type="button" data-swing data-image-swing aria-label={t(lang, 'pushSwing')} disabled></button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <script>
@@ -217,6 +263,21 @@ const canopy = [[-420, 360, 80], [-300, 350, 70], [-180, 362, 64], [1180, 362, 6
   const fit = () => garden?.setAttribute('preserveAspectRatio', wide.matches ? 'xMidYMax meet' : 'xMidYMax slice');
   fit();
   wide.addEventListener('change', fit);
+  const section = document.querySelector<HTMLElement>('#journey');
+  const image = section?.querySelector<HTMLImageElement>('[data-courtyard-image]');
+  const fallbackSwing = section?.querySelector<SVGGElement>('[data-fallback-swing]');
+  const imageSwing = section?.querySelector<HTMLButtonElement>('[data-image-swing]');
+  const showArt = (ready: boolean) => {
+    section?.classList.toggle('has-courtyard-art', ready);
+    section?.classList.toggle('courtyard-art-failed', !ready);
+    fallbackSwing?.setAttribute('tabindex', ready ? '-1' : '0');
+    fallbackSwing?.setAttribute('aria-hidden', String(ready));
+    if (imageSwing) imageSwing.disabled = !ready;
+  };
+  image?.addEventListener('load', () => showArt(true));
+  image?.addEventListener('error', () => showArt(false));
+  section?.querySelector('.courtyard-swing-anchor img')?.addEventListener('error', () => showArt(false));
+  if (image?.complete) showArt(image.naturalWidth > 0);
 </script>
 
 <style>
@@ -226,30 +287,63 @@ const canopy = [[-420, 360, 80], [-300, 350, 70], [-180, 362, 64], [1180, 362, 6
     background: linear-gradient(to bottom, #5E2C48, var(--color-midnight) 18%);
     overflow: hidden;
     isolation: isolate;
+    aspect-ratio: 2 / 3;
   }
   .j-copy {
     position: absolute;
-    z-index: 1;
-    inset: 0 0 auto;
+    z-index: 3;
+    inset: 17% 3% auto 28%;
     display: grid;
     justify-items: center;
     gap: var(--space-3);
-    padding: clamp(3rem, 9vw, 5.5rem) var(--gutter) 0;
+    padding: 0;
+    pointer-events: none;
     text-align: center;
   }
   .j-copy h2 {
     max-width: 18ch;
-    font-size: var(--fs-h2);
+    font-size: clamp(1.5rem, 5.5vw, 3.5rem);
     text-shadow: 0 2px 20px rgb(23 23 44 / 0.7);
   }
   .swing { cursor: grab; touch-action: none; outline: none; }
   .swing:active { cursor: grabbing; }
   .swing:focus-visible .swing-arm { filter: drop-shadow(0 0 6px #F2D59A); }
   .garden {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: clamp(560px, 100svh, 900px);
+    height: 100%;
   }
-  @media (min-aspect-ratio: 5/4) {
-    .garden { height: clamp(560px, 100svh, 1000px); }
+  .courtyard-art { position: absolute; inset: 0; pointer-events: none; }
+  .courtyard-art-failed .courtyard-art { display: none; }
+  .courtyard-art picture, .courtyard-art picture > img { display: block; width: 100%; height: 100%; }
+  .courtyard-art picture > img { object-fit: cover; }
+  .courtyard-lights, .courtyard-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .courtyard-lights { mix-blend-mode: screen; }
+  .courtyard-lights.landscape { display: none; }
+  .courtyard-shade { background: linear-gradient(#21140f55, transparent 18% 85%, #21140f); }
+  .courtyard-swing-anchor { position: absolute; left: 1%; top: 21%; width: 31%; }
+  .courtyard-swing-anchor .swing-arm { transform-origin: 50% 0; }
+  .courtyard-swing-anchor img { display: block; width: 100%; height: auto; }
+  .courtyard-swing-control { position: absolute; inset: 63% 0 9%; padding: 0; border: 0; background: transparent; pointer-events: auto; cursor: grab; touch-action: pan-y; border-radius: 12%; }
+  .courtyard-swing-control:active { cursor: grabbing; }
+  .courtyard-swing-control:focus-visible { outline: 2px solid #fff1c2; outline-offset: 4px; box-shadow: 0 0 22px #e6c27b; }
+  .courtyard-swing-control:disabled { pointer-events: none; }
+  .has-courtyard-art .garden { visibility: hidden; }
+  .journey:not(.has-courtyard-art) .courtyard-swing-anchor,
+  .journey:not(.has-courtyard-art) .courtyard-lights { visibility: hidden; }
+  @media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+    .journey { aspect-ratio: 1672 / 941; }
+    .j-copy { inset: 18% 18% auto 34%; }
+    .j-copy h2 { font-size: clamp(2rem, 3.6vw, 4rem); }
+    .courtyard-swing-anchor { left: 7%; top: 11%; width: 17%; }
+    .courtyard-lights.portrait { display: none; }
+    .courtyard-lights.landscape { display: block; }
+  }
+  /* Images and swing remain a complete static composition without JavaScript. */
+  @media (scripting: none) {
+    .garden .swing { visibility: hidden; }
+    .journey:not(.has-courtyard-art) .courtyard-swing-anchor,
+    .journey:not(.has-courtyard-art) .courtyard-lights { visibility: visible; }
   }
 </style>

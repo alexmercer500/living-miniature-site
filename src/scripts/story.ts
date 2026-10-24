@@ -82,10 +82,15 @@ function dancingPeacock() {
 
 /** Jhoola: drag to swing, tap or Enter to push. A damped pendulum, so it always settles. */
 function jhoola() {
-  const el = document.querySelector<SVGGElement>('[data-swing]');
-  const arm = el?.querySelector<SVGGElement>('.swing-arm');
-  if (!el || !arm) return undefined;
-  const MAX = 38;
+  const pushes = [...document.querySelectorAll<SVGGElement | HTMLButtonElement>('[data-swing]')].map(setupSwing);
+  return (velocity?: number) => pushes.forEach((push) => push?.(velocity));
+}
+
+function setupSwing(el: SVGGElement | HTMLButtonElement) {
+  const imageSwing = el.hasAttribute('data-image-swing');
+  const arm = imageSwing ? el.closest<HTMLElement>('[data-courtyard-arm]') : el.querySelector<SVGGElement>('.swing-arm');
+  if (!arm) return;
+  const MAX = imageSwing ? 9 : 38;
   let angle = 0;
   let vel = 0;
   let raf = 0;
@@ -95,14 +100,17 @@ function jhoola() {
   let startX = 0;
   let startAngle = 0;
   let lastMove = 0;
-  const render = () => arm.setAttribute('transform', `rotate(${angle.toFixed(2)})`);
+  const render = () => {
+    if (arm instanceof HTMLElement) arm.style.transform = `rotate(${angle.toFixed(2)}deg)`;
+    else arm.setAttribute('transform', `rotate(${angle.toFixed(2)})`);
+  };
   const tick = (now: number) => {
     const dt = Math.min(0.033, (now - prev) / 1000);
     prev = now;
     if (!dragging) {
       const acc = -9 * Math.sin((angle * Math.PI) / 180) * (180 / Math.PI) - 0.55 * vel;
       vel += acc * dt;
-      angle += vel * dt;
+      angle = Math.max(-MAX, Math.min(MAX, angle + vel * dt));
       if (Math.abs(angle) < 0.05 && Math.abs(vel) < 0.5) { angle = 0; vel = 0; render(); raf = 0; return; }
     }
     render();
@@ -110,11 +118,12 @@ function jhoola() {
   };
   const run = () => { if (!raf) { prev = performance.now(); raf = requestAnimationFrame(tick); } };
   const push = (v = 75) => {
-    if (reduceMotion) return;
-    vel += angle > 0 ? -v : v;
+    if (reduceMotion || !el.getClientRects().length || getComputedStyle(el).visibility === 'hidden' || (el instanceof HTMLButtonElement && el.disabled)) return;
+    vel += (angle > 0 ? -v : v) * (imageSwing ? 0.3 : 1);
     run();
   };
   el.addEventListener('pointerdown', (e) => {
+    if (reduceMotion) return;
     dragging = true;
     moved = false;
     startX = e.clientX;
@@ -143,10 +152,13 @@ function jhoola() {
     if (!moved) push();
   };
   el.addEventListener('pointerup', release);
-  el.addEventListener('pointercancel', release);
+  el.addEventListener('pointercancel', () => { dragging = false; vel = 0; });
+  el.addEventListener('lostpointercapture', release);
   el.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); push(); }
   });
+  // Assistive technology can activate the native image-swing button without pointer events.
+  if (el instanceof HTMLButtonElement) el.addEventListener('click', (e) => { if (e.detail === 0) push(); });
   return push;
 }
 
@@ -159,14 +171,20 @@ async function story(pushSwing?: (v?: number) => void) {
   // Scene 1 — camera glides forward: palace grows, frame parts, copy drifts away.
   const hero = $('.hero');
   if (hero) {
-    gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.4 } })
+    const heroTimeline = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.4 } });
+    const poster = $('[data-layer="poster"]', hero);
+    if (poster) {
+      heroTimeline.to(poster, { scale: 1.07, yPercent: 3, transformOrigin: '50% 45%' }, 0);
+    } else {
+      heroTimeline
       .to($('[data-layer="sky"]', hero), { yPercent: 12 }, 0)
       .to($('.sun', hero), { yPercent: 70 }, 0)
       .to($('[data-layer="hills"]', hero), { yPercent: 22 }, 0)
       .to($('[data-layer="palace"]', hero), { scale: 1.22, yPercent: 10, transformOrigin: '50% 100%' }, 0)
       .to($$('.foliage', hero), { xPercent: -32, yPercent: -14, scale: 1.18 }, 0)
-      .to($$('.lantern.hang', hero), { yPercent: -50 }, 0)
-      .to($('.hero-copy', hero), { yPercent: -40, autoAlpha: 0, ease: 'power1.in' }, 0)
+      .to($$('.lantern.hang', hero), { yPercent: -50 }, 0);
+    }
+    heroTimeline.to($('.hero-copy', hero), { yPercent: -40, autoAlpha: 0, ease: 'power1.in' }, 0)
       .to($('.hero-foot', hero), { autoAlpha: 0, duration: 0.25 }, 0);
   }
 
@@ -223,17 +241,17 @@ async function story(pushSwing?: (v?: number) => void) {
   const journey = $('#journey');
   if (journey) {
     const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: journey, start: 'top 65%', end: 'bottom 85%', scrub: 0.6 } })
-      .from($('[data-journey-title]', journey), { autoAlpha: 0, y: 30, duration: 0.15 }, 0)
-      .from($('.ornament', journey), { autoAlpha: 0, duration: 0.1 }, 0.08)
       .fromTo($$('.trail', journey), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.58 }, 0.05);
     for (let step = 0; step < 8; step++) {
       tl.fromTo($$(`.lamp[data-step="${step}"] .lamp-light`, journey), { opacity: 0.1 }, { opacity: 1, duration: 0.07 }, 0.06 + step * 0.07);
+      tl.fromTo($$(`[data-courtyard-step="${step}"]`, journey), { opacity: 0.15 }, { opacity: 1, duration: 0.1 }, 0.06 + step * 0.07);
     }
     tl.fromTo($('.meet', journey), { scale: 0, opacity: 0, transformOrigin: '50% 50%' }, { scale: 1.5, opacity: 1, duration: 0.1 }, 0.62)
       .to($('.meet', journey), { scale: 1, duration: 0.1 }, 0.72)
       .fromTo($('.pav-lit', journey), { opacity: 0.2 }, { opacity: 1, duration: 0.2 }, 0.68)
       .fromTo($('.fountain', journey), { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.74)
       .call(() => pushSwing?.(60), undefined, 0.78);
+    tl.fromTo($$('.courtyard-meet', journey), { opacity: 0.2 }, { opacity: 1, duration: 0.2 }, 0.62);
   }
 
   // Scene 5 — windows rise in as they arrive.

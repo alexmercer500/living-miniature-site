@@ -4,6 +4,7 @@ import Header from './Header.astro';
 import ActionBar from './ActionBar.astro';
 import Hero from './sections/Hero.astro';
 import Reveal from './sections/Reveal.astro';
+import Envelope from './sections/Envelope.astro';
 import Journey from './sections/Journey.astro';
 import Celebrations from './sections/Celebrations.astro';
 import Venue from './sections/Venue.astro';
@@ -19,6 +20,7 @@ const { lang } = Astro.props;
   <main id="main">
     <Hero lang={lang} />
     <Reveal lang={lang} />
+    <Envelope lang={lang} />
     <Journey lang={lang} />
     <Celebrations lang={lang} />
     <Venue lang={lang} />
@@ -34,6 +36,8 @@ const { lang } = Astro.props;
 
 <script>
   import '../scripts/story';
+  import { setupEnvelope } from '../scripts/envelope';
+  setupEnvelope().catch((error) => console.warn('Invitation animation unavailable; the static card remains accessible.', error));
 </script>
 
 <style>
