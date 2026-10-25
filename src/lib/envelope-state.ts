@@ -10,6 +10,9 @@ const spring = (x: number) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * M
 
 export const envelopeTimings = { tapOpen: 6, tapClose: 3.5 };
 
+/** Nature has a short closed beat and a generous readable hold before unpinning. */
+export const envelopeScrollProgress = (progress: number) => clamp((progress - .04) / .8);
+
 export function envelopeLayout(viewHeight: number, rigHeight: number, cardHeight: number, headerHeight: number) {
   const safeTop = headerHeight + 28;
   const safeBottom = viewHeight - (viewHeight < 650 ? 220 : 124);

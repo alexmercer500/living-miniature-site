@@ -1,3 +1,8 @@
+import { setupKeepsakes } from './keepsakes';
+import { setupVenue } from './venue';
+import { setupWishes } from './wishes';
+import { setupHeroJourney } from './hero-journey';
+import { setupSceneTransitions } from './scene-transitions';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -10,12 +15,23 @@ export async function setupNature() {
   const header = document.querySelector<HTMLElement>('[data-nature-header]');
   const observer = new IntersectionObserver(entries => entries.forEach(e => {
     e.target.toggleAttribute('data-offscreen', !e.isIntersecting);
-    if (e.target.id === 'welcome') header?.toggleAttribute('data-solid', !e.isIntersecting);
+    if (e.target.id === 'welcome') {
+      header?.toggleAttribute('data-solid', !e.isIntersecting);
+      // A guest who scrolls away should never return to half-hidden intro text.
+      if (!e.isIntersecting) (e.target as HTMLElement).dataset.introComplete = '';
+    }
     if (e.target.classList.contains('envelope-viewport')) document.querySelector('.ns-dock')?.toggleAttribute('data-invitation-active', e.isIntersecting);
   }), { rootMargin: '80px 0px' });
   all('.ns-scene').forEach(scene => observer.observe(scene));
   cleanups.push(() => observer.disconnect());
-  all<HTMLButtonElement>('[data-keepsake],[data-nature-lantern],[data-nature-petals]').forEach(button => { button.disabled = false; });
+  const pauseAmbient = () => root.toggleAttribute('data-ambient-paused', document.hidden);
+  pauseAmbient();
+  document.addEventListener('visibilitychange', pauseAmbient);
+  cleanups.push(() => document.removeEventListener('visibilitychange', pauseAmbient));
+  all<HTMLButtonElement>('[data-nature-lantern],[data-nature-petals]').forEach(button => { button.disabled = false; });
+  cleanups.push(setupKeepsakes(root, motion));
+  cleanups.push(setupVenue(root, motion));
+  cleanups.push(setupWishes(root, motion));
 
   document.querySelectorAll<HTMLAnchorElement>('[data-nature-locale]').forEach(link => {
     link.addEventListener('click', () => {
@@ -27,9 +43,6 @@ export async function setupNature() {
     });
   });
 
-  all<HTMLButtonElement>('[data-keepsake]').forEach(button => button.addEventListener('click', () => {
-    all('[data-keepsake]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-  }));
   const lantern = q<HTMLButtonElement>('[data-nature-lantern]');
   lantern?.addEventListener('click', () => lantern.setAttribute('aria-pressed', String(lantern.getAttribute('aria-pressed') !== 'true')));
   q('[data-nature-petals]')?.addEventListener('click', event => {
@@ -84,22 +97,16 @@ export async function setupNature() {
   gsap.registerPlugin(ScrollTrigger);
   const media = gsap.matchMedia();
   media.add('(prefers-reduced-motion: no-preference)', () => {
+    let clearHeroJourney=()=>{};
+    let clearScenes=()=>{};
     const context = gsap.context(() => {
-      const hero = q('.ns-hero');
-      if (hero) gsap.fromTo(hero.querySelector('.ns-art'), { scale: 1, xPercent: 0 }, { scale: 1.055, xPercent: -1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: .8 } });
-      all('.ns-story-landscape,.ns-venue-landscape,.ns-closing').forEach(scene => {
-        gsap.fromTo(scene.querySelector('.ns-art'), { scale: 1.045, yPercent: -1.5 }, { scale: 1, yPercent: 0, ease: 'none', scrollTrigger: { trigger: scene, start: 'top bottom', end: 'center center', scrub: 1 } });
-      });
-      const path = q('.ns-path path');
-      if (path) gsap.fromTo(path, { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: '#journey', start: 'top 65%', end: 'center 40%', scrub: 1 } });
-      all('.ns-event-art,.ns-keepsake').forEach((art, i) => {
-        gsap.fromTo(art, { y: 26, rotation: i % 2 ? 1.5 : -1.5 }, { y: 0, rotation: 0, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: art, start: 'top 95%', once: true } });
-      });
+      clearHeroJourney=setupHeroJourney(root,gsap);
+      clearScenes=setupSceneTransitions(root,gsap);
       gsap.to(document.querySelector('[data-nature-progress]'), { scaleX: 1, ease: 'none', scrollTrigger: { trigger: root, start: 'top top', end: 'bottom bottom', scrub: .25 } });
     }, root);
 
     document.fonts.ready.then(() => ScrollTrigger.refresh());
-    return () => context.revert();
+    return () => { context.revert(); clearHeroJourney(); clearScenes(); };
   });
   cleanups.push(() => media.revert());
   window.addEventListener('pagehide', () => cleanups.forEach(clean => clean()), { once: true });

@@ -11,14 +11,14 @@ import LotusMark from './LotusMark.astro';
 import Monogram from './Monogram.astro';
 import Icon from './Icon.astro';
 import CalendarButton from './CalendarButton.astro';
-import { type Lang, content, loc, t, href, formatDate, mapConfigured } from '../lib/content';
+import { type Lang, content, loc, t, royalHref as href, formatDate, mapConfigured } from '../lib/content';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const p = content.invitation.placeholders;
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
 const title = `${loc(content.invitation.label, lang)} — ${loc(content.couple.displayName, lang)}`;
 ---
-<Base lang={lang} page="invitation" title={title}>
+<Base lang={lang} page="invitation" routePath="/royal/invitation" title={title}>
   <Header lang={lang} page="invitation" />
   <main id="main" class="invite-page">
     <Garland class="invite-toran" width={1400} strands={21} seed={9} />

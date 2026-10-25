@@ -15,7 +15,7 @@ import { type Lang, content, loc } from '../lib/content';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
-<Base lang={lang}>
+<Base lang={lang} routePath="/royal">
   <Header lang={lang} />
   <main id="main">
     <Hero lang={lang} />

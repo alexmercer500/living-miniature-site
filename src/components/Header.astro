@@ -1,7 +1,8 @@
 ---
-import { type Lang, t, href, rsvpConfigured, content } from '../lib/content';
+import { type Lang, t, royalHref as href, rsvpConfigured, content } from '../lib/content';
 import Icon from './Icon.astro';
 import Monogram from './Monogram.astro';
+import { natureCopy, natureHref } from '../lib/nature-content';
 interface Props { lang: Lang; page?: 'home' | 'invitation' }
 const { lang, page = 'home' } = Astro.props;
 const path = page === 'invitation' ? '/invitation' : '/';
@@ -42,6 +43,7 @@ const links = [
     <ol>
       {links.map((l) => <li><a href={`${home}#${l.id}`} data-menu-link>{l.label}</a></li>)}
       <li><a href={href(lang, '/invitation')}>{t(lang, 'invitation')}</a></li>
+      <li><a href={natureHref(lang)}>{natureCopy[lang].theme} ↗</a></li>
     </ol>
   </nav>
 </header>

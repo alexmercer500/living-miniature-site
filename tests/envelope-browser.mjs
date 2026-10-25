@@ -28,7 +28,7 @@ const evaluate = async (expression) => {
   if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
   return result.result.value;
 };
-const settle = () => new Promise(resolve => setTimeout(resolve, 1400));
+const settle = () => new Promise(resolve => setTimeout(resolve, process.argv.includes('--nature') ? 2200 : 1400));
 const waitFor = async (expression, timeout = 14000) => {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
@@ -57,7 +57,7 @@ try {
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: false });
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: view.reduced ? 'reduce' : 'no-preference' }] });
     await command('Emulation.setScriptExecutionDisabled', { value: Boolean(view.noJs) });
-    const path = nature ? (view.path === '/hi/' ? '/hi/nature/' : '/nature/') : view.path;
+    const path = nature ? view.path : (view.path === '/hi/' ? '/hi/royal/' : '/royal/');
     await command('Page.navigate', { url: `http://127.0.0.1:4321${path}` });
     await settle();
     await evaluate('document.fonts.ready.then(() => true)');
@@ -72,6 +72,17 @@ try {
     for (const [name, progress] of fallback ? [['static', 0]] : [['rest', 0], ['float', .25], ['paper', .62], ['settled', .9], ['open', 1], ['reverse', 0]]) {
       await evaluate(`(() => { const s=document.querySelector('[data-envelope]'); window.scrollTo({top:scrollY+s.getBoundingClientRect().top+${progress}*(s.offsetHeight-s.firstElementChild.offsetHeight),behavior:'instant'}); return true; })()`);
       await settle();
+      if (nature && !fallback) {
+        const stage=await evaluate("(()=>{const s=document.querySelector('[data-envelope]'),v=s.firstElementChild,r=v.getBoundingClientRect();return {top:r.top,height:r.height,travel:s.offsetHeight-v.offsetHeight,snap:getComputedStyle(document.documentElement).scrollSnapType}})()");
+        assert.ok(Math.abs(stage.top)<2 && Math.abs(stage.height-view.height)<2,'Stage stays pinned at exactly one viewport');
+        assert.ok(stage.travel>=2800,'Slow reveal has sufficient scroll distance');
+        if(progress>0&&progress<1) assert.equal(stage.snap,'none','Page snapping cannot skip animation poses');
+        if(name==='rest') {
+          const angle=await evaluate("document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')");
+          await settle();
+          assert.equal(await evaluate("document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')"),angle,'Stationary scrolling must not autoplay the envelope');
+        }
+      }
       if (name === 'open') await waitFor("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded') === 'true'");
       if (name === 'reverse') await waitFor("parseFloat(document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')) > 57.99");
       const state = await evaluate(`(() => {

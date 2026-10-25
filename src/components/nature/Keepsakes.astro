@@ -1,0 +1,34 @@
+---
+import Art from './Art.astro';
+import LotusMark from '../LotusMark.astro';
+import Icon from '../Icon.astro';
+import { type Lang, t } from '../../lib/content';
+import { natureCopy } from '../../lib/nature-content';
+import { landscapes } from '../../lib/nature-assets';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = natureCopy[lang];
+const items = [
+  { title:c.roots, body:c.rootsBody, image:landscapes.hero.mobile },
+  { title:c.paths, body:c.pathsBody, image:landscapes.journey.mobile },
+  { title:c.tomorrow, body:c.tomorrowBody, image:landscapes.closing.mobile },
+];
+---
+<div class="ns-keepsakes" tabindex="0" role="group" aria-label={c.story}>
+  {items.map((item,i)=><div class="ns-keepsake-hanger" data-memory-hanger style={`--tilt:${[-5,4,-4][i]}deg;--cord:${[30,106,52][i]}px;--wind-time:${[8.5,10,9.2][i]}s;--wind-delay:${[-2,-5,-1][i]}s`}>
+    <div class="ns-keepsake-wind">
+      <button type="button" class="ns-keepsake" data-keepsake data-memory-tilt={[-5,4,-4][i]} aria-haspopup="dialog" aria-controls={`ns-memory-${i}`} aria-describedby={`ns-memory-summary-${i}`} disabled>
+        <span class="ns-photo"><Art mobile={item.image} /></span>
+        <span class="ns-keepsake-title">{item.title}</span><span class="ns-keepsake-body" id={`ns-memory-summary-${i}`}>{item.body}</span>
+        <span class="ns-memory-number" aria-hidden="true">0{i+1} <Icon name="arrow-right" /></span>
+      </button>
+    </div>
+  </div>)}
+</div>
+{items.map((item,i)=><dialog class="ns-memory-dialog" id={`ns-memory-${i}`} aria-labelledby={`ns-memory-title-${i}`} aria-describedby={`ns-memory-description-${i}`}>
+  <article class="ns-memory-frame">
+    <form method="dialog"><button type="submit" class="ns-memory-close" aria-label={t(lang,'close')} autofocus><Icon name="close" /></button></form>
+    <div class="ns-memory-mat"><Art mobile={item.image} sizes="(max-width: 767px) 90vw, 700px" /></div>
+    <div class="ns-memory-caption"><p class="ns-kicker">0{i+1} / {c.story}</p><LotusMark class="ns-lotus" /><h2 id={`ns-memory-title-${i}`}>{item.title}</h2><p id={`ns-memory-description-${i}`}>{item.body}</p><span class="ns-memory-flourish" aria-hidden="true">✧</span></div>
+  </article>
+</dialog>)}

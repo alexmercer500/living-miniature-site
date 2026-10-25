@@ -1,5 +1,5 @@
 import { href, type Lang } from './content';
-export const natureHref = (lang: Lang, path = '') => href(lang, `/nature${path}`);
+export const natureHref = (lang: Lang, path = '') => href(lang, path || '/');
 export const natureCopy = {
   en: {
     theme: 'Nature & Stories', chapter: 'A journey together', heroOne: 'Two paths.', heroTwo: 'One journey.',
@@ -13,10 +13,16 @@ export const natureCopy = {
     openLetter: 'Unfurl the invitation', closeLetter: 'Roll the letter closed', letterHint: 'Touch the ribbon or scroll to unfold.',
     dear: 'With love, you are invited', eventLine: 'Little moments. Beautiful celebrations.',
     venueLine: 'Find your way to the celebration.', venueNote: 'Our gathering place',
+    venueExperience: 'Venue Experience', exploreVenue: 'Explore venue',
+    mapSoon: 'Map & directions will follow once the venue is confirmed.',
+    venuePreviewNote: 'An illustrated setting. Final venue details will be shared here.',
     wishes: 'Love, light & good wishes', wishesBody: 'Your presence and blessings are the most beautiful part of our celebration.',
     wishOne: 'Love & laughter', wishTwo: 'A lifetime of joy', wishThree: 'New beginnings',
+    wishesHeading: 'RSVP & Wishes', wishFour: 'Lots of love', wishFive: 'A beautiful journey', wishSix: 'Forever together',
+    wishTouch: 'Gently sway this blessing', wishHint: 'A little touch, a little flutter.',
     decorative: 'Decorative wishes, not guest submissions.',
     closingOne: 'Different paths.', closingTwo: 'A shared tomorrow.',
+    finalNote: 'A Final Note', finalNoteIntro: 'A new chapter begins.',
     light: 'Warm the lantern', petals: 'Scatter a few petals', royal: 'Royal Heritage',
     opened: 'The invitation is open.', closed: 'The invitation is rolled closed.',
   },
@@ -32,10 +38,16 @@ export const natureCopy = {
     openLetter: 'निमंत्रण पत्र खोलें', closeLetter: 'पत्र समेटें', letterHint: 'रिबन छुएँ या पत्र खोलने के लिए स्क्रॉल करें।',
     dear: 'स्नेह सहित आपका आमंत्रण', eventLine: 'छोटे पल। सुंदर उत्सव।',
     venueLine: 'उत्सव तक पहुँचने की राह।', venueNote: 'हमारा मिलन स्थल',
+    venueExperience: 'उत्सव का आँगन', exploreVenue: 'स्थल की झलक देखें',
+    mapSoon: 'स्थल तय होने पर नक्शा और रास्ते की जानकारी यहाँ मिलेगी।',
+    venuePreviewNote: 'यह एक चित्रित परिवेश है। स्थल की अंतिम जानकारी यहाँ साझा की जाएगी।',
     wishes: 'प्रेम, उजाला और शुभकामनाएँ', wishesBody: 'आपकी उपस्थिति और आशीर्वाद हमारे उत्सव का सबसे सुंदर हिस्सा हैं।',
     wishOne: 'प्रेम और मुस्कान', wishTwo: 'जीवन भर खुशियाँ', wishThree: 'नई शुरुआत',
+    wishesHeading: 'उपस्थिति और शुभकामनाएँ', wishFour: 'ढेर सारा प्यार', wishFive: 'सुंदर सफ़र', wishSix: 'सदा साथ',
+    wishTouch: 'इस शुभकामना को हल्के से झुलाएँ', wishHint: 'हल्का सा स्पर्श, प्यार की हलचल।',
     decorative: 'ये सजावटी शुभकामनाएँ हैं, अतिथियों के संदेश नहीं।',
     closingOne: 'अलग राहें।', closingTwo: 'साझा कल।',
+    finalNote: 'स्नेह का संदेश', finalNoteIntro: 'एक नए अध्याय की शुरुआत।',
     light: 'दीप का उजाला बढ़ाएँ', petals: 'कुछ पंखुड़ियाँ बिखेरें', royal: 'रॉयल हेरिटेज',
     opened: 'निमंत्रण खुल गया है।', closed: 'निमंत्रण पत्र समेट दिया गया है।',
   },

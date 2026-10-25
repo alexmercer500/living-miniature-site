@@ -1,0 +1,10 @@
+---
+// Bounded decorative layer, intentionally leaving the central copy corridor quiet.
+const lanes=[4,14,24,94,8,89,19,97,29,6,92,17,26,95,11,85,3,22,91,15,98,7,31,88];
+---
+<div class="ns-atmosphere" aria-hidden="true">
+  {lanes.map((x,i)=><span class:list={['ns-drift',i<12?'ns-drift-petal':i<16?'ns-drift-flower':'ns-drift-mote']}
+    style={`--x:${x}%;--size:${i<12?7+i%5:i<16?14+i%4:3}px;--duration:${20+i%7*3}s;--delay:${-i*2.7-3}s;--drift:${i%2?'-':' '}${3+i%4}vw;--turn:${i%2?-240:280}deg;--alpha:${i<12?.5:i<16?.42:.4}`}>
+    {i>=12&&i<16&&<svg viewBox="0 0 24 24" focusable="false"><path d="M12 9C3-4-3 12 9 12C-3 18 12 30 12 16C20 30 30 12 16 12C30 4 12-6 12 9Z" fill="currentColor" /><circle cx="12" cy="12" r="2.5" fill="#f6d7a0" /></svg>}
+  </span>)}
+</div>

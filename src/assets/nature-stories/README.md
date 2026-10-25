@@ -1,10 +1,11 @@
 # Nature & Stories artwork
 
-Thirteen bitmap assets created with the built-in image tool on 2026-10-25.
+Fifteen bitmap assets created with the built-in image tool on 2026-10-25.
 Reference: RIGHT Nature & Stories / A Journey Together panels of both boards
 under wedding-cinematic-two-theme-spec/assets/reference/. Original tool outputs
 remain intact; final source copies are here. No third-party stock, personal
-photos or 3D models are included. Each companion references the generated hero.
+photos or 3D models are included. Original scene companions reference the
+generated hero; the later wishing-garden pair follows its material/palette family.
 
 Paired portrait/landscape compositions: hero, journey, letter, venue, closing,
 each with -mobile.png and -desktop.png. Portrait event assets: event-haldi.png,
@@ -19,6 +20,25 @@ production requests. All names, keepsakes, event details and scroll-letter
 content are HTML. Letter paper and rods are independent CSS elements.
 
 ## Exact prompts
+
+### Wishing garden revision — built-in generation
+
+Final source paths: `src/assets/nature-stories/wishes-desktop-v1.png` and
+`src/assets/nature-stories/wishes-mobile-v1.png`. Generated with the built-in
+image tool, not the CLI. Original outputs were copied non-destructively into
+the project. Both are text-free environment layers; rope, paper tags, holes,
+blessings and all practical actions are HTML/SVG/CSS. The desktop negative
+space supports six tags in one row; mobile supports two rows of three.
+Visually inspected for text, people and conflicting architecture. No new
+personal/venue data is implied. Astro emits responsive AVIF/WebP variants.
+
+#### wishes-desktop-v1 — exact prompt
+
+Use case: stylized-concept. Asset type: one WIDE LANDSCAPE 16:9 text-free full-bleed BACKGROUND for the RSVP and Wishes section of a premium Nature & Stories Indian Hindu wedding invitation website. Create an intimate lantern-lit Indian garden at twilight, close-up perspective with lush deep forest green foliage, flowering pink bougainvillea and roses, a mature tree, hanging jasmine/marigold strands at the far sides, warm carved brass candle lanterns suspended at different depths. Soft dimensional cinematic illustrated realism, sumptuous handmade materials, not flat vector, not photographic stock. Large out-of-focus flowers frame the bottom corners, a narrow sandstone path recedes softly into the background; warm amber candlelight and gold bokeh behind a calm dark green middle. IMPORTANT COMPOSITION: middle 75% width from 30% to 75% image height stays mostly dark soft-focus foliage so SIX large separate HTML parchment tags can overlay it later. Top-left area from 10% to 27% height is uncluttered dark foliage for HTML section heading. Lanterns mostly at outer edges and lower background, not blocking central tag zone. Rich romantic amber, deep green, muted rose, warm ivory, antique gold; delicate depth and atmospheric haze, warm welcoming tone. This is environment art ONLY: DO NOT render paper tags, cards, ropes across center, handwritten notes, text, lettering, numbers, UI, buttons, borders or montage. No people, personal photos, logos or watermarks. No Taj Mahal, domes, minarets, Mughal palaces, Islamic/Moorish motifs, European castles. One cohesive luxurious landscaped garden scene, matching the lantern-lit wishing-tag reference mood but with all tags and typography absent for real animated UI.
+
+#### wishes-mobile-v1 — exact prompt
+
+Use case: stylized-concept. Asset type: one PORTRAIT 2:3 full-bleed text-free mobile background for RSVP & Wishes, a premium Nature & Stories Indian Hindu wedding invitation website. Match the companion wide garden scene: intimate deep forest-green twilight garden, mature tree and pink bougainvillea, roses, jasmine/marigold strands at far sides, warmly glowing handmade brass candle lanterns hanging at different depths, a narrow sandstone path receding into softly blurred leafy darkness, amber bokeh, softly out-of-focus foreground roses at lower corners. Luxurious dimensional cinematic illustrated realism, natural materials, forest green, muted rose, warm ivory and antique gold. PORTRAIT COMPOSITION: central 80% width from 28% to 78% height must remain calm dark out-of-focus foliage for TWO ROWS of three separate HTML parchment tags to be placed later. Upper central 12–27% is calm dark foliage for the real heading, lanterns are confined mainly to outer edges and deeper background. Flowers at foreground corners provide depth without covering central space. Environment art only: no paper tags, cards, ropes across the middle, writing, text, numbers, logos, watermark, interface, border or collage. No people or personal photos. No domes, minarets, Taj Mahal, Mughal palaces, Islamic/Moorish motifs or European castles. Do not crop a wide image: compose a complete tall garden with space for six live paper tags. One text-free, warm, romantic lantern garden portrait.
 
 ### hero-mobile
 

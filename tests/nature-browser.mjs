@@ -27,7 +27,7 @@ await command('Network.setCacheDisabled', { cacheDisabled: true });
 await command('Page.bringToFront');
 const records = [];
 const shot = async name => { const r = await command('Page.captureScreenshot', { format: 'png' }); await fs.writeFile(`${out}/${name}.png`, Buffer.from(r.data, 'base64')); };
-const scroll = async selector => { await evaluate(`window.scrollTo({top:scrollY+document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().top-75,behavior:'instant'}); true`); await wait(650); };
+const scroll = async selector => { await evaluate(`window.scrollTo({top:scrollY+document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().top,behavior:'instant'}); true`); await wait(650); };
 const enter = async () => { await command('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' }); await command('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); };
 try {
   for (const view of [
@@ -44,24 +44,48 @@ try {
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: view.reduced ? 'reduce' : 'no-preference' }] });
     await command('Emulation.setScriptExecutionDisabled', { value: Boolean(view.noJs) });
     await command('Network.setBlockedURLs', { urls: view.failed ? ['*hero-mobile.*','*hero-desktop.*','*journey-mobile.*','*journey-desktop.*','*letter-mobile.*','*letter-desktop.*','*venue-mobile.*','*venue-desktop.*','*closing-mobile.*','*closing-desktop.*','*event-haldi.*','*event-evening.*','*event-wedding.*'] : [] });
-    const base = `${view.lang === 'hi' ? '/hi' : ''}/nature`;
+    const base = view.lang === 'hi' ? '/hi' : '';
     await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/` }); await wait(1500);
     await evaluate('document.fonts.ready.then(()=>true)');
     assert.equal(await evaluate("document.documentElement.dataset.theme"), 'nature');
-    assert.ok((await evaluate("document.querySelector('link[rel=canonical]').href")).endsWith(base));
+    assert.equal(new URL(await evaluate("document.querySelector('link[rel=canonical]').href")).pathname, `${base}/`);
     assert.equal(await evaluate("document.querySelector('[data-nature-sound]')?.getAttribute('aria-pressed')"), 'false');
+    assert.equal(await evaluate("getComputedStyle(document.documentElement).scrollPaddingTop"), '0px', 'No inherited header offset');
     for (const section of ['welcome','journey','invitation','celebrations','venue','wishes','closing']) {
       await scroll(`#${section}`);
+      if(view.name==='width-390'||view.name==='width-1440'||view.name==='short-hindi') {
+        await evaluate(`location.hash='${section}'; true`); await wait(1000);
+        const aligned=await evaluate(`(()=>{const s=document.getElementById('${section}'),r=(s.matches('[data-envelope][data-enhanced]')?s.firstElementChild:s).getBoundingClientRect();return {top:r.top,bottom:r.bottom}})()`);
+        assert.ok(Math.abs(aligned.top)<2 && Math.abs(aligned.bottom-view.height)<2, `${view.name}/${section}: native anchor fills viewport ${JSON.stringify(aligned)}`);
+        assert.equal(await evaluate("document.elementFromPoint(5,innerHeight-2)?.closest('section')?.id"), section, 'Bottom edge belongs to this chapter, not overflowing artwork from the next');
+      }
+      if(section==='journey'||section==='celebrations') {
+        const row=section==='journey'?'.ns-keepsakes':'.ns-events';
+        const count=await evaluate(`document.querySelector('${row}').children.length`);
+        for(let i=0;i<count;i++) {
+          await evaluate(`(()=>{const row=document.querySelector('${row}');row.scrollLeft=row.children[${i}].offsetLeft-row.offsetLeft;return true})()`);
+          await wait(350);
+          if(!view.failed) await waitFor(`document.querySelector('${row}').children[${i}].querySelector('img').naturalWidth>0`);
+        }
+        await evaluate(`document.querySelector('${row}').scrollLeft=0; true`); await wait(350);
+      }
       const state = await evaluate(`(() => {
         const s=document.getElementById('${section}'), b=s.getBoundingClientRect();
-        return {width:document.documentElement.scrollWidth,left:b.left,right:b.right,
-          headings:[...s.querySelectorAll('h1,h2,h3')].map(h=>{const r=h.getBoundingClientRect();return {text:h.textContent,opacity:getComputedStyle(h).opacity,left:r.left,right:r.right}}),
-          images:[...s.querySelectorAll('img')].map(i=>({ready:i.complete&&i.naturalWidth>0,src:i.currentSrc})),
+        return {height:s.matches('[data-envelope][data-enhanced]')?s.firstElementChild.getBoundingClientRect().height:b.height,width:document.documentElement.scrollWidth,left:b.left,right:b.right,
+          headings:[...s.querySelectorAll('h1,h2,h3')].filter(h=>!h.closest('dialog:not([open])')).map(h=>{const r=h.getBoundingClientRect(), slide=h.closest('.ns-event,.ns-keepsake')?.getBoundingClientRect();return {text:h.textContent,opacity:getComputedStyle(h).opacity,left:r.left,right:r.right,top:r.top,bottom:r.bottom,slide:slide?{left:slide.left,right:slide.right}:null}}),
+          images:[...s.querySelectorAll('img')].filter(i=>!i.closest('dialog:not([open])')).map(i=>({ready:i.complete&&i.naturalWidth>0,src:i.currentSrc})),
           refs:[...s.querySelectorAll('*')].flatMap(e=>[...e.attributes].flatMap(a=>[...a.value.matchAll(/url\\(#([^)]*)\\)/g)].map(m=>m[1]).concat(a.name==='href'&&a.value.startsWith('#')?[a.value.slice(1)]:[]))).filter(id=>!document.getElementById(id))};
       })()`);
       assert.ok(state.width <= view.width + 1, `${view.name}/${section}: page overflow ${state.width}`);
+      assert.ok(Math.abs(state.height-view.height)<2, `${view.name}/${section}: exactly one viewport (${state.height})`);
+      if(section!=='wishes') assert.equal(await evaluate(`getComputedStyle(document.getElementById('${section}')).overflowY`), 'clip', 'Parallax artwork cannot bleed into neighboring chapters');
       assert.ok(state.left >= -1 && state.right <= view.width + 1);
-      for (const h of state.headings) { assert.equal(h.opacity, '1', 'Copy never waits for animation'); assert.ok(h.left >= -2 && h.right <= view.width + 2, `${view.name}: heading out of frame ${h.text}`); }
+      for (const h of state.headings) {
+        assert.equal(h.opacity, '1', 'Copy never waits for animation');
+        const frame=h.slide ?? {left:0,right:view.width};
+        assert.ok(h.left >= frame.left-2 && h.right <= frame.right+2, `${view.name}: heading outside its slide ${h.text}`);
+        if(section!=='invitation') assert.ok(h.top>=63 && h.bottom<=view.height-65, `${view.name}/${section}: heading vertically out of frame ${h.text} (${h.top},${h.bottom})`);
+      }
       assert.deepEqual(state.refs, []);
       if (!view.failed) {
         for (const image of state.images) {
@@ -72,19 +96,39 @@ try {
       records.push({ view: view.name, section, ...state });
       if ([390,1440].includes(view.width) || view.lang === 'hi' && view.width === 320) await shot(`${view.name}-${section}`);
     }
-    const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-venue-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-card .ns-actions a').length,rsvp:!!document.getElementById('rsvp')})");
+    const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-venue-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-signs a[target=\"_blank\"]').length,rsvp:!!document.getElementById('rsvp')})");
     assert.deepEqual(details.titles, data.events.map(e => e.title[view.lang])); assert.equal(details.address, data.venue.address);
     assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, false);
     if (view.reduced || view.noJs) assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), false);
     if (view.name === 'width-390' || view.name === 'width-1440') {
       await scroll('#welcome');
+      await command('Input.dispatchMouseEvent', {type:'mouseWheel',x:Math.round(view.width/2),y:Math.round(view.height/2),deltaX:0,deltaY:60});
+      await wait(1200);
+      const snapState=await evaluate("({top:document.getElementById('welcome').getBoundingClientRect().top,snap:getComputedStyle(document.documentElement).scrollSnapType,journey:document.documentElement.hasAttribute('data-journey-scroll')})");
+      assert.ok(snapState.journey&&snapState.snap==='none'&&Math.abs(snapState.top+60)<2, `Hero/Journey allows continuous scroll instead of fighting native snap: ${JSON.stringify(snapState)}`);
+      await scroll('#welcome');
       await evaluate("document.querySelector('[data-nature-lantern]').focus(); true"); await enter();
       assert.equal(await evaluate("document.querySelector('[data-nature-lantern]').getAttribute('aria-pressed')"), 'true');
       await scroll('.ns-keepsakes');
       await evaluate("document.querySelectorAll('[data-keepsake]')[1].focus(); true"); await enter();
-      assert.equal(await evaluate("document.querySelectorAll('[data-keepsake]')[1].getAttribute('aria-pressed')"), 'true');
+      assert.equal(await evaluate("document.getElementById('ns-memory-1').open"), true);
+      await wait(900);
+      await command('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await waitFor("!document.getElementById('ns-memory-1').open");
+      assert.equal(await evaluate("document.activeElement===document.querySelectorAll('[data-keepsake]')[1]"),true);
       await scroll('#invitation');
-      await wait(1200);
+      // Arrival is closed; only deliberate scroll/tap drives the pinned reveal.
+      assert.equal(await evaluate("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')"),'false');
+      if(view.width===390) {
+        await command('Input.dispatchMouseEvent',{type:'mouseWheel',x:195,y:420,deltaX:0,deltaY:1000});
+        await wait(200);
+        assert.ok(Math.abs(await evaluate("document.querySelector('.envelope-viewport').getBoundingClientRect().top"))<2,'Fast wheel gesture keeps the reveal pinned');
+        await wait(2200);
+        assert.equal(await evaluate("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')"),'false','One fast gesture cannot skip the entire slow reveal');
+        assert.ok(await evaluate("parseFloat(document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle'))<5"),'Scroll gesture advances the lift');
+        await shot(`${view.name}-envelope-fast-scroll`);
+        await scroll('#invitation');await wait(1800);
+      }
       await evaluate("document.querySelector('[data-envelope-toggle]').focus({preventScroll:true}); true");
       await enter();
       await waitFor("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')==='true'");
@@ -96,6 +140,8 @@ try {
       await enter(); await waitFor("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')==='false'");
       await wait(5000);
       await shot(`${view.name}-envelope-closed`);
+      await enter();
+      await waitFor("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')==='true'");
       await evaluate("document.querySelector('.ns-menu summary').focus(); true"); await enter();
       assert.equal(await evaluate("document.querySelector('.ns-menu').open"), true);
       await command('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape' });
@@ -113,7 +159,7 @@ try {
     await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/invitation/` }); await wait(900);
     assert.ok((await evaluate("document.querySelector('link[rel=canonical]').href")).endsWith(`${base}/invitation`));
     assert.equal(await evaluate("document.querySelector('h1').textContent"), data.couple.displayName[view.lang]);
-    assert.ok(await evaluate(`document.querySelector('.ns-invite-actions a:last-child').getAttribute('href') === '${base}'`));
+    assert.ok(await evaluate(`document.querySelector('.ns-invite-actions a:last-child').getAttribute('href') === '${base}/'`));
     if (view.width === 390 && !view.failed && !view.noJs) { await command('Emulation.setEmulatedMedia', { media: 'print' }); assert.equal(await evaluate("getComputedStyle(document.querySelector('.ns-header')).display"), 'none'); await shot(`${view.name}-print`); await command('Emulation.setEmulatedMedia', { media: '' }); }
   }
   assert.deepEqual(errors, [], 'No runtime exceptions');

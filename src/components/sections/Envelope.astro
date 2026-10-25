@@ -1,6 +1,6 @@
 ---
 import { Picture, getImage } from 'astro:assets';
-import { type Lang, content, loc, href, t, formatDate } from '../../lib/content';
+import { type Lang, content, loc, royalHref as href, t, formatDate } from '../../lib/content';
 import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
 import table from '../../assets/royal-heritage/invitation-table-v1.png';
@@ -93,8 +93,11 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
   }
   .envelope-scene[data-enhanced] { min-height: calc(max(34rem, 100svh) + clamp(2000px, 280svh, 3400px)); }
   .envelope-nature { background: #172e28; }
-  .envelope-nature .envelope-backdrop::after { background: linear-gradient(#172e2877, #172e2844 15%, transparent 40% 70%, #172e28); }
+  .envelope-nature .envelope-backdrop::after { background: var(--ns-shade-invitation,linear-gradient(#172e2877, #172e2844 15%, transparent 40% 70%, #172e28)); }
   .envelope-nature .envelope-backdrop :global(img) { object-position: center; }
+  .envelope-nature[data-enhanced] { min-height: 0; }
+  .envelope-nature .envelope-viewport { height: var(--ns-screen, 100svh); }
+  .envelope-nature[data-enhanced] .envelope-viewport { position: sticky; top: 0; }
   .envelope-viewport { position: relative; height: max(34rem, 100svh); overflow: clip; }
   [data-enhanced] .envelope-viewport { position: sticky; top: 0; }
   .envelope-backdrop { position: absolute; inset: 0; z-index: -1; pointer-events: none; }

@@ -1,0 +1,51 @@
+---
+import Art from './Art.astro';
+import Icon from '../Icon.astro';
+import LotusMark from '../LotusMark.astro';
+import { type Lang, content, loc, t, mapConfigured } from '../../lib/content';
+import { natureCopy, natureHref } from '../../lib/nature-content';
+import { landscapes } from '../../lib/nature-assets';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = natureCopy[lang];
+const hasMap = mapConfigured();
+const actions = [
+  { label:t(lang,'viewMap'), icon:'pin' as const },
+  { label:loc(content.venue.directionsLabel,lang), icon:'arrow-right' as const },
+];
+---
+<section id="venue" class="ns-venue ns-scene" aria-labelledby="ns-venue-title">
+  <div class="ns-venue-landscape ns-scene"><Art {...landscapes.venue} /></div>
+  <div class="ns-venue-shade" aria-hidden="true"></div>
+  <header class="ns-venue-head" data-venue-reveal>
+    <span class="ns-venue-index" aria-hidden="true">04</span>
+    <div><p class="ns-kicker">{c.chapter}</p><h2 id="ns-venue-title">{c.venueExperience}</h2><p class="ns-venue-intro">{c.venueLine}</p></div>
+  </header>
+  <div class="ns-venue-stage">
+    <div class="ns-venue-card" data-venue-reveal>
+      <LotusMark class="ns-lotus" /><p class="ns-kicker">{c.venueNote}</p>
+      <h3>{content.venue.name}</h3><address>{content.venue.address}</address>
+    </div>
+    <div class="ns-wayfinding">
+      <span class="ns-signpost" aria-hidden="true"></span>
+      <nav class="ns-venue-signs" aria-label={t(lang,'venueHeading')}>
+        {actions.map((action,i)=><div class="ns-sign-mount" data-venue-sign style={`--sign-tilt:${[-1.5,1.2][i]}deg`}>
+          {hasMap
+            ? <a class="ns-wood-sign" href={content.venue.mapUrl} target="_blank" rel="noopener"><span class="ns-sign-icon"><Icon name={action.icon} /></span><span>{action.label}</span></a>
+            : <button class="ns-wood-sign" type="button" disabled aria-describedby="ns-venue-map-note"><span class="ns-sign-icon"><Icon name={action.icon} /></span><span>{action.label}</span></button>}
+        </div>)}
+        <div class="ns-sign-mount" data-venue-sign style="--sign-tilt:-.8deg">
+          <a class="ns-wood-sign" data-venue-explore href={`${natureHref(lang,'/invitation')}#ns-invite-venue`}><span class="ns-sign-icon"><LotusMark /></span><span>{c.exploreVenue}</span><Icon name="arrow-right" /></a>
+        </div>
+      </nav>
+      <p class="ns-venue-map-note" id="ns-venue-map-note">{hasMap ? c.venuePreviewNote : c.mapSoon}</p>
+    </div>
+  </div>
+  <dialog id="ns-venue-preview" class="ns-venue-dialog" aria-labelledby="ns-venue-preview-title" aria-describedby="ns-venue-preview-note">
+    <article class="ns-venue-preview">
+      <form method="dialog"><button class="ns-venue-close" type="submit" aria-label={t(lang,'close')} autofocus><Icon name="close" /></button></form>
+      <div class="ns-venue-preview-art"><Art {...landscapes.venue} sizes="90vw" /></div>
+      <div class="ns-venue-preview-copy"><p class="ns-kicker">{c.venueNote}</p><h2 id="ns-venue-preview-title">{content.venue.name}</h2><address>{content.venue.address}</address><p id="ns-venue-preview-note">{c.venuePreviewNote}</p></div>
+    </article>
+  </dialog>
+</section>

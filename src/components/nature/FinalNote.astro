@@ -1,0 +1,59 @@
+---
+import Art from './Art.astro';
+import { getImage } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { type Lang, content, loc, t } from '../../lib/content';
+import { natureCopy, natureHref } from '../../lib/nature-content';
+import { landscapes } from '../../lib/nature-assets';
+import paper from '../../assets/royal-heritage/ivory-floral-paper-v1.png';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = natureCopy[lang];
+const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality:80});
+---
+<section id="closing" class="ns-closing ns-scene" aria-labelledby="ns-closing-title">
+  <Art {...landscapes.closing} /><div class="ns-closing-shade" aria-hidden="true"></div>
+  <header class="ns-note-head">
+    <span class="ns-note-index" aria-hidden="true">06</span>
+    <div><p class="ns-kicker">{c.chapter}</p><h2 id="ns-closing-title">{c.finalNote}</h2><p>{c.finalNoteIntro}</p></div>
+  </header>
+  <div class="ns-note-stage">
+    <div class="ns-note-arrival" data-note-arrival>
+      <div class="ns-note-float">
+        <article class="ns-note-card" aria-labelledby="ns-note-names" style={`--note-fibers:url('${paperMaterial.src}')`}>
+          <svg class="ns-note-frame" viewBox="0 0 900 450" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path d="M46 2H854L898 41V409L854 448H46L2 409V41Z" fill="none" stroke="#a77a3d" stroke-width="2" />
+            <path d="M50 10H850L890 45V405L850 440H50L10 405V45Z" fill="none" stroke="#b9975d" stroke-width="1" />
+            <path class="ns-note-glint" d="M46 2H854L898 41V409L854 448H46L2 409V41Z" fill="none" stroke="#fff4c7" stroke-width="3" pathLength="1" stroke-dasharray=".12 1" />
+          </svg>
+          {['a','b'].map(corner=><svg class:list={['ns-note-floral',corner]} viewBox="0 0 160 125" fill="none" aria-hidden="true" focusable="false">
+            <path d="M7 113Q21 58 88 17M18 75Q68 69 118 25M11 99Q61 94 87 62" stroke="#9c773e" stroke-width="1.2" />
+            <g fill="#b19256" stroke="#96713d" stroke-width=".6">
+              <path d="M24 66Q1 49 14 31Q31 42 24 66ZM34 51Q23 25 39 15Q51 35 34 51ZM54 35Q53 9 74 6Q77 24 54 35ZM44 63Q52 43 70 45Q64 66 44 63ZM72 50Q86 26 104 34Q92 53 72 50ZM32 89Q43 72 57 79Q49 96 32 89ZM62 79Q72 59 89 64Q82 83 62 79Z" />
+            </g>
+            <g transform="translate(22 24)">
+              {[0,60,120,180,240,300].map(angle=><path d="M0 0C-13-3-19-18-8-22C3-27 10-12 0 0Z" fill={angle%120?'#9a4e50':'#7d343d'} stroke="#a76659" stroke-width=".6" transform={`rotate(${angle})`} />)}
+              <path d="M-7-4Q3-12 8-2Q10 8-3 7Q-11 5-7-4ZM-3-2Q3-5 4 1Q3 5-1 3" fill="#a45b51" stroke="#d09a70" stroke-width=".7" />
+            </g>
+            <path d="M96 17l5-5 5 5-5 5ZM14 113l4-4 4 4-4 4Z" fill="#b08a52" />
+          </svg>)}
+          <span class="ns-note-pin top" aria-hidden="true"></span><span class="ns-note-pin bottom" aria-hidden="true"></span>
+          <div class="ns-note-copy">
+            <p class="ns-note-salutation">{t(lang,'withLove')}</p>
+            <h3 id="ns-note-names">{loc(content.couple.displayName,lang)}</h3>
+            <div class="ns-note-ornament" aria-hidden="true"><span></span><svg viewBox="0 0 28 28" focusable="false"><path d="M14 1L18 7L14 12L10 7ZM27 14L21 18L16 14L21 10ZM14 27L10 21L14 16L18 21ZM1 14L7 10L12 14L7 18Z" fill="currentColor" /></svg><span></span></div>
+            <p class="ns-note-message">{loc(content.closing.line,lang)}</p>
+            <p class="ns-note-epilogue">{c.closingOne} <em>{c.closingTwo}</em></p>
+          </div>
+        </article>
+      </div>
+    </div>
+    <nav class="ns-note-actions" aria-label={c.finalNote}>
+      <a class="ns-button" href={natureHref(lang,'/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
+      <a class="ns-note-back" href="#welcome"><Icon name="up" />{t(lang,'backToTop')}</a>
+    </nav>
+  </div>
+  <div class="ns-note-atmosphere" aria-hidden="true">
+    {[7,22,40,68,83,95].map((x,i)=><i class:list={['ns-note-drift',i%2?'mote':'petal']} style={`--x:${x}%;--drift:${[28,-22,18,-30,24,-20][i]}px;--duration:${[26,31,28,33,29,34][i]}s;--delay:${[-3,-18,-9,-24,-14,-28][i]}s`} />)}
+  </div>
+</section>

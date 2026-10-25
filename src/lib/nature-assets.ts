@@ -8,6 +8,8 @@ import venueMobile from '../assets/nature-stories/venue-mobile.png';
 import venueDesktop from '../assets/nature-stories/venue-desktop.png';
 import closingMobile from '../assets/nature-stories/closing-mobile.png';
 import closingDesktop from '../assets/nature-stories/closing-desktop.png';
+import wishesMobile from '../assets/nature-stories/wishes-mobile-v1.png';
+import wishesDesktop from '../assets/nature-stories/wishes-desktop-v1.png';
 import haldi from '../assets/nature-stories/event-haldi.png';
 import evening from '../assets/nature-stories/event-evening.png';
 import wedding from '../assets/nature-stories/event-wedding.png';
@@ -17,6 +19,7 @@ export const landscapes = {
   letter: { mobile: letterMobile, desktop: letterDesktop },
   venue: { mobile: venueMobile, desktop: venueDesktop },
   closing: { mobile: closingMobile, desktop: closingDesktop },
+  wishes: { mobile: wishesMobile, desktop: wishesDesktop },
 };
 export const natureEvents: Record<string, typeof haldi> = {
   'floral-courtyard': haldi, haldi, 'lantern-garden': evening, mehndi: evening,

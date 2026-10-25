@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { envelopeState, envelopeLayout } from '../src/lib/envelope-state.ts';
+import { envelopeState, envelopeLayout, envelopeScrollProgress } from '../src/lib/envelope-state.ts';
+
+test('Nature scroll reserves a closed beat and readable end hold', () => {
+  assert.equal(envelopeScrollProgress(0),0);
+  assert.equal(envelopeScrollProgress(.04),0);
+  assert.ok(Math.abs(envelopeScrollProgress(.44)-.5)<1e-8);
+  assert.equal(envelopeScrollProgress(.9),1);
+  assert.equal(envelopeScrollProgress(1),1);
+  assert.equal(envelopeState(envelopeScrollProgress(.84)).present,1);
+  for(let i=1;i<=100;i++) assert.ok(envelopeScrollProgress(i/100)>=envelopeScrollProgress((i-1)/100));
+});
 
 test('the envelope has stable closed and readable open endpoints', () => {
   const closed = envelopeState(0);

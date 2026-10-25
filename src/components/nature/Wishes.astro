@@ -1,0 +1,54 @@
+---
+import Art from './Art.astro';
+import Icon from '../Icon.astro';
+import { type Lang, content, loc, t, parseDate, rsvpConfigured } from '../../lib/content';
+import { natureCopy } from '../../lib/nature-content';
+import { landscapes } from '../../lib/nature-assets';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = natureCopy[lang];
+const date = parseDate(content.site.weddingDate);
+const hasRsvp = rsvpConfigured();
+const wishes = [c.wishOne,c.wishTwo,c.wishThree,c.wishFour,c.wishFive,c.wishSix];
+const drops = [23,56,73,73,56,23];
+const cords = [66,88,40,18,58,46];
+const tilts = [-5,3,-3,5,-4,4];
+---
+<section id="wishes" class:list={['ns-wishes','ns-scene',{'ns-wishes-with-details':date||hasRsvp}]} aria-labelledby="ns-wishes-title">
+  <div class="ns-wishes-landscape"><Art {...landscapes.wishes} /></div>
+  <div class="ns-wishes-shade" aria-hidden="true"></div>
+  <header class="ns-wishes-head">
+    <span class="ns-wishes-index" aria-hidden="true">05</span>
+    <div><p class="ns-kicker">{c.chapter}</p><h2 id="ns-wishes-title">{c.wishesHeading}</h2><p class="ns-wishes-intro">{c.wishesBody}</p></div>
+  </header>
+  <div class="ns-wish-canopy">
+    <svg class="ns-wish-rope" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M-20 0Q600 150 1220 0" fill="none" stroke="#4a2c15" stroke-width="4" /><path d="M-20 0Q600 150 1220 0" fill="none" stroke="#c69d62" stroke-width="2" stroke-dasharray="3 1" /></svg>
+    <ul class="ns-wish-garland" aria-label={c.wishes} aria-describedby="ns-wishes-demo">
+    {wishes.map((wish,i)=><li class="ns-wish-hanger" style={`--rope-drop:${drops[i]}px;--cord:${cords[i]}px;--tilt:${tilts[i]}deg;--wind-time:${[8.2,10.6,9.1,7.7,10,8.9][i]}s;--wind-delay:${[-2,-5,-1,-4,-6,-3][i]}s`}>
+      <div class="ns-wish-arrival" data-wish-arrival>
+        <div class="ns-wish-wind">
+          <div class="ns-wish-gesture">
+            <span class="ns-wish-string" aria-hidden="true"></span>
+            <button class="ns-wish-tag" type="button" data-wish-tag disabled aria-label={`${c.wishTouch}: ${wish}`}>
+              <svg class="ns-wish-etch" viewBox="0 0 170 250" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M23 6H147L164 24V231L153 244H17L6 231V24Z" fill="none" stroke="currentColor" stroke-width=".9" /><path d="M19 223v11h12M151 223v11h-12M80 230l5-5 5 5-5 5Z" fill="none" stroke="currentColor" stroke-width="1" /></svg>
+              <span class="ns-wish-eyelet" aria-hidden="true"></span><span class="ns-wish-message">{wish}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </li>)}
+    </ul>
+  </div>
+  <footer class="ns-wishes-foot">
+    <p class="ns-wish-hint" data-wish-hint hidden>{c.wishHint}</p>
+    <p id="ns-wishes-demo">{c.decorative}</p>
+    {(date || hasRsvp) && <div id="rsvp" class="ns-rsvp">
+      {date && <div class="ns-countdown" data-nature-countdown={date.toISOString()} role="timer" aria-label={t(lang,'countdownHeading')} aria-live="off">{(['days','hours','minutes','seconds'] as const).map(unit=><div><strong data-nature-unit={unit}>–</strong><span>{t(lang,unit)}</span></div>)}</div>}
+      {hasRsvp && <a class="ns-button ns-button-light" href={content.rsvp.url} target="_blank" rel="noopener"><Icon name="heart" />{loc(content.rsvp.label,lang)}</a>}
+    </div>}
+  </footer>
+  <div class="ns-wish-atmosphere" aria-hidden="true">
+    {[8,25,43,62,80,93].map((x,i)=><i class:list={['ns-wish-drift',i%2?'ns-wish-mote':'ns-wish-petal']} style={`--x:${x}%;--drift:${[30,-24,18,-35,27,-20][i]}px;--duration:${[22,27,24,29,26,31][i]}s;--delay:${[-4,-17,-9,-22,-13,-26][i]}s`} />)}
+    <span class="ns-wish-lantern-glow"></span>
+  </div>
+</section>

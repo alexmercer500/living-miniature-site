@@ -2,6 +2,253 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+All-chapter scroll flow (2026-10-26): the approved Hero/Journey camera is retained
+and five later unpinned cameras reuse its feathered reveal and timing, through
+the Final Note. `SceneBridges.astro` contains only inert decorative Art/Foliage;
+`scene-transitions.ts` coordinates a single active background pair and isolated
+incoming UI transforms. `scene-transition-state.ts` shares the first camera's
+pure state math and defines restrained staggered arrivals. The envelope exit
+range is its last viewport, after the existing opening track. No new pins,
+scroll distance, wheel/touch interception or independent couple-name reveal.
+The old timed entrance observers and competing later background parallax were
+removed from `nature.ts`; wind/hover/tap/modal controllers are unchanged.
+`nature.css` shares original/bridge scene grades and shades, hides only actual
+backgrounds while a pair is active, and restores them at endpoints. Nearby-only
+low-priority decorative prefetch uses the existing URLs/cache. No-JS/reduced/
+failed-art fallback, fast-jump and focus readability, explicit teardown and
+single-owner snap scope are retained. The Nature-only Envelope shade reads a
+variable with its previous gradient as fallback; its shared animation controller
+and Royal behavior are unchanged. Tests now sample intermediate scroll positions
+before asserting fully readable anchor states, instead of waiting for autoplay.
+Validation: 13-route production build, 33 unit/static checks, 131 later handoff
+checks, 28 original first-handoff checks, 61 scene-specific checks, full mobile
+smoke (seven scenes plus touch/keyboard/locale/print), 16 route/deep-link checks
+and 20 Nature envelope phase checks all pass. Desktop/mobile intermediate and
+resting screenshots inspected; short Hindi, tablet, reduced motion, no JS,
+blocked art and runtime preference cleanup covered. Only the nearby camera is
+prepared at the top; unprepared copies stay display:none so their viewport
+placement cannot cause premature native lazy loading. No runtime exceptions,
+broken SVG targets or horizontal overflow found in these checks. Real-device
+Safari/Android smoothness remains unverified. Temporary preview/Chrome are
+closed after QA; use `npm run dev` for local review.
+
+Hero → Journey cinematic-flow pilot: new `hero-journey-state.ts` defines pure,
+bounded camera/mask/heading/path/keepsake poses, sampled from one scroll value.
+`scripts/hero-journey.ts` owns one unpinned ScrollTrigger across the first viewport
+with 0.85s scrub. The existing first two 100dvh sections, all real copy and anchor
+positions stay in document flow. `HeroJourneyBridge.astro` adds only an inert,
+pointer-transparent, behind-content decorative camera that reuses approved Art
+URLs. A soft three-gradient botanical reveal is preferred, with an organic
+polygon fallback; subtle pre-existing foliage symbols are reused unchanged.
+The bridge is visible only during the handoff, and original background layers
+return at both endpoints. Fast jumps force completed content poses immediately.
+Proximity snap is disabled only for this continuous segment and released exactly
+at Journey's anchor, not left active across subsequent scenes. The old hero/
+Journey camera/path and memory entrance tweens were removed to avoid competing
+transform owners. Keepsake wind, hover and modal interaction controllers remain.
+Loading is lazy in SSR; only motion-enabled clients promote decorative images
+to eager/low-priority loading. Enhancement is gated by image readiness and CSS
+support, and cleanups restore image attributes, inline memory styles, root vars,
+path style and scroll-scope flags. Reduced-motion/no-JS/failed-image cases keep
+the original readable sections; no wheel/touch scroll hijacking or added track.
+Mobile hides decorative carousel chrome and disallows nested vertical scrolling
+while retaining horizontal swipe and keyboard focus. No source art, Royal,
+content data, routes, packages or deployment changes. Build: 13 routes; 29 unit/
+static tests and 28 focused transition checks pass; existing keepsake/modal suite
+passes 15. Reverse/hold/fast-jump, initial/resting/intermediate desktop/mobile,
+short Hindi, tablet and preference-switch cleanup verified. Generic smoke test's
+former "small wheel must snap back" assertion now checks intentional continuous
+Hero/Journey scroll, rather than fighting the new scroll-driven choreography.
+The complete mobile smoke passes: seven scenes, envelope open/close, touch,
+navigation, locale and printable invitation. The prior envelope controller and
+its separate snap-state implementation were not changed by this pilot.
+All 16 primary/secondary/legacy route, direct-hash and locale checks also pass.
+
+Final Note hybrid revision: new `nature/FinalNote.astro` replaces the Nature
+inline closing copy while retaining the exact original closing desktop/mobile
+art. Royal's reference card guides the clipped ivory silhouette, double antique
+gold frame, rose/botanical corner accents, centred with-love/names and diamond
+ornament. Reuses the existing Royal `ivory-floral-paper-v1.png` at the same
+optimized WebP URL as the envelope, cropping away the embossed outer border to
+retain subtle paper fibres. No source art or shared Royal component was changed.
+All semantic names, bilingual approved closing text and Nature epilogue remain
+real HTML. Full-invitation and back-to-beginning links preserve locale/targets.
+Nature GSAP reveals the whole note over 1.8s with restrained perspective/back
+easing; a single 2.4s travelling border glint fades out. No per-name/text reveal
+or delayed lettering. Independent 9s CSS float and six sparse particles pause
+offscreen/hidden; reduced-motion/no-JS are complete static compositions. Short
+landscape places header beside the note so both links fit above the dock.
+Build passes 13 routes; 24 unit/static tests and 13 focused Final Note checks
+pass. Checks include intermediate entry, names printed from outset, SVG/anchor
+references, EN/Hindi, 320px/short/landscape/tablet/wide layouts, native keyboard
+navigation, reduced-motion, no-JS and blocked-art fallback. Desktop, mobile,
+short Hindi and landscape screenshots visually reviewed. No packages, personal
+data, endpoints or deployment changes.
+Seven-section mobile smoke and all 16 theme/locale/deep-link checks pass as well.
+
+Wishes reference redesign: `nature/Wishes.astro` replaces Home's inline wishes
+section. Added paired `wishes-desktop-v1.png` / `wishes-mobile-v1.png` environment
+art through built-in image generation, with exact prompts/provenance recorded in
+`src/assets/nature-stories/README.md`. Existing Art component emits responsive
+AVIF/WebP. All six tag faces, text, eyelets, cords and ropes are live HTML/SVG/CSS,
+not baked artwork. Three existing blessings plus three generic bilingual wishes;
+visible decorative-not-guest-submissions label. No new personal details, backend,
+packages or data changes. Existing RSVP/date configuration remains authoritative.
+Nature GSAP reveals whole tag/cord assemblies over 1.6s with 180ms stagger and
+gentle back easing. Independent 7.7–10.6s CSS wind pivots and a bounded 1.8s WAAPI
+tap/keyboard flutter avoid transform conflicts. Repeated taps snapshot the current
+pose. Motion-query change cancels tap motion; root/offscreen/visibility handling
+pauses ambient work. All observers/listeners/timers/animations are cleaned up.
+Desktop six-across and mobile/portrait-tablet two-by-three layouts fit one viewport, including
+short Hindi and landscape. Browser-only configured-RSVP/countdown fixtures caught
+and fixed an overlap on short phones; no fixture data is shipped in the page.
+Build passes 13 routes; 23 unit/static checks and 17 focused wishes checks pass,
+including stagger, intermediate frames, keyboard/tap, continuity, wind, reduced
+motion, no-JS, blocked art and configured-layout fixtures. Screenshots reviewed.
+Seven-section mobile layout smoke and all 16 theme/locale/deep-link checks pass.
+Broad desktop/mobile scripts still hit the known envelope-active/snap assertion
+after a synthetic jump from closing to hero. This pre-existing issue was not
+changed as part of the Wishes scene and remains open.
+
+Venue reference redesign: new `nature/Venue.astro` uses the existing traditional
+garden/pavilion artwork behind an editorial chapter header and visible venue
+details. Three actual HTML signs have chipped/arrow ends, layered wood grain,
+etched borders, nail details and a shared timber post. Their GSAP entry is
+scroll-visibility-triggered, softly spring-settled over 1.6s with 200ms stagger;
+background drift and fine-pointer hover lift stay subtle. A native framed
+illustration preview is enhanced by `scripts/venue.ts`: 900ms soft entrance,
+320ms exit from the current pose, Escape/backdrop dismissal, focus restoration
+and scroll lock. The original printable-details link remains the no-JS or
+unsupported-dialog fallback. Real map/directions links are gated by the existing
+map configuration; empty maps show two disabled signs and a localized note.
+Placeholders, bilingual routes, Royal and all other sections are unchanged.
+CSS handles single-screen portrait and short landscape separately. Removed
+the old Venue panel rules rather than stacking another panel override. The
+13-route build, 22 unit/static checks and 13 focused venue checks pass. Browser
+screenshots reviewed on desktop, mobile, short Hindi, landscape and preview;
+reduced-motion/no-JS verified. General QA now ignores lazy images inside closed
+dialogs and checks map gating in the new sign navigation. The broad mobile
+interaction test passed on rerun after an existing intermittent scroll-snap
+timing failure (stale envelope-active during a synthetic jump back to hero).
+This unrelated envelope behavior was not changed. Desktop/mobile smoke checks
+(14 scenes plus interactions) and 16 theme/legacy/deep-link/locale checks pass.
+
+Celebrations reference redesign: new `nature/Celebrations.astro` replaces the
+Home inline section. Uses a dark, dusk-graded existing garden backdrop, warm
+festoon lights, compact chapter heading and portrait ceremony cards with 22px
+corners, fine gold/inset rims, curved SVG parchment edges and a four-diamond
+ornament. Parchment caption heights align on desktop while short screens remain
+content-adaptive. Existing three event records/artwork, English/Hindi text,
+placeholder dates and conditional calendar buttons are preserved. No additional
+events/dates, packages or fabricated personal data. Nature GSAP now reveals the
+entire card (rise/soft rotation/fade, 1.35s, desktop 160ms stagger), with a 1.7s
+image settle and visibility-triggered mobile slides. Observers disconnect on
+motion-query cleanup; reduced-motion/no-JS have readable static cards. Scene
+remains one viewport tall. Build passes 13 routes; all 21 unit/static tests and
+18 dedicated ceremony checks pass, including actual stagger/intermediate frames,
+mobile, wide desktop, short Hindi, reduced-motion and no-JS. General page and
+deep-link regressions pass; screenshots visually reviewed.
+
+Journey spacing/transition refinement: widened the hanging layout to a responsive
+1480px maximum with 300px mounts, larger gaps and varied cord lengths; mobile
+retains horizontal swipe with increased separation. Frozen 80ms opening frames
+reproduced clipping from dialog overflow:auto. The dialog now allows the moving
+frame outside its centered bounds, with content overflow handled inside the
+frame. Source geometry is captured before focus/scroll-lock changes; the inline
+source hides during expansion, the moving paper stays opaque and the backdrop
+fades in. Interrupted closing snapshots the current transform/opacity before
+cancelling the opening animation, eliminating a full-size jump. Added
+`tests/keepsake-transition-browser.mjs` to freeze opening frames and verify exact
+interruption continuity on desktop/mobile. Build, all 21 unit/static tests,
+15 keepsake/modal checks and a mobile scene regression pass. Screenshots reviewed.
+
+Journey keepsakes revision: existing symbolic items moved to
+`nature/Keepsakes.astro`. Cards have curved rope segments, individual cords,
+wooden clips, varied heights, tilted photo mounts and independent wind pivots.
+GSAP scrubs a staggered hanger reveal; hover lifts/straightens the card without
+competing with sway or reveal transforms. Mobile retains horizontal swipe and
+the chapter remains one viewport tall. `scripts/keepsakes.ts` adds native modal
+dialogs with card-origin opening/return animations, focus containment, background
+inertness/scroll lock and close/Escape/backdrop dismissal with focus restoration.
+Reduced motion is instant; no-JS content remains readable inline. Modal photos
+reuse current art with an optional Art.sizes override for appropriate resolution.
+No packages, invented biography or personal photos were added. Verification:
+13-route build, 21 unit/static tests, 15 dedicated keepsake/modal/fallback checks,
+14 desktop/mobile scene/layout checks plus interactions, and 16 direct-link/
+locale checks pass. Reviewed desktop/mobile/short-Hindi card and modal screenshots.
+
+Hero motion polish: `HeroLantern.astro` adds independent foreground SVG artwork
+using the existing shared brass/glass/flame gradients; baked-in image lanterns
+are unchanged. Native CSS animates a gentle 7.5s pivot and low-amplitude flicker.
+The existing lantern toggle/ARIA/keyboard/touch interaction remains. Hero text
+uses a first-paint, whole-line stagger (soft rise, short blur and subtle settle),
+lasting about 2.45s. This avoids bundle-gated invisible content and preserves
+Hindi shaping. Scrolling away marks the intro complete instead of re-hiding it.
+`HeroAtmosphere.astro` supplies 24 bounded petals/blossoms/motes, halved on mobile,
+with a masked quiet copy corridor and no pointer interaction. Ambient loops
+pause offscreen and on tab visibility changes; reduced motion is static. No-JS
+copy and decorative lantern remain visible without interactive/looping effects.
+Motion's public stagger example and hero description informed timing only:
+https://motion.dev/examples/js-stagger-from-edges and
+https://motion.dev/examples/vue-hero-stagger. No Motion package or paid source is
+used. `tests/nature-hero-browser.mjs` verifies five viewport/fallback cases,
+settled copy, actual sway, offscreen pause, bounded particles and SVG references.
+Verification passes: 13-route production build, 21 unit/static tests, five hero
+browser cases, seven mobile scene/layout plus interaction checks, and 16 direct
+link/locale regressions. Desktop/mobile/short-Hindi screenshots visually reviewed.
+
+Latest envelope revision: owner requested scroll control instead of autoplay.
+Nature now shares the deterministic scroll controller with Royal, using a longer
+2,800–4,400px track while keeping its sticky visual stage at one viewport. This
+is the sole intentional exception to the one-screen section document height.
+The 1.8s scrub and existing damped lift/flap/presentation springs provide smooth
+reversible motion. Closed/rest and readable end holds reserve 4% / 16% of travel.
+No names are animated or delayed. Tap/keyboard follows the same scroll path at
+8s open / 4.5s close; wheel/touch/navigation keys can interrupt it. Proximity snap
+is disabled inside this chapter's active scroll range and restored outside it.
+Reduced-motion/no-JS keep one-screen open-card fallbacks, with no long track.
+Earlier entry-autoplay notes below are historical and superseded by this change.
+Verification: 13-route production build, 21 unit/static tests, 20 Nature envelope
+phase checks, 6 Royal mobile regressions, 16 direct-link/locale checks and 7 mobile
+scene/layout plus interaction checks pass. A 1,000px wheel gesture stays pinned,
+advances the lift and does not skip the entire reveal. Reviewed desktop/mobile
+screenshots for resting, lifted and extracting poses; names remain preprinted.
+
+Primary-route revision: Nature is now `/` and `/hi/`, with Nature invitations at
+`/invitation` and `/hi/invitation`. Royal is preserved at `/royal` and `/hi/royal`,
+with its own `/royal/invitation` and `/hi/royal/invitation`. Explicit `royalHref`
+keeps Royal menus, locale switches, actions, envelope and print return links in
+their own theme. Nature comparison links point to Royal. The old `/nature` URLs
+remain compatible rendering aliases with primary canonical/alternate URLs.
+Nature overrides the shared 60px root scroll-padding with zero and uses gentle
+vertical proximity snapping, so native anchors and small scroll gestures settle
+on the full viewport rather than exposing the neighboring chapter. This applies
+only to Nature home pages, not printable pages or Royal's sticky sequences.
+Screenshot review also identified the visible bottom strip as the following
+scene's scaled parallax artwork overflowing its own section. Nature sections
+now clip at their viewport boundaries, while Wishes retains internal scrolling.
+Direct-load tests reproduced the screenshot's stale `#venue`/hero mismatch.
+Nature now waits for fonts and animation initialization, resolves the original
+hash once (unless the guest has already interacted), then enables proximity
+snapping. No-JS pages keep native fragment navigation without snap initialization.
+This preserves scroll/touch control during startup and does not change Royal.
+Verification: production build passes all 13 routes; 20 unit/static tests,
+91 scene/layout checks, 16 primary/secondary/legacy direct-link and locale checks,
+6 Royal mobile envelope checks, and a final 7-scene mobile interaction run pass.
+Internal href targets and canonical URLs are validated across both themes.
+
+Single-screen revision: all seven Nature home sections now use `100dvh` (fallback
+`100vh`), with header/dock safe spacing, shorter-screen typography, mobile native
+horizontal keepsake/event collections, an overlaid venue card and internal
+overflow for wishes/venue details. Printable invitations and Royal are unchanged.
+The Nature envelope no longer allocates a multi-screen sticky scroll track:
+its same poses run slowly in place on entry, pause when offscreen, and reverse
+with tap/keyboard. Royal's existing scroll controller path remains intact.
+The browser harness now verifies every section's height and heading bounds,
+visits every horizontal slide, and exercises in-place opening/closing. All 91
+scene/layout cases, 20 Nature envelope phase checks, 6 Royal mobile envelope
+regressions and 16 unit/static tests passed; production builds nine routes.
+
 Latest revision supersedes the scroll-letter description below: the owner
 requested the first theme's envelope and animation instead. Nature now reuses
 `sections/Envelope.astro` with optional Nature variant, backdrop slot, section
