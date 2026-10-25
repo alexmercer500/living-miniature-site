@@ -6,19 +6,19 @@ import Icon from '../Icon.astro';
 import table from '../../assets/royal-heritage/invitation-table-v1.png';
 import paper from '../../assets/royal-heritage/ivory-floral-paper-v1.png';
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; variant?: 'nature' }
+const { lang, id = 'invitation-reveal', invitationHref = href(lang, '/invitation'), continueHref = '#journey', variant } = Astro.props;
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
 ---
-<section id="invitation-reveal" class="envelope-scene" data-envelope aria-labelledby="envelope-title"
+<section id={id} class:list={['envelope-scene', { 'envelope-nature': variant === 'nature' }]} data-envelope aria-labelledby="envelope-title"
   style={`--paper-material: url('${paperMaterial.src}')`}>
-  <div class="envelope-viewport">
+  <div class:list={['envelope-viewport', { 'ns-scene': variant === 'nature' }]}>
     <div class="envelope-backdrop" aria-hidden="true">
-      <Picture src={table} formats={['avif', 'webp']} fallbackFormat="webp" widths={[768, 1280, 1672]}
+      {Astro.slots.has('backdrop') ? <slot name="backdrop" /> : <Picture src={table} formats={['avif', 'webp']} fallbackFormat="webp" widths={[768, 1280, 1672]}
         sizes="(max-aspect-ratio: 16/9) 178svh, 100vw" quality={55}
-        alt="" loading="lazy" decoding="async" />
+        alt="" loading="lazy" decoding="async" />}
     </div>
     <header class="envelope-heading">
       <p class="eyebrow">{t(lang, 'invitation')}</p>
@@ -38,7 +38,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
         <h3 id="invitation-card-title"><span class="name-one">{one}</span><em>{lang === 'hi' ? 'एवं' : '&'}</em><span class="name-two">{two}</span></h3>
         <p class="card-date">{date}</p>
         <p class="card-venue">{content.venue.name}</p>
-        <a class="card-link" href={href(lang, '/invitation')}>{loc(content.invitation.label, lang)} <Icon name="arrow-right" /></a>
+        <a class="card-link" href={invitationHref}>{loc(content.invitation.label, lang)} <Icon name="arrow-right" /></a>
       </article>
 
       <div class="envelope-pocket" aria-hidden="true"></div>
@@ -55,8 +55,8 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     </div>
 
     <div class="envelope-footer">
-      <a href={href(lang, '/invitation')}>{loc(content.invitation.label, lang)}</a>
-      <a href="#journey">{t(lang, 'continueJourney')} <Icon name="arrow-down" /></a>
+      <a href={invitationHref}>{loc(content.invitation.label, lang)}</a>
+      <a href={continueHref}>{t(lang, 'continueJourney')} <Icon name="arrow-down" /></a>
     </div>
     <p class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-envelope-status
       data-open={t(lang, 'envelopeOpened')} data-closed={t(lang, 'envelopeClosed')}></p>
@@ -92,6 +92,9 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     isolation: isolate;
   }
   .envelope-scene[data-enhanced] { min-height: calc(max(34rem, 100svh) + clamp(2000px, 280svh, 3400px)); }
+  .envelope-nature { background: #172e28; }
+  .envelope-nature .envelope-backdrop::after { background: linear-gradient(#172e2877, #172e2844 15%, transparent 40% 70%, #172e28); }
+  .envelope-nature .envelope-backdrop :global(img) { object-position: center; }
   .envelope-viewport { position: relative; height: max(34rem, 100svh); overflow: clip; }
   [data-enhanced] .envelope-viewport { position: sticky; top: 0; }
   .envelope-backdrop { position: absolute; inset: 0; z-index: -1; pointer-events: none; }

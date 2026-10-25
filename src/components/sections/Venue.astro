@@ -3,6 +3,19 @@
 import { type Lang, content, loc, t, mapConfigured } from '../../lib/content';
 import Lantern from '../scene/Lantern.astro';
 import Icon from '../Icon.astro';
+import { getImage } from 'astro:assets';
+import mobileVenue from '../../assets/royal-heritage/venue-mobile-v1.png';
+import desktopVenue from '../../assets/royal-heritage/venue-desktop-v1.png';
+const sources = await Promise.all(['avif', 'webp'].map(async (format) => {
+  const variants = async (src: typeof mobileVenue, widths: number[]) =>
+    (await Promise.all(widths.map(async (width) => {
+      const image = await getImage({ src, width, format: format as 'avif' | 'webp', quality: format === 'avif' ? 55 : 76 });
+      return `${image.src} ${width}w`;
+    }))).join(', ');
+  return { type: `image/${format}`, mobile: await variants(mobileVenue, [480, 768, 1024]), desktop: await variants(desktopVenue, [1280, 1672]) };
+}));
+const fallback = await getImage({ src: mobileVenue, width: 768, format: 'webp', quality: 76 });
+const staticDesktop = await getImage({ src: desktopVenue, width: 1280, format: 'webp', quality: 76 });
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const hasMap = mapConfigured();
@@ -15,6 +28,19 @@ const hasMap = mapConfigured();
     <div class="v-lanterns">
       <Lantern cord={10} /><Lantern cord={46} /><Lantern cord={24} /><Lantern cord={60} /><Lantern cord={18} />
     </div>
+    <!-- SVG layers remain underneath for loading, image errors and static delivery. -->
+    <picture class="venue-poster" data-venue-poster>
+      {sources.map((source) => <>
+        <source media="(min-width: 768px) and (min-aspect-ratio: 1/1)" type={source.type} srcset={source.desktop} sizes="100vw" />
+        <source type={source.type} srcset={source.mobile} sizes="100vw" />
+      </>)}
+      <img src={fallback.src} width={mobileVenue.width} height={mobileVenue.height} alt="" loading="lazy" decoding="async" data-venue-image />
+    </picture>
+    <noscript>
+      <!-- A failed CSS background is transparent, unlike a native broken img box. -->
+      <div class="venue-static" style={`--static-mobile: url('${fallback.src}'); --static-desktop: url('${staticDesktop.src}')`}></div>
+    </noscript>
+    <div class="venue-shade"></div>
   </div>
 
   <div class="venue-card">
@@ -35,18 +61,37 @@ const hasMap = mapConfigured();
   </div>
 </section>
 
+<script>
+  const image = document.querySelector<HTMLImageElement>('[data-venue-image]');
+  const update = () => image?.closest('picture')?.toggleAttribute('data-art-failed', image.complete && image.naturalWidth === 0);
+  image?.addEventListener('error', () => image.closest('picture')?.setAttribute('data-art-failed', ''));
+  image?.addEventListener('load', update);
+  if (image?.complete) update();
+</script>
+
 <style>
   .venue {
     position: relative;
     display: grid;
-    background: var(--color-midnight);
+    background: #21140f;
   }
   .venue-art {
     position: relative;
-    height: clamp(300px, 62vw, 560px);
+    aspect-ratio: 2 / 3;
     overflow: hidden;
   }
   .venue-art > * { position: absolute; }
+  .venue-art > noscript { inset: 0; }
+  .venue-poster { inset: 0; z-index: 1; }
+  .venue-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .venue-poster[data-art-failed] { display: none; }
+  .venue-static { position: absolute; inset: 0; z-index: 1; background: var(--static-mobile) center / cover no-repeat; }
+  @media (scripting: none) { .venue-poster { display: none; } }
+  .venue-shade { inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(#21140f33, transparent 12% 83%, #21140f); }
+  @media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+    .venue-art { aspect-ratio: 1672 / 941; }
+    .venue-static { background-image: var(--static-desktop); }
+  }
   .v-sky {
     inset: 0;
     background:
@@ -89,14 +134,15 @@ const hasMap = mapConfigured();
 
   .venue-card {
     position: relative;
+    z-index: 3;
     display: grid;
     justify-items: center;
     gap: var(--space-3);
     width: min(100% - 2 * var(--gutter), 34rem);
-    margin: calc(var(--space-7) * -1) auto var(--space-8);
-    padding: var(--space-7) var(--space-6) var(--space-6);
+    margin: -1.5rem auto var(--space-8);
+    padding: var(--space-7) clamp(1rem, 5vw, 2.5rem) var(--space-6);
     text-align: center;
-    background: linear-gradient(to bottom, rgb(37 39 68 / 0.92), rgb(23 23 44 / 0.96));
+    background: linear-gradient(145deg, #4b1020, #291618 65%, #21140f);
     border: 1px solid var(--color-line-gold);
     border-radius: 2px;
     box-shadow: 0 20px 50px rgb(0 0 0 / 0.4);
@@ -111,7 +157,7 @@ const hasMap = mapConfigured();
     width: 3.25rem;
     height: 3.25rem;
     border-radius: 50%;
-    background: var(--color-midnight);
+    background: #321b20;
     border: 1px solid var(--color-antique-gold);
     color: var(--color-gold-highlight);
   }

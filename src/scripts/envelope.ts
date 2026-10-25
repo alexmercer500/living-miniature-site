@@ -32,7 +32,7 @@ export async function setupEnvelope() {
     let footerTop = scene.querySelector<HTMLElement>('.envelope-footer')!.offsetTop;
     let layout = envelopeLayout(viewport.offsetHeight, rig.offsetHeight, cardHeight, 60);
     const measure = () => {
-      const header = document.querySelector<HTMLElement>('[data-header]');
+      const header = document.querySelector<HTMLElement>('[data-header], [data-nature-header]');
       cardHeight = card.offsetHeight;
       rigHeight = rig.offsetHeight;
       sealHeight = button.querySelector<HTMLElement>('.wax-seal')!.offsetHeight;

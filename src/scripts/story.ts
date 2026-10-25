@@ -268,7 +268,8 @@ async function story(pushSwing?: (v?: number) => void) {
   // Scene 6 — venue settles in.
   const venue = $('#venue');
   if (venue) {
-    gsap.fromTo($('.v-palace', venue), { scale: 1.08, transformOrigin: '50% 100%' }, { scale: 1, ease: 'none', scrollTrigger: { trigger: venue, start: 'top bottom', end: 'center center', scrub: 0.5 } });
+    const venuePoster = $('[data-venue-poster]', venue);
+    gsap.fromTo(venuePoster ?? $('.v-palace', venue), { scale: venuePoster ? 1.025 : 1.08, transformOrigin: '50% 65%' }, { scale: 1, ease: 'none', scrollTrigger: { trigger: venue, start: 'top bottom', end: 'center center', scrub: 0.5 } });
     gsap.from($('.venue-card', venue), { autoAlpha: 0, y: 40, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: $('.venue-card', venue), start: 'top 88%' } });
   }
 

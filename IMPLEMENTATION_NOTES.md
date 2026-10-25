@@ -1,5 +1,157 @@
 # Implementation Notes — Phase 1 Visual Reconstruction
 
+## Nature & Stories — independent second theme (2026-10-25)
+
+Latest revision supersedes the scroll-letter description below: the owner
+requested the first theme's envelope and animation instead. Nature now reuses
+`sections/Envelope.astro` with optional Nature variant, backdrop slot, section
+ID and destination links. Royal Heritage defaults remain unchanged. The Nature
+garden tabletop is retained, along with its responsive image/error fallbacks.
+The old Nature scroll markup, animation controller and paper/rod styles were
+removed. The shared envelope uses its established spring lift, glowing seal,
+hinged flap, slow card extraction and foreground presentation. Names are printed
+from the outset. Header measurement now supports either theme's header selector.
+Nature shortcuts hide while the envelope is in view, and Continue leads forward
+to Celebrations rather than back to Journey. Tests were updated for the envelope.
+
+Envelope revision verification: production build passes for all nine routes;
+20 Nature envelope phase checks and 6 Royal mobile regression checks pass.
+Nature mobile passes 7 scene/layout checks plus interaction/locale/invitation
+checks, and all 16 unit/static tests pass. Desktop, mobile and short Hindi
+screenshots were visually reviewed, including extraction and open-card layering.
+
+Owner explicitly authorized the full second theme, asset generation through
+implementation, without intermediate approvals. `nature-plan.md` records the
+plan, scope, files and test status. Royal Heritage and its existing routes,
+source artwork, scene components and shared content were preserved.
+
+New URLs: `/nature/`, `/hi/nature/`, `/nature/invitation/`, and
+`/hi/nature/invitation/`. Original home/invitation routes remain Royal Heritage.
+The only shared shell change is optional theme/canonical-path inputs in Base,
+whose defaults preserve the original rendering and metadata.
+
+Thirteen text-free artworks were generated using the built-in image tool from
+the RIGHT Nature & Stories / A Journey Together panels of the two supplied
+boards. Five paired environments (hero, symbolic journey, empty letter table,
+venue garden and closing terrace) plus three ceremony vignettes are stored in
+`src/assets/nature-stories/`, with exact prompts/provenance in its README.
+Visuals share flowering tree, Indian garden, peach sunset, river valley, brass
+lanterns, traditional textiles and dimensional cinematic treatment. Forbidden
+domed/Mughal/Moorish imagery was excluded. No board screenshot, personal photos,
+invented biography, real-venue likeness or fake 3D model is used.
+
+The isolated components/style/controller build an entire scene sequence:
+opening and lamp/petal interactions; scroll-following path and selectable
+illustrated keepsakes; CSS paper scroll with separately moving rods and ribbon;
+three event cards using existing content/calendar gating; venue/map gating;
+decorative hanging wishes and conditional RSVP/countdown; sunset closing.
+Letter interaction synchronizes scroll and keyboard/native click; automatic
+travel cancels on wheel/touch/navigation and remains reversible. Essential
+headings/names/details have no delayed text reveal. Natural document scrolling
+is retained, with one bounded sticky letter section. Reduced-motion/no-JS
+delivery renders a fully unfurled readable invitation. Script-only controls
+are disabled/hidden until available. No new dependencies or WebGL were added.
+
+Nature header has native no-JS menu, locale links that retain the scene,
+theme-comparison link, opt-in existing audio player and 44px controls. Floating
+shortcuts hide during the letter to avoid overlap. Nature printable invitation
+retains all family/host/date placeholders, event calendar behavior, conditional
+directions/download links, separate print styling and localized back links.
+No fake RSVP/wish submission is implemented; wishes are labelled decorative.
+
+Production images use Astro responsive AVIF/WebP and lazy loading below the
+eager hero; source PNGs are not production requests. Inline SVG landscape
+fallbacks remain behind each picture. No-JS CSS backgrounds fail transparently
+without broken-image glyphs. GSAP animation is theme-local, honors live motion
+preference, and cleans up timelines/listeners on page exit/hot disposal.
+
+Build: all nine routes pass. Static route/assets and existing envelope state
+tests pass. Browser coverage lives in `tests/nature-browser.mjs`, with ignored
+screenshots/results under `.astro/nature-qa/`. Desktop/mobile/Hindi scenes,
+letter states, decorative wishes, image failures and print layouts were visually
+inspected. `nature-plan.md` records the final expanded QA results.
+
+Limitations: content, venue/maps, wedding date and RSVP remain existing
+placeholders; live external workflows cannot be exercised until configured.
+Keepsakes are symbolic until approved personal photos are supplied. Swing and
+peacock remain illustrated scene details. Physical iOS/Android, audio hardware,
+real printer and network-throttled performance still need device review.
+Nothing was deployed and no dependency was installed.
+
+## Venue integration — 2026-10-25
+
+Owner approved the portrait entrance and requested implementation. Added a wide
+companion with the built-in image tool, referencing only the approved portrait.
+Both production source PNGs are in `src/assets/royal-heritage/venue-{mobile,desktop}-v1.png`.
+Exact prompts, provenance and visual inspection are in the candidate
+`VENUE_STUDY.md`. These depict an invented haveli, not an actual venue likeness.
+
+`Venue.astro` renders art-directed 2:3 portrait / 1672:941 wide AVIF/WebP sources,
+lazy loading and explicit dimensions. AVIF variants range about 69–225 KB.
+The source PNGs are not requested by production pages. Original SVG architecture,
+lanterns and reflection remain underneath as loading/error fallback; failed
+pictures hide when JavaScript is available. Without JavaScript, a noscript CSS
+background supplies the still artwork and fails transparently to the SVG,
+avoiding the native broken-image icon. The maroon HTML venue card overlaps only lower paving/shade,
+leaving the entrance clear. Names/address and map configuration are untouched.
+No new map URL or fake 3D tour was added.
+
+The only story-controller change points the existing venue settle animation
+at the picture when present, with restrained 2.5% scale and the same ScrollTrigger
+timing. The venue card entrance remains unchanged. No shared symbols, other
+scene source files, dependencies or deployment settings were changed this step.
+
+Verification: production build passes (five routes), six envelope state tests
+pass, and `git diff --check` passes. `tests/venue-browser.mjs` passes 12 cases:
+320/360/390/430/768/1024/1440px, portrait tablet, Hindi, reduced motion, no JS,
+and blocked venue images with/without JS. Checks include responsive source
+selection, semantic content, current map gating, no clipped copy/overflow,
+resolved SVG references, card re-entry after reverse scroll, and no runtime
+exceptions. Desktop/mobile/Hindi/tablet/no-JS fallback screenshots inspected
+under ignored `.astro/venue-qa/`.
+
+Limitations: real venue data and map URL remain placeholders; configured-map
+navigation was not exercised because no URL is configured. Physical-device
+Safari testing remains outstanding. Owner reviews the implemented Venue before
+work moves to Closing.
+
+## Celebrations integration — 2026-10-24
+
+The owner approved the haldi sample and authorized the matching evening and
+wedding-mandap art plus integration. Built-in image generation produced two
+companion sources using the approved haldi as reference; exact prompts and
+provenance are in `design-kit/assets/royal-heritage/candidates/CELEBRATIONS_STUDY.md`.
+Production sources are `src/assets/royal-heritage/celebrations-{haldi,evening,wedding}-v1.png`.
+
+`Celebrations.astro` maps existing visual keys to responsive 360/640/900px
+AVIF/WebP images, with lazy loading, explicit dimensions and empty decorative
+alt text. Unknown visual keys retain their existing SVG. All procedural art
+remains under the raster layer for loading/error fallbacks; failed pictures
+are hidden when JavaScript is available. No-JS blocked-image fallback was
+also visually verified. The native image error glyph does not obscure the SVG.
+
+Three stepped haveli frames sit in a desktop row and stack on phones. Event
+details remain semantic, localized HTML in warm maroon panels. Existing event
+records and calendar components/scripts are unchanged; placeholder dates still
+do not produce calendar controls. No ceremony dates or titles were invented.
+The existing GSAP event entrance and reduced-motion behavior remain intact.
+ArchFrame, Vignette, shared symbols, story controller and all other scene source
+files were left unchanged. No dependencies or 3D runtime were added.
+
+Validation: production build passes for five routes; `git diff --check` passes.
+`node tests/celebrations-browser.mjs` passes 33 event checks across 320, 360,
+390, 430, 768, 1024 and 1440px, Hindi, reduced motion, no JavaScript and actual
+blocked images with/without JavaScript. Checks cover loaded optimized artwork,
+preserved titles/descriptions/date placeholders, calendar gating, completed
+entrances, copy bounds, horizontal overflow, resolving SVG references and zero
+runtime exceptions. Desktop/mobile/Hindi/fallback screenshots were inspected
+in ignored `.astro/celebrations-qa/`. Six envelope state tests still pass.
+Physical-device Safari testing remains outstanding. Valid-date calendar download
+behavior was not re-exercised because the current data has no configured dates.
+
+Next: owner reviews the integrated Celebrations section. Venue and Closing are
+not part of this implementation and must await the next approval.
+
 ## Journey courtyard integration — 2026-10-24
 
 Owner-approved courtyard studies are now integrated in `Journey.astro`.

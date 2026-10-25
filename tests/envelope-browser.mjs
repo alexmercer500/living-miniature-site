@@ -37,7 +37,8 @@ const waitFor = async (expression, timeout = 14000) => {
   }
   throw new Error(`Timed out waiting for: ${expression}`);
 };
-const output = '.astro/envelope-qa';
+const nature = process.argv.includes('--nature');
+const output = nature ? '.astro/nature-envelope-qa' : '.astro/envelope-qa';
 await fs.mkdir(output, { recursive: true });
 await command('Runtime.enable');
 await command('Page.enable');
@@ -52,15 +53,21 @@ try {
     { name: 'reduced-hindi', width: 320, height: 568, path: '/hi/', reduced: true },
     { name: 'no-js-mobile', width: 390, height: 844, path: '/', noJs: true },
   ]) {
-    if (process.argv[2] && view.name !== process.argv[2]) continue;
+    if (process.argv[2] && process.argv[2] !== '--nature' && view.name !== process.argv[2]) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: false });
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: view.reduced ? 'reduce' : 'no-preference' }] });
     await command('Emulation.setScriptExecutionDisabled', { value: Boolean(view.noJs) });
-    await command('Page.navigate', { url: `http://127.0.0.1:4321${view.path}` });
+    const path = nature ? (view.path === '/hi/' ? '/hi/nature/' : '/nature/') : view.path;
+    await command('Page.navigate', { url: `http://127.0.0.1:4321${path}` });
     await settle();
     await evaluate('document.fonts.ready.then(() => true)');
     await settle();
     const fallback = view.reduced || view.noJs;
+    if (nature) {
+      assert.equal(await evaluate("document.querySelector('.ns-scroll-rig')"), null, 'Old scroll letter is removed');
+      assert.equal(await evaluate("document.querySelector('.card-link').getAttribute('href')"), `${path.replace(/\/$/, '')}/invitation`);
+      assert.equal(await evaluate("document.querySelector('.envelope-footer a:last-child').getAttribute('href')"), '#celebrations');
+    }
     assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), !fallback, 'Enhancement must respect static fallback');
     for (const [name, progress] of fallback ? [['static', 0]] : [['rest', 0], ['float', .25], ['paper', .62], ['settled', .9], ['open', 1], ['reverse', 0]]) {
       await evaluate(`(() => { const s=document.querySelector('[data-envelope]'); window.scrollTo({top:scrollY+s.getBoundingClientRect().top+${progress}*(s.offsetHeight-s.firstElementChild.offsetHeight),behavior:'instant'}); return true; })()`);

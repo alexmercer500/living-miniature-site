@@ -2,6 +2,16 @@
 
 ## Source of truth
 
+2026-10-25 update: owner authorized a complete, independent Nature & Stories
+second theme, including asset generation and implementation without approval
+pauses. Its execution record is `nature-plan.md`. Royal Heritage remains at
+the existing URLs; Nature is at `/nature/` and `/hi/nature/` with its own
+invitation routes. This change does not authorize replacing Royal Heritage.
+Nature implementation is complete and locally verified: nine production routes,
+91 Nature scene checks, 16 unit/static tests and six Royal envelope browser
+phases pass. See `nature-plan.md` for detailed coverage and remaining real-device
+and configured-service review items. No deployment was performed.
+
 This document is the execution plan for the existing Astro wedding website.
 We will follow it milestone by milestone and stop at every approval gate.
 
@@ -332,13 +342,38 @@ Refine the cinematic storytelling without sacrificing usability.
 
 ## Current status
 
-Active scene: Celebrations (Milestone 5, one scene at a time).
+Active scene: Venue (Milestone 5, one scene at a time).
+The owner requested the next phase after Celebrations. First portrait entrance
+candidate is saved at `design-kit/assets/royal-heritage/candidates/venue-mobile-v1.png`.
+See `VENUE_STUDY.md` beside it for provenance, exact prompt and integration plan.
+The owner approved implementation. Portrait and wide artwork are now integrated
+in Venue through responsive AVIF/WebP with the retained SVG fallback. The
+details card sits below the entrance; existing placeholders, bilingual labels,
+map gating and scroll-settle behavior are preserved. Production build and 12
+venue browser cases pass (seven widths, tablet portrait, Hindi, reduced motion,
+no-JS, blocked images, reverse scrolling, SVG references and console errors).
+Desktop/mobile/Hindi/static fallback screenshots were inspected. Six envelope
+state tests pass. Owner review of the integrated Venue is next; Closing remains
+outside this step and must not begin automatically.
+
+Completed Celebrations integration:
 The owner requested continuation after the integrated journey courtyard.
-First haldi-inspired visual candidate is saved at
+The owner approved the haldi direction and authorized companion artwork and
+integration. The first haldi-inspired visual candidate remains saved at
 `design-kit/assets/royal-heritage/candidates/celebrations-haldi-v1.png`.
 See `CELEBRATIONS_STUDY.md` beside it for the prompt and next steps.
-Awaiting visual approval before the remaining vignettes and integration;
-the live Celebrations section and event placeholders are unchanged.
+All three vignettes are now integrated: haldi-inspired courtyard, evening
+mehndi/sangeet setting, and wedding mandap with varmala. Existing event records,
+bilingual copy, date placeholders and calendar gating are unchanged. Responsive
+AVIF/WebP artwork overlays the retained procedural SVG fallbacks; shared
+ArchFrame/Vignette components and other scenes were not changed.
+
+Verification: production build (five routes), 33 event browser checks across
+seven widths plus reduced-motion/no-JS/blocked-image cases, six envelope state
+tests, and `git diff --check` pass. Desktop, mobile, Hindi and fallback screenshots
+were captured and visually inspected in `.astro/celebrations-qa/`.
+The owner requested continuation to Venue. Celebrations source and its verified
+behavior are preserved while the Venue visual is prepared.
 
 Completed journey integration:
 The owner approved the opening/envelope and requested the next part. Portrait

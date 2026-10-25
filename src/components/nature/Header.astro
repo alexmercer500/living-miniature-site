@@ -1,0 +1,37 @@
+---
+import Monogram from '../Monogram.astro';
+import Icon from '../Icon.astro';
+import { type Lang, t, href, content } from '../../lib/content';
+import { natureHref, natureCopy } from '../../lib/nature-content';
+interface Props { lang: Lang; invitation?: boolean }
+const { lang, invitation = false } = Astro.props;
+const c = natureCopy[lang];
+const path = invitation ? '/invitation' : '';
+---
+<header class="ns-header" data-nature-header>
+  <a class="ns-brand" href={natureHref(lang)} aria-label={c.theme}><Monogram /><span>{c.chapter}</span></a>
+  <div class="ns-header-actions">
+    <nav class="ns-locales" aria-label={t(lang, 'language')}>
+      <a href={natureHref('en', path)} lang="en" aria-current={lang === 'en' ? 'page' : undefined} data-nature-locale>EN</a>
+      <a href={natureHref('hi', path)} lang="hi" aria-current={lang === 'hi' ? 'page' : undefined} data-nature-locale>हिंदी</a>
+    </nav>
+    {!invitation && content.music.enabled && <button class="ns-icon-button" type="button" data-nature-sound data-src={content.music.src} aria-label={t(lang, 'musicOn')} data-on={t(lang, 'musicOff')} data-off={t(lang, 'musicOn')} aria-pressed="false" hidden><Icon name="sound" /></button>}
+    <details class="ns-menu">
+      <summary aria-label={t(lang, 'menu')}><Icon name="menu" /></summary>
+      <nav aria-label={t(lang, 'menu')}>
+        <a href={`${natureHref(lang)}#welcome`}>{c.welcome}</a>
+        <a href={`${natureHref(lang)}#journey`}>{c.story}</a>
+        <a href={`${natureHref(lang)}#invitation`}>{t(lang, 'invitation')}</a>
+        <a href={`${natureHref(lang)}#celebrations`}>{t(lang, 'celebrations')}</a>
+        <a href={`${natureHref(lang)}#venue`}>{t(lang, 'venue')}</a>
+        <a href={natureHref(lang, '/invitation')}>{t(lang, 'printInvitation')}</a>
+        <a href={href(lang)} class="ns-compare">{c.royal} ↗</a>
+      </nav>
+    </details>
+  </div>
+</header>
+<script>
+  document.querySelectorAll('.ns-menu a').forEach(link => link.addEventListener('click', () => link.closest('details')?.removeAttribute('open')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { const menu = document.querySelector<HTMLDetailsElement>('.ns-menu[open]'); menu?.removeAttribute('open'); menu?.querySelector('summary')?.focus(); } });
+  document.addEventListener('click', e => { if (e.target instanceof Node && !document.querySelector('.ns-menu')?.contains(e.target)) document.querySelector('.ns-menu')?.removeAttribute('open'); });
+</script>

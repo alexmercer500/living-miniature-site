@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from './Header.astro';
+import Art from './Art.astro';
+import Envelope from '../sections/Envelope.astro';
+import Icon from '../Icon.astro';
+import LotusMark from '../LotusMark.astro';
+import Monogram from '../Monogram.astro';
+import CalendarButton from '../CalendarButton.astro';
+import { type Lang, content, loc, t, formatDate, mapConfigured, rsvpConfigured, parseDate } from '../../lib/content';
+import { natureHref, natureCopy } from '../../lib/nature-content';
+import { landscapes, natureEvents, eventFallback } from '../../lib/nature-assets';
+import '../../styles/nature.css';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = natureCopy[lang];
+const keepsakes = [
+  { title: c.roots, body: c.rootsBody, image: landscapes.hero.mobile },
+  { title: c.paths, body: c.pathsBody, image: landscapes.journey.mobile },
+  { title: c.tomorrow, body: c.tomorrowBody, image: landscapes.closing.mobile },
+];
+const date = parseDate(content.site.weddingDate);
+const hasRsvp = rsvpConfigured();
+---
+<Base lang={lang} theme="nature" routePath="/nature" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
+  <Header lang={lang} />
+  <main id="main" class="ns-home" data-nature-root>
+    <section id="welcome" class="ns-hero ns-scene" aria-labelledby="nature-title">
+      <Art {...landscapes.hero} eager />
+      <div class="ns-hero-shade"></div>
+      <div class="ns-hero-copy">
+        <LotusMark class="ns-lotus" />
+        <p class="ns-kicker">{c.chapter}</p>
+        <h1 id="nature-title"><span>{c.heroOne}</span><em>{c.heroTwo}</em></h1>
+        <p class="ns-couple">{loc(content.couple.displayName, lang)}</p>
+        <div class="ornament"><span></span></div>
+        <p class="ns-date">{loc(content.site.weddingDateLabel, lang)}</p>
+      </div>
+      <button class="ns-lantern-touch" type="button" data-nature-lantern aria-label={c.light} aria-pressed="false" disabled><span></span></button>
+      <button class="ns-petal-touch" type="button" data-nature-petals aria-label={c.petals} disabled><span aria-hidden="true">✿</span></button>
+      <div class="ns-hero-foot">
+        <a href="#journey" class="ns-scroll"><span><Icon name="arrow-down" /></span>{t(lang, 'scrollToBegin')}</a>
+        <a href="#celebrations" class="ns-skip">{t(lang, 'jumpToDetails')} ↗</a>
+      </div>
+      <div class="ns-petals" aria-hidden="true">{Array.from({ length: 7 }, (_, i) => <i style={`--i:${i}`}></i>)}</div>
+    </section>
+
+    <section id="journey" class="ns-story" aria-labelledby="ns-story-title">
+      <div class="ns-story-landscape ns-scene">
+        <Art {...landscapes.journey} />
+        <div class="ns-story-shade"></div>
+        <header class="ns-story-copy"><p class="ns-kicker">01 / {c.story}</p><h2 id="ns-story-title">{c.storyTitle}</h2><p>{c.storyIntro}</p></header>
+        <svg class="ns-path" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true"><path d="M80 680C100 500 620 640 500 430S600 240 730 190" pathLength="1" /></svg>
+      </div>
+      <div class="ns-keepsakes">
+        {keepsakes.map((item, i) => <button type="button" class="ns-keepsake" style={`--tilt:${[-5, 3, -3][i]}deg`} aria-pressed={i === 0 ? 'true' : 'false'} data-keepsake disabled>
+          <span class="ns-photo"><Art mobile={item.image} /></span>
+          <span class="ns-keepsake-title">{item.title}</span><span class="ns-keepsake-body">{item.body}</span>
+        </button>)}
+      </div>
+      <p class="ns-keepsake-hint">{c.keepsakeHint}</p>
+    </section>
+
+    <Envelope lang={lang} id="invitation" variant="nature" invitationHref={natureHref(lang, '/invitation')} continueHref="#celebrations">
+      <Art slot="backdrop" {...landscapes.letter} />
+    </Envelope>
+
+    <section id="celebrations" class="ns-celebrations" aria-labelledby="ns-events-title">
+      <header class="ns-section-head"><p class="ns-kicker">03 / {t(lang, 'celebrations')}</p><h2 id="ns-events-title">{c.eventLine}</h2><div class="ornament"><span></span></div></header>
+      <ol class="ns-events">
+        {content.events.map((event, i) => <li class="ns-event" data-nature-event={event.id}>
+          <div class="ns-event-art"><Art mobile={natureEvents[event.visualKey] ?? eventFallback} /><span class="ns-event-number" aria-hidden="true">0{i + 1}</span></div>
+          <div class="ns-event-copy"><p class="ns-kicker">{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {event.time}</>}</p><h3>{loc(event.title, lang)}</h3><p>{loc(event.shortDescription, lang)}</p><CalendarButton lang={lang} event={event} tone="dark" /></div>
+        </li>)}
+      </ol>
+    </section>
+
+    <section id="venue" class="ns-venue" aria-labelledby="ns-venue-title">
+      <div class="ns-venue-landscape ns-scene"><Art {...landscapes.venue} /><div class="ns-venue-shade"></div><p class="ns-venue-caption">{c.venueLine}</p></div>
+      <div class="ns-venue-card">
+        <span class="ns-venue-pin"><Icon name="pin" /></span><p class="ns-kicker">04 / {t(lang, 'venueHeading')}</p>
+        <h2 id="ns-venue-title">{content.venue.name}</h2><address>{content.venue.address}</address>
+        {mapConfigured() && <div class="ns-actions"><a class="ns-button" href={content.venue.mapUrl} target="_blank" rel="noopener"><Icon name="pin" />{loc(content.venue.directionsLabel, lang)}</a><a class="ns-button ns-button-outline" href={content.venue.mapUrl} target="_blank" rel="noopener">{t(lang, 'viewMap')}</a></div>}
+      </div>
+    </section>
+
+    <section id="wishes" class="ns-wishes" aria-labelledby="ns-wishes-title">
+      <header class="ns-section-head"><LotusMark class="ns-lotus" /><p class="ns-kicker">05 / {c.chapter}</p><h2 id="ns-wishes-title">{c.wishes}</h2><p>{c.wishesBody}</p></header>
+      <div class="ns-wish-line" aria-label={c.decorative}>{[c.wishOne, c.wishTwo, c.wishThree].map((wish, i) => <div class="ns-wish" style={`--tilt:${[-5, 3, -2][i]}deg`}><span aria-hidden="true">♡</span><p>{wish}</p></div>)}</div>
+      {(date || hasRsvp) && <div id="rsvp" class="ns-rsvp">
+        <h3>{t(lang, 'countdownHeading')}</h3>
+        {date && <div class="ns-countdown" data-nature-countdown={date.toISOString()} role="timer" aria-live="off">{(['days','hours','minutes','seconds'] as const).map(unit => <div><strong data-nature-unit={unit}>–</strong><span>{t(lang, unit)}</span></div>)}</div>}
+        {hasRsvp && <a class="ns-button ns-button-light" href={content.rsvp.url} target="_blank" rel="noopener"><Icon name="heart" />{loc(content.rsvp.label, lang)}</a>}
+      </div>}
+    </section>
+
+    <section id="closing" class="ns-closing ns-scene" aria-labelledby="ns-closing-title">
+      <Art {...landscapes.closing} /><div class="ns-closing-shade"></div>
+      <div class="ns-closing-copy"><p class="ns-kicker">{t(lang, 'withLove')}</p><h2 id="ns-closing-title"><span>{c.closingOne}</span><em>{c.closingTwo}</em></h2><p>{loc(content.closing.line, lang)}</p><Monogram /><a class="ns-button" href={natureHref(lang, '/invitation')}>{loc(content.invitation.label, lang)}<Icon name="arrow-right" /></a></div>
+      <a class="ns-back" href="#welcome"><Icon name="up" />{t(lang, 'backToTop')}</a>
+    </section>
+  </main>
+  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{c.theme} · <a href={lang === 'hi' ? '/hi/' : '/'}>{c.royal} ↗</a></p></footer>
+  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={natureHref(lang, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
+  <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
+</Base>
+<script>
+  import { setupNature } from '../../scripts/nature';
+  import { setupEnvelope } from '../../scripts/envelope';
+  setupNature().catch(error => console.warn('Nature animation unavailable; static content remains readable.', error));
+  setupEnvelope().catch(error => console.warn('Envelope animation unavailable; static invitation remains readable.', error));
+</script>

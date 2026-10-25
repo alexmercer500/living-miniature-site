@@ -1,5 +1,35 @@
 # Royal Heritage scene materials
 
+## Venue artwork
+
+- `venue-mobile-v1.png`: owner-approved portrait entrance, copied from
+  `design-kit/assets/royal-heritage/candidates/venue-mobile-v1.png`.
+- `venue-desktop-v1.png`: wide companion generated using the portrait as the
+  reference with the built-in image tool. Exact prompts/provenance are in
+  `design-kit/assets/royal-heritage/candidates/VENUE_STUDY.md`.
+
+These are invented thematic haveli views, not a real venue likeness or 3D tour.
+`Venue.astro` outputs mobile 480/768/1024px and desktop 1280/1672px AVIF/WebP.
+AVIFs range approximately 69–225 KB; production does not request source PNGs.
+The existing SVG remains beneath the image for loading/static/error delivery.
+Venue names, addresses and navigation stay real HTML outside the artwork.
+
+## Celebrations artwork
+
+Production sources: `celebrations-haldi-v1.png`, `celebrations-evening-v1.png`,
+and `celebrations-wedding-v1.png` in this directory. The haldi source is copied
+from the owner-approved candidate; the two companions were created with the
+built-in image-generation tool using that candidate as their reference.
+These are text-free still artworks, not 3D models or screenshots of event UI.
+The exact prompts are recorded in
+`design-kit/assets/royal-heritage/candidates/CELEBRATIONS_STUDY.md`.
+
+`Celebrations.astro` imports them and generates 360/640/900px AVIF/WebP variants.
+AVIF outputs are approximately 39–179 KB each. No source PNG is requested by
+the production page. Existing visual keys map to the appropriate image, with
+unknown keys retaining the existing SVG. Each SVG remains behind the picture
+for loading/error fallbacks; all dates, titles and descriptions stay in HTML.
+
 Generated with the built-in image generation tool from owner-approved
 invitation reference artwork. These are raster materials, not GLB models.
 

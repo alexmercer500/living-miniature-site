@@ -4,6 +4,26 @@ import { type Lang, content, loc, t, formatDate } from '../../lib/content';
 import ArchFrame from '../scene/ArchFrame.astro';
 import Vignette from '../scene/Vignette.astro';
 import CalendarButton from '../CalendarButton.astro';
+import { getImage } from 'astro:assets';
+import haldi from '../../assets/royal-heritage/celebrations-haldi-v1.png';
+import evening from '../../assets/royal-heritage/celebrations-evening-v1.png';
+import wedding from '../../assets/royal-heritage/celebrations-wedding-v1.png';
+// Keyed by the existing content model, not list position. Unknown keys keep the SVG.
+const artwork = new Map([
+  ['floral-courtyard', haldi], ['haldi', haldi],
+  ['lantern-garden', evening], ['mehndi', evening], ['sangeet', evening],
+  ['mandap-courtyard', wedding], ['varmala', wedding],
+]);
+const posters = new Map(await Promise.all([...new Set(artwork.values())].map(async (src) => {
+  const sources = await Promise.all(['avif', 'webp'].map(async (format) => ({
+    type: `image/${format}`,
+    srcset: (await Promise.all([360, 640, 900].map(async (width) => {
+      const img = await getImage({ src, width, format: format as 'avif' | 'webp', quality: format === 'avif' ? 55 : 76 });
+      return `${img.src} ${width}w`;
+    }))).join(', '),
+  })));
+  return [src, { sources, fallback: await getImage({ src, width: 640, format: 'webp', quality: 76 }) }] as const;
+})));
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
@@ -14,10 +34,19 @@ const { lang } = Astro.props;
   </header>
 
   <ol class="events">
-    {content.events.map((e) => (
-      <li class="event">
+    {content.events.map((e) => {
+      const source = artwork.get(e.visualKey);
+      const poster = source && posters.get(source);
+      return <li class="event" data-event-id={e.id}>
         <ArchFrame class="window" tone="night">
-          <Vignette slot="art" visualKey={e.visualKey} />
+          <div slot="art" class="event-art" aria-hidden="true">
+            <Vignette visualKey={e.visualKey} />
+            {poster && <picture class="event-poster">
+              {poster.sources.map((s) => <source type={s.type} srcset={s.srcset} sizes="(min-width: 1200px) 360px, (min-width: 768px) 30vw, (min-width: 480px) 432px, 92vw" />)}
+              <img src={poster.fallback.src} width={source.width} height={source.height} alt="" loading="lazy" decoding="async" data-event-poster />
+            </picture>}
+            <div class="event-art-shade"></div>
+          </div>
         </ArchFrame>
         <div class="event-copy">
           <p class="event-date">{formatDate(e.date, lang, true) ?? t(lang, 'dateTbc')}{e.time && <> · {e.time}</>}</p>
@@ -25,16 +54,26 @@ const { lang } = Astro.props;
           <p class="event-desc">{loc(e.shortDescription, lang)}</p>
           <CalendarButton lang={lang} event={e} />
         </div>
-      </li>
-    ))}
+      </li>;
+    })}
   </ol>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('[data-event-poster]').forEach((image) => {
+    const update = () => image.closest('picture')?.toggleAttribute('data-art-failed', image.complete && image.naturalWidth === 0);
+    image.addEventListener('error', () => image.closest('picture')?.setAttribute('data-art-failed', ''));
+    image.addEventListener('load', update);
+    if (image.complete) update();
+  });
+</script>
 
 <style>
   .celebrations {
     padding: var(--space-9) var(--gutter) var(--space-8);
     background:
-      linear-gradient(to bottom, #17231D, var(--color-indigo) 35%, var(--color-midnight));
+      radial-gradient(ellipse at 50% 30%, #4b102055, transparent 70%),
+      linear-gradient(to bottom, #21140f, #2d1718 45%, #21140f);
   }
   .section-head {
     display: grid;
@@ -53,14 +92,25 @@ const { lang } = Astro.props;
     max-width: var(--content-wide);
     display: grid;
     gap: var(--space-7) var(--space-6);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    grid-template-columns: 1fr;
   }
-  .event { display: grid; justify-items: center; gap: var(--space-5); text-align: center; }
+  .event { display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: var(--space-4); width: min(100%, 27rem); margin-inline: auto; text-align: center; min-width: 0; }
   .event :global(.window) {
-    width: min(100%, 17rem);
-    aspect-ratio: 5 / 6;
+    width: 100%;
+    aspect-ratio: 4 / 5;
   }
-  .event-copy { display: grid; gap: var(--space-2); max-width: 20rem; }
+  .event-art { position: relative; width: 100%; height: 100%; }
+  .event-poster, .event-art-shade { position: absolute; inset: 0; }
+  .event-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .event-poster[data-art-failed] { display: none; }
+  .event-art-shade { pointer-events: none; background: linear-gradient(transparent 75%, #21140f88); }
+  .event-copy {
+    display: grid; align-content: start; gap: var(--space-2); width: 100%;
+    padding: clamp(1.2rem, 3vw, 1.8rem) clamp(.8rem, 2vw, 1.4rem);
+    border: 1px solid #b889454d; border-radius: .25rem;
+    background: linear-gradient(135deg, #4b102088, #21140f);
+    box-shadow: 0 12px 32px #12090733;
+  }
   .event-date {
     font-size: var(--fs-small);
     font-weight: 500;
@@ -71,6 +121,7 @@ const { lang } = Astro.props;
   :lang(hi) .event-date { letter-spacing: 0.02em; text-transform: none; font-size: var(--fs-body); }
   .event h3 { font-size: var(--fs-h3); }
   .event-desc { color: var(--color-text-light-muted); }
+  @media (min-width: 768px) { .events { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
   @media (prefers-reduced-motion: no-preference) {
     .event :global(.window) { transition: translate var(--dur-base) var(--ease-out); }
