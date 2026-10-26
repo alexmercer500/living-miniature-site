@@ -1,0 +1,27 @@
+---
+/**
+ * The guest's own blessing: written here, hung on the last garland tag on their own
+ * device (localStorage), and optionally sent to the couple on WhatsApp (scripts/blessing.ts).
+ */
+import Icon from '../Icon.astro';
+import { type Lang, content, loc, t } from '../../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<dialog id="ns-blessing" class="ns-sheet-dialog" aria-labelledby="ns-blessing-title">
+  <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={content.rsvp.whatsapp}
+    data-heading={`${t(lang, 'blessingTitle')} · ${loc(content.couple.displayName, lang)}`} data-from={t(lang, 'blessingFrom')}>
+    <button class="ns-sheet-close" type="button" data-sheet-close aria-label={t(lang, 'close')}><Icon name="close" /></button>
+    <header class="ns-sheet-head">
+      <h2 id="ns-blessing-title">{t(lang, 'blessingTitle')}</h2>
+    </header>
+    <label class="ns-field ns-blessing-text"><span class="visually-hidden">{t(lang, 'blessingTitle')}</span>
+      <textarea name="blessing" rows="3" maxlength="120" required placeholder={t(lang, 'blessingPlaceholder')}></textarea></label>
+    <label class="ns-field"><span>{t(lang, 'blessingFrom')}</span><input name="from" maxlength="60" autocomplete="name" /></label>
+    <div class="ns-sheet-actions">
+      <button class="ns-button" type="submit" value="hang"><Icon name="heart" />{t(lang, 'blessingHang')}</button>
+      <button class="ns-button ns-button-outline" type="submit" value="send"><Icon name="chat" />{t(lang, 'blessingSend')}</button>
+    </div>
+    <p class="ns-sheet-status" role="status" data-blessing-status data-saved={t(lang, 'blessingSaved')}></p>
+  </form>
+</dialog>

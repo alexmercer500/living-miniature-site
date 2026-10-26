@@ -19,6 +19,7 @@ Requires Node 22.23+.
 |---|---|
 | `/`, `/hi/` | Nature & Stories: the scroll journey (EN / HI) |
 | `/invitation`, `/hi/invitation` | Full printable invitation (family names, schedule, hosts) |
+| `/invite-links` | For you: make personal links (`/?to=Sharma Parivar`) that greet each family by name |
 | `/royal`, `/nature` (+ `/invitation`, `/hi/…`) | Old preview links; they forward to the pages above |
 
 ## Replacing placeholder data
@@ -26,7 +27,10 @@ Edit **only** `src/data/site-content.json`:
 - `couple.*` — names (the `displayName` must keep ` & ` / ` एवं ` between partners).
 - `site.weddingDate` — real `YYYY-MM-DD` turns on the countdown.
 - `venue.mapUrl` — an `https://` link turns on the map and directions.
-- `rsvp.enabled` + `rsvp.url` — turns on the RSVP button in the Wishes chapter.
+- `rsvp.whatsapp` — the number RSVPs and blessings are sent to (with country code). The RSVP form writes the WhatsApp message for the guest; `rsvp.deadline` adds "Kindly reply by…".
+- `contacts[]` — family contacts; Call / WhatsApp buttons appear once a real number is set.
+- `photos.albumUrl` — a shared album link adds "Share your photos" to the final note.
+- `venue.notes` — parking / entrance lines for the venue preview.
 - `events[]` — `date`, `time` (`HH:MM`), `title`, `shortDescription`, `visualKey` (`haldi`, `mehndi`, `sangeet`, `varmala`, …; see PROJECT_GUIDE §5). A real date also adds an *Add to calendar* button.
 - `music.enabled` — shows the header music button. `music.src` empty = music generated in the browser; or put an audio file in `public/` and set its path.
 - `invitation.placeholders.*` — replace with approved family / invocation / host text.

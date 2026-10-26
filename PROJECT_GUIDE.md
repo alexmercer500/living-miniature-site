@@ -57,6 +57,7 @@ To see the site on your phone over Wi-Fi: `npm run dev -- --host`, then open the
 | `/` | The cinematic journey, in English |
 | `/hi/` | The same journey, in Hindi |
 | `/invitation` · `/hi/invitation` | The full, printable invitation card (family names, schedule, venue, hosts) |
+| `/invite-links` | **For you only** (not linked, not indexed). Paste family names, get a personal link for each, ready to copy or send on WhatsApp. |
 | `/royal`, `/nature` (and their `/invitation`, `/hi/…` forms) | Old links from earlier theme previews. They forward to the pages above, keeping any `#section`. |
 
 The **EN | हिंदी** toggle switches routes and keeps your place (it carries the current section as `#hash`).
@@ -98,8 +99,14 @@ Every visible string has an `en` and `hi` version.
 | `couple.displayName` | Names as displayed. **Keep ` & ` (EN) and ` एवं ` (HI) between the two names**: the layout splits on them. | — |
 | `couple.tagline` | Line under the names on the invitation page | — |
 | `venue.name`, `venue.address` | Venue card | — |
-| `venue.mapUrl` | An `https://` map link | **View map / Get directions** |
-| `rsvp.enabled` + `rsvp.url` | `true` + an `https:`, `mailto:` or `tel:` link | **RSVP** button in the Wishes chapter |
+| `venue.mapUrl` | An `https://` map link (the venue is confirmed) | **View map**, plus **Get directions** built from the venue name and address |
+| `venue.notes` | Short lines (parking, entrance, landmark) per language | Shown in the **Explore venue** preview |
+| `rsvp.enabled` | `true` | **RSVP** button and form in the Wishes chapter. The form writes a WhatsApp message for the guest; nothing is stored. |
+| `rsvp.whatsapp` | The number replies go to, with country code (`919812345678`). Empty = WhatsApp asks the guest which chat to use. | — |
+| `rsvp.deadline` | `YYYY-MM-DD` | "Kindly reply by …" in the RSVP form |
+| `rsvp.url` | Optional external form (Google Form etc.) | Replaces the WhatsApp form with a link to it |
+| `contacts[]` | `name`, `role` (EN/HI), `phone`, `whatsapp` | **Call / WhatsApp** buttons in the RSVP form and on the invitation page, once a real number is set |
+| `photos.albumUrl` | A shared album link (Google Photos, Drive) | **Share your photos** on the final note |
 | `invitation.downloadUrl` | Path/URL of a PDF or image card | **Download invitation** button |
 | `invitation.placeholders.*` | Invocation, blessings, family lines, hosts on the invitation page | — |
 | `events[]` | `id`, `date` (`YYYY-MM-DD`), `time` (`HH:MM`, optional), `title`, `shortDescription`, `visualKey`, `venueName` | **Add to calendar** per event with a real date |

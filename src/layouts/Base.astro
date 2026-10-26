@@ -17,7 +17,9 @@ import jost from '../../node_modules/@fontsource-variable/jost/files/jost-latin-
 import greatVibes from '../../node_modules/@fontsource/great-vibes/files/great-vibes-latin-400-normal.woff2?url';
 import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-normal.woff2?url';
 import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
+import { getImage } from 'astro:assets';
 import { type Lang, content, loc, t, href } from '../lib/content';
+import { landscapes } from '../lib/nature-assets';
 
 interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string }
 const { lang, page = 'home' } = Astro.props;
@@ -25,6 +27,8 @@ const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displa
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
 const path = Astro.props.routePath ?? (page === 'invitation' ? '/invitation' : '/');
 const canonical = new URL(href(lang, path), Astro.site);
+// Link preview (WhatsApp, Messages, social): the welcome painting at the 1.91:1 size they expect.
+const preview = await getImage({ src: landscapes.hero.desktop, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
 const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, greatVibes];
 ---
 <!doctype html>
@@ -44,7 +48,13 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={lang === 'hi' ? 'hi_IN' : 'en_IN'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(preview.src, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={loc(content.couple.displayName, lang)} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
   </head>
   <body>
     <a class="skip-link" href="#main">{t(lang, 'skipToContent')}</a>

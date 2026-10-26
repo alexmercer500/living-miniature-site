@@ -1,0 +1,98 @@
+---
+/**
+ * For the couple only (not linked anywhere, not indexed): paste family names, get one
+ * personal link per family, ready to copy or send on WhatsApp. Opening a link greets that
+ * family by name and fills it into the RSVP form. Links are built in the browser from
+ * this page's own address, so they are right on whatever domain the site is served from.
+ */
+import '@fontsource-variable/fraunces/soft.css';
+import '@fontsource-variable/jost/wght.css';
+import '../styles/global.css';
+import { content, loc } from '../lib/content';
+const couple = loc(content.couple.displayName, 'en');
+const defaults = {
+  en: `Dear {name}, with joy we invite you to celebrate with us. Your invitation: {link}`,
+  hi: `प्रिय {name}, हमारे विवाह उत्सव में आपको सादर आमंत्रित करते हैं। आपका निमंत्रण: {link}`,
+};
+---
+<!doctype html>
+<html lang="en" data-theme="nature">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Personal invitation links — {couple}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="links">
+      <header>
+        <h1>Personal invitation links</h1>
+        <p>One name per line (a person or a family, e.g. <em>Sharma Parivar</em>). Each link opens the invitation greeting them by name, with their name already filled in the RSVP. Nothing is stored or sent anywhere until you share a link yourself.</p>
+      </header>
+      <form data-links-form>
+        <label>Names<textarea name="names" rows="6" placeholder={'Sharma Parivar\nVerma Ji & Family\nAnanya'}></textarea></label>
+        <div class="row">
+          <label>Language<select name="lang"><option value="en">English</option><option value="hi">हिंदी</option></select></label>
+          <label class="grow"><span>WhatsApp message (<code>{'{name}'}</code> and <code>{'{link}'}</code> are filled in)</span><textarea name="message" rows="3" data-defaults={JSON.stringify(defaults)}>{defaults.en}</textarea></label>
+        </div>
+        <button type="submit">Make links</button>
+      </form>
+      <ol class="results" data-links-results aria-live="polite"></ol>
+    </main>
+    <script>
+      const form = document.querySelector<HTMLFormElement>('[data-links-form]')!;
+      const results = document.querySelector<HTMLOListElement>('[data-links-results]')!;
+      const lang = form.elements.namedItem('lang') as HTMLSelectElement;
+      const message = form.elements.namedItem('message') as HTMLTextAreaElement;
+      const defaults = JSON.parse(message.dataset.defaults ?? '{}') as Record<string, string>;
+      // Switching language swaps the message only if it has not been edited.
+      lang.addEventListener('change', () => {
+        if (Object.values(defaults).includes(message.value)) message.value = defaults[lang.value];
+      });
+      const button = (label: string) => Object.assign(document.createElement('button'), { type: 'button', textContent: label });
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const names = (form.elements.namedItem('names') as HTMLTextAreaElement).value.split('\n').map(n => n.trim()).filter(Boolean);
+        results.replaceChildren(...names.map(name => {
+          const url = new URL(lang.value === 'hi' ? '/hi/' : '/', location.origin);
+          url.searchParams.set('to', name);
+          const link = url.toString();
+          const text = message.value.replaceAll('{name}', name).replaceAll('{link}', link);
+          const item = document.createElement('li');
+          const title = Object.assign(document.createElement('strong'), { textContent: name });
+          const anchor = Object.assign(document.createElement('a'), { href: link, textContent: link, target: '_blank', rel: 'noopener' });
+          const copy = button('Copy link');
+          copy.addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied'; } catch { copy.textContent = 'Select and copy the link'; }
+            setTimeout(() => { copy.textContent = 'Copy link'; }, 1600);
+          });
+          const send = Object.assign(document.createElement('a'), { className: 'send', href: `https://wa.me/?text=${encodeURIComponent(text)}`, target: '_blank', rel: 'noopener', textContent: 'Send on WhatsApp' });
+          const actions = document.createElement('div');
+          actions.append(copy, send);
+          item.append(title, anchor, actions);
+          return item;
+        }));
+      });
+    </script>
+    <style>
+      body { background: #172e28; color: #fff6e9; }
+      .links { max-width: 46rem; margin: 0 auto; padding: 3rem 1rem 5rem; display: grid; gap: 1.5rem; }
+      h1 { font-size: clamp(2rem, 6vw, 3rem); color: #efd2a0; }
+      header p { margin-top: .6rem; color: #e7ddc9; }
+      form { display: grid; gap: 1rem; padding: 1.2rem; background: #fbf0dc; color: #334537; border-radius: 14px; }
+      label { display: grid; gap: .35rem; font-size: .85rem; font-weight: 500; }
+      .row { display: grid; grid-template-columns: auto 1fr; gap: 1rem; }
+      @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+      textarea, select { width: 100%; min-height: 46px; padding: .6rem .8rem; font: 400 1rem/1.4 var(--font-ui); color: #26372b; background: #fffaf0; border: 1px solid #c7a97a; border-radius: 10px; }
+      form > button { min-height: 48px; border: 0; border-radius: 40px; background: #425d43; color: #fff5e5; font: 600 .95rem var(--font-ui); cursor: pointer; }
+      .results { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
+      .results li { display: grid; gap: .4rem; padding: 1rem; border: 1px solid #efd2a055; border-radius: 12px; background: #213b32; }
+      .results strong { font: 450 1.3rem var(--font-display); color: #efd2a0; }
+      .results a:not(.send) { overflow-wrap: anywhere; font-size: .85rem; color: #e7ddc9; }
+      .results div { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .results button, .results .send { display: inline-flex; align-items: center; min-height: 44px; padding: .4rem 1rem; border: 1px solid #efd2a0; border-radius: 30px; background: transparent; color: #fff6e9; font: 500 .85rem var(--font-ui); text-decoration: none; cursor: pointer; }
+      .results .send { background: #efd2a0; color: #213b32; }
+    </style>
+  </body>
+</html>

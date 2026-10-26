@@ -2,7 +2,7 @@
 import Art from './Art.astro';
 import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
-import { type Lang, content, loc, t } from '../../lib/content';
+import { type Lang, content, loc, t, photosConfigured } from '../../lib/content';
 import { natureCopy, natureHref } from '../../lib/nature-content';
 import { landscapes } from '../../lib/nature-assets';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
@@ -15,7 +15,7 @@ const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality
   <Art {...landscapes.closing} /><div class="ns-closing-shade" aria-hidden="true"></div>
   <header class="ns-note-head">
     <span class="ns-note-index" aria-hidden="true">06</span>
-    <div><p class="ns-kicker">{c.chapter}</p><h2 id="ns-closing-title">{c.finalNote}</h2><p>{c.finalNoteIntro}</p></div>
+    <div><p class="ns-kicker">{c.noteKicker}</p><h2 id="ns-closing-title">{c.finalNote}</h2><p>{c.finalNoteIntro}</p></div>
   </header>
   <div class="ns-note-stage">
     <div class="ns-note-arrival" data-note-arrival>
@@ -50,6 +50,7 @@ const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality
     </div>
     <nav class="ns-note-actions" aria-label={c.finalNote}>
       <a class="ns-button" href={natureHref(lang,'/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
+      {photosConfigured() && <a class="ns-button ns-button-light" href={content.photos.albumUrl} target="_blank" rel="noopener"><Icon name="camera" />{t(lang,'sharePhotos')}</a>}
       <a class="ns-note-back" href="#welcome"><Icon name="up" />{t(lang,'backToTop')}</a>
     </nav>
   </div>

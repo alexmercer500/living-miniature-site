@@ -7,6 +7,19 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Guest features without a backend (2026-10-26, `development`). The site stays fully
+static and stores no guest data. RSVP: a parchment form (attending, name, guests,
+events, note) composes a WhatsApp message to `rsvp.whatsapp` (`rsvp.ts`); the draft
+stays in localStorage. Blessings: the last garland tag opens a form; the blessing
+hangs on that device only and can be sent on WhatsApp (`blessing.ts`). Personal links:
+`?to=` is read by an inline script before paint (text only, control characters and
+`<>{}` stripped, 48 chars), remembered on the device, and greets on the veil, the hero
+and the RSVP name. `/invite-links` (noindex, unlinked) makes those links. Also: Call /
+WhatsApp contacts, a directions link built from the venue address (distinct from the
+map link), venue notes, a photo-album button, per-section labels, formatted event
+times, a "Today" badge, a warmer lantern, a 1200×630 link-preview image, and the
+internal theme name removed from titles and footer.
+
 Typography (2026-10-26, `development`). Fraunces (soft axis) headings, Jost text and
 spaced capitals, Great Vibes script for the large romantic accents only; Hindi keeps
 Tiro Devanagari / Mukta through the font fallbacks. Legibility: dark hero copy over a

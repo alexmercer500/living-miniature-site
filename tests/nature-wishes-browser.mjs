@@ -36,14 +36,14 @@ try {
     const layout=await evaluate(`(()=>{const s=document.getElementById('wishes'),h=s.querySelector('header').getBoundingClientRect();return {
       height:s.getBoundingClientRect().height,top:s.getBoundingClientRect().top,width:document.documentElement.scrollWidth,headingTop:h.top,
       tags:[...s.querySelectorAll('[data-wish-tag]')].map(e=>{const r=e.getBoundingClientRect(),m=e.querySelector('.ns-wish-message').getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,text:e.textContent.trim(),disabled:e.disabled,messageInside:m.top>=r.top+24&&m.bottom<=r.bottom-7,opacity:getComputedStyle(e.closest('[data-wish-arrival]')).opacity};}),
-      demo:s.querySelector('#ns-wishes-demo').textContent,demoBottom:s.querySelector('#ns-wishes-demo').getBoundingClientRect().bottom,
+      demo:s.querySelector('#ns-wishes-hint').textContent,demoBottom:s.querySelector('#ns-wishes-hint').getBoundingClientRect().bottom,
       wind:[...s.querySelectorAll('.ns-wish-wind')].map(e=>({name:getComputedStyle(e).animationName,duration:getComputedStyle(e).animationDuration,state:getComputedStyle(e).animationPlayState,rotate:getComputedStyle(e).rotate})),
-      forms:s.querySelectorAll('form').length,rsvp:!!s.querySelector('#rsvp'),ready:s.querySelector('img').naturalWidth>0,
+      forms:[...s.querySelectorAll('form')].filter(f=>f.hasAttribute('action')).length,rsvp:!!s.querySelector('#rsvp'),rsvpBottom:s.querySelector('#rsvp')?.getBoundingClientRect().bottom??0,ready:s.querySelector('img').naturalWidth>0,
       cols:getComputedStyle(s.querySelector('.ns-wish-garland')).gridTemplateColumns.split(' ').length,overflow:getComputedStyle(s).overflowY
     };})()`);
     await shot(`${view.name}-settled`);
     assert.equal(layout.height,view.height);assert.ok(Math.abs(layout.top)<2);assert.ok(layout.width<=view.width);assert.ok(layout.headingTop>=64);assert.equal(layout.overflow,'clip');assert.equal(layout.tags.length,6);
-    assert.equal(layout.cols,view.width<768||(view.width<=1024&&view.width<=view.height)?3:6);assert.equal(layout.forms,0);assert.equal(layout.rsvp,false);assert.ok(layout.demo);assert.ok(layout.demoBottom<view.height-65);
+    assert.equal(layout.cols,view.width<768||(view.width<=1024&&view.width<=view.height)?3:6);assert.equal(layout.forms,0,'No form submits anywhere');assert.equal(layout.rsvp,true);assert.ok(layout.rsvpBottom<=view.height-65,'RSVP clears the dock');assert.ok(layout.demo);assert.ok(layout.demoBottom<view.height-65);
     for(const tag of layout.tags){assert.equal(tag.opacity,'1');assert.equal(tag.disabled,Boolean(view.noJs));assert.ok(tag.height>=44&&tag.top>=64&&tag.bottom<=view.height-65,`${view.name}: tag vertical bounds ${JSON.stringify(tag)}`);assert.ok(tag.left>=0&&tag.right<=view.width,`${view.name}: tag horizontal bounds ${JSON.stringify(tag)}`);assert.ok(tag.messageInside,`${view.name}: message fits tag ${tag.text}`);}
     if(!view.noJs&&!view.failed)assert.ok(layout.ready);
     if(view.noJs||view.reduced)assert.ok(layout.wind.every(w=>w.name==='none'));
@@ -53,11 +53,11 @@ try {
     // Layout-only fixture: future configured countdown/RSVP must also fit.
     // Never changes content files or sends guest data anywhere.
     if(view.name==='mobile'||view.name==='short-hindi'||view.name==='landscape') {
-      const details=await evaluate(`(()=>{const s=document.getElementById('wishes'),f=s.querySelector('footer'),e=document.createElement('div');s.classList.add('ns-wishes-with-details');e.className='ns-rsvp';e.dataset.qaDetails='';e.innerHTML='<div class="ns-countdown">'+['Days','Hours','Minutes','Seconds'].map(u=>'<div><strong>24</strong><span>'+u+'</span></div>').join('')+'</div><a class="ns-button ns-button-light" href="#wishes">RSVP</a>';f.append(e);const tags=[...s.querySelectorAll('[data-wish-tag]')].map(t=>{const r=t.getBoundingClientRect(),m=t.querySelector('.ns-wish-message').getBoundingClientRect();return {top:r.top,bottom:r.bottom,message:m.bottom<=r.bottom-5};}),b=e.getBoundingClientRect();return {tags,top:b.top,bottom:b.bottom};})()`);
+      const details=await evaluate(`(()=>{const s=document.getElementById('wishes'),e=s.querySelector('#rsvp'),c=document.createElement('div');c.className='ns-countdown';c.dataset.qaDetails='';c.innerHTML=['Days','Hours','Minutes','Seconds'].map(u=>'<div><strong>24</strong><span>'+u+'</span></div>').join('');e.prepend(c);const tags=[...s.querySelectorAll('[data-wish-tag]')].map(t=>{const r=t.getBoundingClientRect(),m=t.querySelector('.ns-wish-message').getBoundingClientRect();return {top:r.top,bottom:r.bottom,message:m.bottom<=r.bottom-5};}),b=e.getBoundingClientRect();return {tags,top:b.top,bottom:b.bottom};})()`);
       await shot(`${view.name}-configured-layout`);
       assert.ok(details.bottom<=view.height-65,`${view.name}: configured actions clear dock ${JSON.stringify(details)}`);
-      assert.ok(details.tags.every(t=>t.top>=64&&t.bottom<details.top&&t.message),`${view.name}: configured tags stay above footer ${JSON.stringify(details)}`);
-      await evaluate("document.querySelector('[data-qa-details]').remove();document.getElementById('wishes').classList.remove('ns-wishes-with-details');true");
+      assert.ok(details.tags.every(t=>t.top>=64&&(t.bottom<details.top||t.top>details.bottom)&&t.message),`${view.name}: configured tags never overlap the RSVP row ${JSON.stringify(details)}`);
+      await evaluate("document.querySelector('[data-qa-details]').remove();true");
     }
     await evaluate("document.querySelector('[data-wish-tag]').focus({preventScroll:true});true");
     await command('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,text:'\r'});await command('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await wait(120);

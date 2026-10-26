@@ -6,6 +6,8 @@ import { setupSceneTransitions } from './scene-transitions';
 import { scrollGlide } from './scroll-glide';
 import { setupInvitationMorph } from './invitation-morph';
 import { setupTiltParallax } from './tilt-parallax';
+import { setupRsvp } from './rsvp';
+import { setupBlessing } from './blessing';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -36,6 +38,16 @@ export async function setupNature() {
   cleanups.push(setupVenue(root, motion));
   cleanups.push(setupWishes(root, motion));
   cleanups.push(setupInvitationMorph(root));
+  cleanups.push(setupRsvp(root));
+  cleanups.push(setupBlessing(root));
+
+  // On a celebration's own day its card says "Today" (local date, so it is right in India).
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  all('[data-event-date]').forEach(card => {
+    const badge = card.querySelector<HTMLElement>('[data-event-today]');
+    if (badge) badge.hidden = card.dataset.eventDate !== today;
+  });
 
   document.querySelectorAll<HTMLAnchorElement>('[data-nature-locale]').forEach(link => {
     link.addEventListener('click', () => {

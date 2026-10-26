@@ -98,7 +98,7 @@ try {
     }
     const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-venue-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-signs a[target=\"_blank\"]').length,rsvp:!!document.getElementById('rsvp')})");
     assert.deepEqual(details.titles, data.events.map(e => e.title[view.lang])); assert.equal(details.address, data.venue.address);
-    assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, false);
+    assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, data.rsvp.enabled);
     if (view.reduced || view.noJs) assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), false);
     if (view.name === 'width-390' || view.name === 'width-1440') {
       await scroll('#welcome');

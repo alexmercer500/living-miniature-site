@@ -1,7 +1,7 @@
 ---
 import Monogram from '../Monogram.astro';
 import Icon from '../Icon.astro';
-import { type Lang, t, content } from '../../lib/content';
+import { type Lang, t, loc, content } from '../../lib/content';
 import { natureHref, natureCopy } from '../../lib/nature-content';
 interface Props { lang: Lang; invitation?: boolean }
 const { lang, invitation = false } = Astro.props;
@@ -9,7 +9,7 @@ const c = natureCopy[lang];
 const path = invitation ? '/invitation' : '';
 ---
 <header class="ns-header" data-nature-header>
-  <a class="ns-brand" href={natureHref(lang)} aria-label={c.theme}><Monogram /><span>{c.chapter}</span></a>
+  <a class="ns-brand" href={natureHref(lang)} aria-label={loc(content.couple.displayName, lang)}><Monogram /><span>{c.chapter}</span></a>
   <div class="ns-header-actions">
     <nav class="ns-locales" aria-label={t(lang, 'language')}>
       <a href={natureHref('en', path)} lang="en" aria-current={lang === 'en' ? 'page' : undefined} data-nature-locale>EN</a>

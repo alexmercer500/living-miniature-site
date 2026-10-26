@@ -8,8 +8,8 @@
  */
 import LotusMark from '../LotusMark.astro';
 import Monogram from '../Monogram.astro';
-interface Props { scene?: string; sceneWide?: string }
-const { scene, sceneWide } = Astro.props;
+interface Props { scene?: string; sceneWide?: string; greeting?: string }
+const { scene, sceneWide, greeting } = Astro.props;
 const style = [scene && `--veil-scene: ${scene}`, sceneWide && `--veil-scene-wide: ${sceneWide}`].filter(Boolean).join('; ') || undefined;
 // Fixed positions, sizes and timings, so every build and every visit looks the same.
 const motes = [[18, 72, 16, 7.5, 0, 14], [33, 86, 10, 6.2, .7, -10], [47, 64, 22, 8.4, .3, 8], [61, 80, 12, 6.8, 1.2, -16],
@@ -19,7 +19,8 @@ const motes = [[18, 72, 16, 7.5, 0, 14], [33, 86, 10, 6.2, .7, -10], [47, 64, 22
   <div class="ns-veil-scene"></div>
   <div class="ns-veil-motes">{motes.map(([x, y, size, duration, delay, dx]) =>
     <i style={`--x:${x}%;--y:${y}%;--s:${size}px;--d:${duration}s;--delay:${delay}s;--dx:${dx}px;--a:${size > 15 ? .6 : .9}`}></i>)}</div>
-  <div class="ns-veil-mark"><LotusMark class="ns-veil-lotus" /><Monogram /><span class="ns-veil-line"></span></div>
+  <div class="ns-veil-mark"><LotusMark class="ns-veil-lotus" /><Monogram /><span class="ns-veil-line"></span>
+    <p class="ns-veil-greeting" data-template={greeting} hidden></p><script is:inline>window.nsGreet?.(document.currentScript.previousElementSibling)</script></div>
 </div>
 <script is:inline>
   (() => {

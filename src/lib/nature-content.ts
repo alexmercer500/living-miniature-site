@@ -2,7 +2,7 @@ import { href, type Lang } from './content';
 export const natureHref = (lang: Lang, path = '') => href(lang, path || '/');
 export const natureCopy = {
   en: {
-    theme: 'Nature & Stories', chapter: 'A journey together', heroOne: 'Two paths.', heroTwo: 'One journey.',
+    chapter: 'A journey together', heroOne: 'Two paths.', heroTwo: 'One journey.',
     welcome: 'The beginning', story: 'Our journey', storyTitle: 'Every path leads us here.',
     storyIntro: 'Two families, countless blessings, and a beautiful new beginning.',
     keepsakeHint: 'Choose a keepsake to linger a little longer.',
@@ -19,15 +19,15 @@ export const natureCopy = {
     wishes: 'Love, light & good wishes', wishesBody: 'Your presence and blessings are the most beautiful part of our celebration.',
     wishOne: 'Love & laughter', wishTwo: 'A lifetime of joy', wishThree: 'New beginnings',
     wishesHeading: 'RSVP & Wishes', wishFour: 'Lots of love', wishFive: 'A beautiful journey', wishSix: 'Forever together',
-    wishTouch: 'Gently sway this blessing', wishHint: 'A little touch, a little flutter.',
-    decorative: 'Decorative wishes, not guest submissions.',
+    wishTouch: 'Gently sway this blessing', wishHint: 'Touch a blessing, or write your own on the last tag.',
+    celebrationsKicker: 'The festivities', venueKicker: 'Where we gather', wishesKicker: 'Until we meet', noteKicker: 'With gratitude',
     closingOne: 'Different paths.', closingTwo: 'A shared tomorrow.',
     finalNote: 'A Final Note', finalNoteIntro: 'A new chapter begins.',
     light: 'Warm the lantern', petals: 'Scatter a few petals',
     opened: 'The invitation is open.', closed: 'The invitation is rolled closed.',
   },
   hi: {
-    theme: 'प्रकृति और कहानियाँ', chapter: 'साथ का एक सफ़र', heroOne: 'दो राहें।', heroTwo: 'एक सफ़र।',
+    chapter: 'साथ का एक सफ़र', heroOne: 'दो राहें।', heroTwo: 'एक सफ़र।',
     welcome: 'शुभ शुरुआत', story: 'हमारा सफ़र', storyTitle: 'हर राह हमें यहाँ लाती है।',
     storyIntro: 'दो परिवार, अनगिनत आशीर्वाद और एक सुंदर नई शुरुआत।',
     keepsakeHint: 'किसी याद को चुनें और कुछ पल ठहरें।',
@@ -44,8 +44,8 @@ export const natureCopy = {
     wishes: 'प्रेम, उजाला और शुभकामनाएँ', wishesBody: 'आपकी उपस्थिति और आशीर्वाद हमारे उत्सव का सबसे सुंदर हिस्सा हैं।',
     wishOne: 'प्रेम और मुस्कान', wishTwo: 'जीवन भर खुशियाँ', wishThree: 'नई शुरुआत',
     wishesHeading: 'उपस्थिति और शुभकामनाएँ', wishFour: 'ढेर सारा प्यार', wishFive: 'सुंदर सफ़र', wishSix: 'सदा साथ',
-    wishTouch: 'इस शुभकामना को हल्के से झुलाएँ', wishHint: 'हल्का सा स्पर्श, प्यार की हलचल।',
-    decorative: 'ये सजावटी शुभकामनाएँ हैं, अतिथियों के संदेश नहीं।',
+    wishTouch: 'इस शुभकामना को हल्के से झुलाएँ', wishHint: 'किसी शुभकामना को छुएँ, या आख़िरी टैग पर अपनी लिखें।',
+    celebrationsKicker: 'उत्सव के पल', venueKicker: 'जहाँ हम मिलेंगे', wishesKicker: 'मिलने तक', noteKicker: 'आभार सहित',
     closingOne: 'अलग राहें।', closingTwo: 'साझा कल।',
     finalNote: 'स्नेह का संदेश', finalNoteIntro: 'एक नए अध्याय की शुरुआत।',
     light: 'दीप का उजाला बढ़ाएँ', petals: 'कुछ पंखुड़ियाँ बिखेरें',

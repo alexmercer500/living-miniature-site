@@ -32,16 +32,59 @@
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
+    },
+    "notes": {
+      "en": [
+        "[Parking details to be added]",
+        "[Entrance and landmark to be added]"
+      ],
+      "hi": [
+        "[पार्किंग की जानकारी जोड़ी जाएगी]",
+        "[प्रवेश द्वार और पहचान जोड़ी जाएगी]"
+      ]
     }
   },
   "rsvp": {
-    "enabled": false,
+    "enabled": true,
+    "whatsapp": "",
     "url": "",
     "deadline": "",
     "label": {
       "en": "RSVP",
       "hi": "अपनी उपस्थिति बताएं"
+    },
+    "_note": "whatsapp: the number replies go to, with country code (e.g. 919812345678). Empty = WhatsApp asks the guest which chat to send to. url: optional external form (Google Form etc.) used instead of the WhatsApp form."
+  },
+  "contacts": [
+    {
+      "name": {
+        "en": "Family contact one",
+        "hi": "परिवार संपर्क एक"
+      },
+      "role": {
+        "en": "For travel and stay",
+        "hi": "यात्रा और ठहरने के लिए"
+      },
+      "phone": "",
+      "whatsapp": ""
+    },
+    {
+      "name": {
+        "en": "Family contact two",
+        "hi": "परिवार संपर्क दो"
+      },
+      "role": {
+        "en": "For the celebrations",
+        "hi": "समारोहों के लिए"
+      },
+      "phone": "",
+      "whatsapp": ""
     }
+  ],
+  "contacts_note": "Each contact shows Call / WhatsApp buttons once phone or whatsapp has a real number (with country code).",
+  "photos": {
+    "albumUrl": "",
+    "_note": "A shared album link (Google Photos, Drive…). Shows a 'Share your photos' button on the final note once set."
   },
   "invitation": {
     "route": "/invitation",
@@ -156,7 +199,35 @@
       "continueJourney": "Continue the journey",
       "addToCalendar": "Add to calendar",
       "musicOn": "Play music",
-      "musicOff": "Mute music"
+      "musicOff": "Mute music",
+      "rsvpTitle": "Will you join us?",
+      "rsvpIntro": "Reply on WhatsApp. We've written the message for you; just press send.",
+      "rsvpBy": "Kindly reply by {date}",
+      "rsvpYes": "Joyfully attending",
+      "rsvpNo": "Can't make it",
+      "rsvpName": "Your name or family",
+      "rsvpGuests": "Guests",
+      "rsvpFewer": "One guest fewer",
+      "rsvpMore": "One guest more",
+      "rsvpEvents": "Joining us for",
+      "rsvpNote": "A note for the couple (optional)",
+      "rsvpSend": "Send on WhatsApp",
+      "rsvpSent": "WhatsApp is open with your reply. Just press send. Thank you!",
+      "rsvpMessageNote": "Note",
+      "contactsTitle": "Prefer to talk?",
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "blessingWrite": "Write your blessing",
+      "blessingTitle": "Your blessing",
+      "blessingPlaceholder": "May your journey together be…",
+      "blessingFrom": "From",
+      "blessingHang": "Hang it on the garland",
+      "blessingSend": "Send it to the couple",
+      "blessingSaved": "Your blessing hangs on the garland on this device.",
+      "guestGreeting": "Dear {name},",
+      "sharePhotos": "Share your photos",
+      "today": "Today",
+      "weddingInvitation": "Wedding Invitation"
     },
     "hi": {
       "scrollToBegin": "आगे बढ़ने के लिए स्क्रॉल करें",
@@ -193,7 +264,35 @@
       "continueJourney": "आगे बढ़ें",
       "addToCalendar": "कैलेंडर में जोड़ें",
       "musicOn": "संगीत चलाएँ",
-      "musicOff": "संगीत बंद करें"
+      "musicOff": "संगीत बंद करें",
+      "rsvpTitle": "क्या आप हमारे साथ होंगे?",
+      "rsvpIntro": "व्हाट्सऐप पर बताइए। संदेश हमने लिख दिया है, बस भेज दीजिए।",
+      "rsvpBy": "कृपया {date} तक बताएं",
+      "rsvpYes": "ज़रूर आएंगे",
+      "rsvpNo": "नहीं आ पाएंगे",
+      "rsvpName": "आपका या परिवार का नाम",
+      "rsvpGuests": "अतिथि",
+      "rsvpFewer": "एक अतिथि कम",
+      "rsvpMore": "एक अतिथि और",
+      "rsvpEvents": "किन समारोहों में",
+      "rsvpNote": "दंपति के लिए संदेश (वैकल्पिक)",
+      "rsvpSend": "व्हाट्सऐप पर भेजें",
+      "rsvpSent": "व्हाट्सऐप में आपका संदेश तैयार है, बस भेज दीजिए। धन्यवाद!",
+      "rsvpMessageNote": "संदेश",
+      "contactsTitle": "बात करना चाहें?",
+      "call": "कॉल करें",
+      "whatsapp": "व्हाट्सऐप",
+      "blessingWrite": "अपनी शुभकामना लिखें",
+      "blessingTitle": "आपकी शुभकामना",
+      "blessingPlaceholder": "आपका साथ सदा…",
+      "blessingFrom": "शुभेच्छु",
+      "blessingHang": "माला पर टांगें",
+      "blessingSend": "दंपति को भेजें",
+      "blessingSaved": "आपकी शुभकामना इस डिवाइस पर माला में टंग गई है।",
+      "guestGreeting": "प्रिय {name},",
+      "sharePhotos": "अपनी तस्वीरें साझा करें",
+      "today": "आज",
+      "weddingInvitation": "विवाह निमंत्रण"
     }
   },
   "music": {

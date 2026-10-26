@@ -72,18 +72,36 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
   }
 });
 
-test('Nature wishes are six decorative blessings, with no fake submission service', () => {
+test('Nature wishes: six blessings (one the guest writes), RSVP by WhatsApp, nothing sent to a server', () => {
   for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="wishes"[\s\S]*?<\/section>/)?.[0];
     assert.ok(scene);
     assert.equal([...scene.matchAll(/data-wish-tag(?=[\s=>])/g)].length,6);
     assert.equal([...scene.matchAll(/data-wish-arrival(?=[\s=>])/g)].length,6);
-    assert.ok(scene.includes('aria-describedby="ns-wishes-demo"'));
-    assert.ok(!scene.includes('<form')&&!scene.includes('id="rsvp"'));
-    assert.ok(scene.includes(route.startsWith('/hi/')?'अतिथियों के संदेश नहीं':'not guest submissions'));
+    assert.equal([...scene.matchAll(/data-wish-own(?=[\s=>])/g)].length,1,'Exactly one writable tag');
+    assert.ok(scene.includes('aria-describedby="ns-wishes-hint"')&&scene.includes('id="ns-wishes-hint"'));
+    assert.ok(!scene.includes('not guest submissions')&&!scene.includes('अतिथियों के संदेश नहीं'),'No disclaimer');
+    assert.ok(!/<form[^>]*\saction=/.test(scene),'No form posts anywhere');
+    assert.ok(scene.includes('data-rsvp-open')&&scene.includes('href="https://wa.me/'),'RSVP falls back to a WhatsApp link');
+    assert.ok(scene.includes('id="ns-rsvp"')&&scene.includes('id="ns-blessing"'));
     assert.ok(scene.includes('wishes-mobile-v1.')&&scene.includes('wishes-desktop-v1.'));
   }
+});
+
+test('personal links, contacts, directions and link previews', () => {
+  const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
+  for(const route of ['/','/hi/']) {
+    const html=fs.readFileSync(`dist${route}index.html`,'utf8');
+    assert.ok(html.includes("get('to')")&&html.includes('class="ns-greeting"'),'Greeting reads ?to= before paint');
+    assert.match(html,/property="og:image" content="https:\/\/[^"]+\.jpg"/);
+    assert.ok(!html.includes('Nature &amp; Stories')&&!html.includes('प्रकृति और कहानियाँ'),'Internal theme name never shown to guests');
+    if(!data.contacts.some(c=>/\d{8}/.test(c.phone+c.whatsapp))) assert.ok(!html.includes('ns-contacts"'),'Placeholder contacts stay hidden');
+    if(/^https?:/.test(data.venue.mapUrl)) assert.ok(html.includes('google.com/maps/dir/'),'Directions differ from the map link');
+  }
+  const links=fs.readFileSync('dist/invite-links/index.html','utf8');
+  assert.ok(links.includes('noindex'));
+  for(const route of ['/','/hi/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
 });
 
 test('Nature final note retains its landscape, real names, message and locale links', () => {
