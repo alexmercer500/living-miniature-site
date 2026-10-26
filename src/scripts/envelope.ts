@@ -1,5 +1,6 @@
 import { envelopeLayout, envelopeState, envelopeTimings, envelopeScrollProgress } from '../lib/envelope-state';
 import { styleWriter } from './style-writer';
+import { sealHaptic } from './haptics';
 
 export async function setupEnvelope() {
   const scene = document.querySelector<HTMLElement>('[data-envelope]');
@@ -27,6 +28,7 @@ export async function setupEnvelope() {
     const writer = styleWriter();
     const set = (key: string, value: string | number) => writer.set(scene, `--${key}`, value);
     let lastUsable: boolean | undefined;
+    let lastSeal: number | undefined;
     let cardHeight = card.offsetHeight;
     let rigHeight = rig.offsetHeight;
     let sealHeight = button.querySelector<HTMLElement>('.wax-seal')!.offsetHeight;
@@ -42,6 +44,9 @@ export async function setupEnvelope() {
     };
     const render = () => {
       const state = envelopeState(nature ? envelopeScrollProgress(driver.progress) : driver.progress);
+      // The wax seal cracks: a short haptic, only while opening (never on the way back).
+      if (lastSeal !== undefined && lastSeal < .5 && state.seal >= .5) sealHaptic();
+      lastSeal = state.seal;
       const focusedCard = card.contains(document.activeElement);
       const pose = focusedCard ? envelopeState(1) : state;
       const floatingCenter = layout.restCenter + (layout.floatCenter - layout.restCenter) * pose.liftSpring;
