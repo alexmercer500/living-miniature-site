@@ -1,4 +1,5 @@
 import { heroJourneyState } from './hero-journey-state.ts';
+import { scenePhase } from './scene-transition-state.ts';
 
 // [lane (% of width), start below/above the edge (screens), extra lift, sway (% width), sway cycles, spin turns, phase]
 const PETALS:[number,number,number,number,number,number,number][]=[
@@ -26,7 +27,10 @@ export function flourishState(progress:number) {
       opacity:y<-.08||y>1.08?0:Math.min(1,glow*1.7),
     };
   });
+  // A warm band of light glides across the new scene while it settles.
+  const settle=scenePhase(s.progress,.5,.97);
   return {
+    sweep:{x:-75+150*settle,opacity:Math.sin(Math.PI*settle)*.9},
     petals,
     // The rim rides the wipe layer itself; it traces the edge's half-opacity contour.
     rim:{wipe:s.wipe,opacity:s.incoming===0||s.incoming===1?0:glow**.5*.95},

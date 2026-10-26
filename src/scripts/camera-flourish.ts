@@ -6,12 +6,15 @@ type Set = (el:HTMLElement|SVGElement|null|undefined,key:string,value:string|num
 /** Drives a bridge's CameraFlourish layers; transform/opacity only. */
 export function cameraFlourish(bridge:HTMLElement) {
   const rim=bridge.querySelector<HTMLElement>('.ns-flourish-rim');
+  const sweep=bridge.querySelector<HTMLElement>('.ns-flourish-sweep');
   const petals=[...bridge.querySelectorAll<HTMLElement>('.ns-flourish-petal')];
   // Camera-height unit, matching the bridge's own lvh height.
   const unit=CSS.supports('height','1lvh')?'lvh':'vh';
   return (progress:number,set:Set)=>{
     const f=flourishState(progress);
     set(rim,'transform',`translate3d(0,${round(f.rim.wipe)}%,0)`);set(rim,'opacity',f.rim.opacity);
+    set(sweep,'opacity',f.sweep.opacity);
+    if(f.sweep.opacity>0)set(sweep,'transform',`translate3d(${round(f.sweep.x)}%,0,0)`);
     petals.forEach((el,i)=>{
       const p=f.petals[i];
       if(!p)return;

@@ -105,7 +105,8 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
    outgoing art, incoming art, then decorations above. */
 :is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-outgoing,.ns-camera-outgoing) { z-index: 0; }
 :is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-incoming,.ns-camera-incoming) { z-index: 2; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-rim { z-index: 3; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-sweep { z-index: 3; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-rim { z-index: 4; }
 :is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-shade,.ns-camera-glow) { z-index: 4; }
 :is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-petal { z-index: 5; }
 :is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-bough,.ns-camera-bough) { z-index: 6; }
@@ -115,7 +116,9 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
 .ns-flourish-rim > i { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: xor; mask-composite: exclude; }
 .ns-flourish-rim > .line { -webkit-mask-image: var(--ns-rim-line),var(--ns-rim-line); mask-image: var(--ns-rim-line),var(--ns-rim-line); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .012); mask-position: 0 0,0 calc(var(--ns-canvas) * .012); background: linear-gradient(90deg,#f0a540,#ffd27a 22%,#fff0c4 50%,#ffd27a 78%,#f0a540); }
 .ns-flourish-rim > .halo { top: calc(var(--ns-canvas) * -.022); bottom: auto; height: 100%; opacity: .55; -webkit-mask-image: var(--ns-rim-halo),var(--ns-rim-halo); mask-image: var(--ns-rim-halo),var(--ns-rim-halo); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .05); mask-position: 0 0,0 calc(var(--ns-canvas) * .05); background: linear-gradient(90deg,#e58a2a,#ffbe5c 30%,#ffd98e 50%,#ffbe5c 70%,#e58a2a); }
-:is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) :is(.ns-flourish-rim,.ns-flourish-petal) { will-change: transform, opacity; }
+:is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) :is(.ns-flourish-rim,.ns-flourish-petal,.ns-flourish-sweep) { will-change: transform, opacity; }
+/* Late-sun sweep: one diagonal band of warm light, slid across while the new scene settles. */
+.ns-flourish-sweep { position: absolute; inset: 0 -10%; opacity: 0; pointer-events: none; background: linear-gradient(108deg,transparent 30%,#ffd9952e 40%,#ffe7b866 48%,#fff4d985 50%,#ffe7b866 52%,#ffd9952e 60%,transparent 70%),linear-gradient(108deg,transparent 56%,#ffe2a833 61%,transparent 66%); }
 /* Petals and candle sparks carried across the edge (positions from camera-flourish-state). */
 .ns-flourish-petal { position: absolute; top: 0; left: 0; width: var(--size); height: calc(var(--size) * 1.5); margin: calc(var(--size) * -.75) 0 0 calc(var(--size) * -.5); opacity: 0; pointer-events: none; }
 .ns-flourish-petal.petal { border-radius: 85% 12% 80% 15%; background: linear-gradient(135deg,#f9dcc4,#e08a8f 55%,#b8566a); box-shadow: inset -1px -1px 2px #8a344766; }
