@@ -1,6 +1,7 @@
 import { heroJourneyState,journeyMemoryState } from '../lib/hero-journey-state';
 import { styleWriter,decodedImages,round } from './style-writer';
 import { type Glide,glideProgress } from './scroll-glide';
+import { cameraFlourish } from './camera-flourish';
 
 type ScrollTriggerType = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
@@ -29,6 +30,7 @@ export function setupHeroJourney(root: HTMLElement,ScrollTrigger: ScrollTriggerT
   const layer=(s:string)=>bridge.querySelector<HTMLElement>(s);
   const outgoing=layer('.ns-bridge-outgoing'),incoming=layer('.ns-bridge-incoming'),camera=layer('.ns-bridge-incoming-camera');
   const glow=layer('.ns-bridge-shade'),boughLeft=layer('.ns-bridge-bough.left'),boughRight=layer('.ns-bridge-bough.right');
+  const flourish=cameraFlourish(bridge);
   const {set,restore}=styleWriter();
   let ready=false,disposed=false;
   let trigger:ReturnType<typeof ScrollTrigger.create>|undefined;
@@ -46,6 +48,7 @@ export function setupHeroJourney(root: HTMLElement,ScrollTrigger: ScrollTriggerT
     set(boughLeft,'transform',`translate3d(${round(s.branchX)}%,${round(s.branchY)}%,0) rotate(-12deg)`);
     set(boughRight,'transform',`translate3d(${round(-s.branchX)}%,${round(s.branchY)}%,0) rotate(12deg)`);
     set(boughLeft,'opacity',s.branchOpacity*.4);set(boughRight,'opacity',s.branchOpacity*.4);
+    flourish(p,set);
     set(heroCopy,'--bridge-hero-y',`${round(s.heroCopyY)}px`);set(heroCopy,'--bridge-hero-opacity',s.heroCopyOpacity);
     set(heroFoot,'--bridge-foot-opacity',s.heroFootOpacity);
     set(storyCopy,'--bridge-story-y',`${round(s.journeyCopyY)}px`);set(storyCopy,'--bridge-story-opacity',s.journeyCopyOpacity);

@@ -1,6 +1,7 @@
 import { sceneTransitionState,sceneEntryState,scenePhase,sceneHandoffRange } from '../lib/scene-transition-state';
 import { styleWriter,decodedImages,round } from './style-writer';
 import { type Glide,glideProgress } from './scroll-glide';
+import { cameraFlourish } from './camera-flourish';
 
 type ScrollTriggerType = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
@@ -37,6 +38,7 @@ export function setupSceneTransitions(root:HTMLElement,ScrollTrigger:ScrollTrigg
     const layer=(s:string)=>bridge.querySelector<HTMLElement>(s);
     const outgoing=layer('.ns-camera-outgoing'),incoming=layer('.ns-camera-incoming'),arrival=layer('.ns-camera-arrival');
     const glow=layer('.ns-camera-glow'),boughLeft=layer('.ns-camera-bough.left'),boughRight=layer('.ns-camera-bough.right');
+    const flourish=cameraFlourish(bridge);
     let camera:ReturnType<typeof ScrollTrigger.create>|undefined;
     const raw=()=>camera?(glide.scroll-camera.start)/Math.max(1,camera.end-camera.start):-1;
     const pose=()=>camera?glideProgress(glide,camera):0;
@@ -54,6 +56,7 @@ export function setupSceneTransitions(root:HTMLElement,ScrollTrigger:ScrollTrigg
       set(boughLeft,'transform',`translate3d(${round(s.branchX)}%,${round(s.branchY)}%,0) rotate(-12deg)`);
       set(boughRight,'transform',`translate3d(${round(-s.branchX)}%,${round(s.branchY)}%,0) rotate(12deg)`);
       set(boughLeft,'opacity',s.branchOpacity*.4);set(boughRight,'opacity',s.branchOpacity*.4);
+      flourish(p,set);
       // Native focus always wins over choreography, including modal openers.
       const contentProgress=focused?1:p;
       groups.forEach(({el,image},i)=>{

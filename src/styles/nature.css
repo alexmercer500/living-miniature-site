@@ -16,6 +16,10 @@ html[data-theme='nature'] {
   /* Static botanical edge for the camera wipe. It moves with its layer (transform only),
      so it is rasterised once instead of being regenerated and repainted every frame. */
   --ns-wipe-mask: linear-gradient(transparent 6.4%,#000 16.8%),radial-gradient(ellipse 45% 8.8% at 23% 10.4%,#000 8%,transparent 88%),radial-gradient(ellipse 48% 10.4% at 76% 12%,#000 8%,transparent 90%);
+  /* The wipe's half-opacity contour as a solid shape (same box, same lobes). XOR-ing it with
+     itself nudged down leaves a crescent that traces the reveal edge: the gold rim. */
+  --ns-rim-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.25'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
+  --ns-rim-halo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.9'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
   scroll-padding-top: 0;
 }
 html[data-theme='nature'][data-nature-ready]:has(.ns-home) { scroll-snap-type: y proximity; }
@@ -96,6 +100,25 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
 .ns-home > :is(.ns-transition-source,.ns-transition-target) > .ns-art { opacity: 0; }
 @media (max-width: 700px) { .ns-camera-bough { width: 110px; bottom: -7%; } }
 @media (prefers-reduced-motion: reduce), (scripting: none) { .ns-scene-bridge { display: none !important; } }
+
+/* Camera flourishes (CameraFlourish.astro), shared by every handoff. Explicit layer order:
+   outgoing art, incoming art, then decorations above. */
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-outgoing,.ns-camera-outgoing) { z-index: 0; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-incoming,.ns-camera-incoming) { z-index: 2; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-rim { z-index: 3; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-shade,.ns-camera-glow) { z-index: 4; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-bough,.ns-camera-bough) { z-index: 6; }
+/* Candle-gold rim riding the reveal edge: a bright line plus a soft flickering halo. Both
+   are static masked layers; the wrapper only moves with the wipe and fades in and out. */
+.ns-flourish-rim { position: absolute; inset: 0 0 auto; height: 125%; opacity: 0; transform: translate3d(0,80%,0); pointer-events: none; }
+.ns-flourish-rim > i { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: xor; mask-composite: exclude; }
+.ns-flourish-rim > .line { -webkit-mask-image: var(--ns-rim-line),var(--ns-rim-line); mask-image: var(--ns-rim-line),var(--ns-rim-line); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .012); mask-position: 0 0,0 calc(var(--ns-canvas) * .012); background: linear-gradient(90deg,#f0a540,#ffd27a 22%,#fff0c4 50%,#ffd27a 78%,#f0a540); }
+.ns-flourish-rim > .halo { top: calc(var(--ns-canvas) * -.022); bottom: auto; height: 100%; opacity: .55; -webkit-mask-image: var(--ns-rim-halo),var(--ns-rim-halo); mask-image: var(--ns-rim-halo),var(--ns-rim-halo); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .05); mask-position: 0 0,0 calc(var(--ns-canvas) * .05); background: linear-gradient(90deg,#e58a2a,#ffbe5c 30%,#ffd98e 50%,#ffbe5c 70%,#e58a2a); }
+:is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) .ns-flourish-rim { will-change: transform, opacity; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) .ns-flourish-rim > .halo { animation: ns-candle-flicker 2.6s linear infinite; }
+}
+@keyframes ns-candle-flicker { 0%,100% { opacity: .45; } 18% { opacity: .62; } 31% { opacity: .5; } 47% { opacity: .58; } 63% { opacity: .4; } 80% { opacity: .56; } }
 .ns-home section { scroll-margin-top: 60px; }
 .ns-header { position: fixed; inset: 0 0 auto; height: 70px; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(1rem,4vw,3.5rem); color: #fff3e4; background: linear-gradient(#172e28c4, #172e2800); transition: background .4s; }
 .ns-header[data-solid], .ns-header:has(.ns-menu[open]) { background: #172e28f2; border-bottom: 1px solid #efd2a033; }
