@@ -65,10 +65,20 @@ export async function setupNature() {
   if (sound) {
     sound.hidden = false;
     let player: import('./music').Player | undefined;
+    // The chapter crossing the middle of the screen sets the music's mood.
+    let chapter = 'welcome';
+    const chapters = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      chapter = e.target.id;
+      player?.setChapter(chapter);
+    }), { rootMargin: '-50% 0px -49% 0px' });
+    all(':scope > section[id]').forEach(section => chapters.observe(section));
+    cleanups.push(() => chapters.disconnect());
     sound.addEventListener('click', async () => {
       sound.disabled = true;
       try {
         player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
+        player.setChapter(chapter);
         if (player.playing) player.stop(); else await player.play();
         sound.setAttribute('aria-pressed', String(player.playing));
         sound.setAttribute('aria-label', (player.playing ? sound.dataset.on : sound.dataset.off) ?? '');
