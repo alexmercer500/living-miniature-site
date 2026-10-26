@@ -15,8 +15,11 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
   }
   if (route === '/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
   assert.ok(!/royal/i.test(html), 'No Royal Heritage links or assets remain');
-  assert.ok(html.includes('Partner One') || html.includes('साथी एक'));
-  assert.ok(!html.includes('RATNESH') && !html.includes('PALLAVI'));
+  const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
+  const names=route.startsWith('/hi/')?data.couple.displayName.hi.split(' एवं '):[data.couple.partnerOne,data.couple.partnerTwo];
+  for (const name of names) assert.ok(html.includes(name), `${name} (from site-content.json) appears on ${route}`);
+  // While the placeholder notice is in the data, no real names may leak into the build.
+  if (data._placeholderNotice) assert.ok(!html.includes('RATNESH') && !html.includes('PALLAVI'));
   assert.ok(!html.includes('src/assets/nature-stories/'));
   for (const m of html.matchAll(/(?:src|href)="(\/_astro\/[^"?#]+)"/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing ${m[1]}`);
   for (const m of html.matchAll(/(\/_astro\/[^\s,"()]+\.(?:avif|webp))/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing image ${m[1]}`);

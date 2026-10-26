@@ -144,13 +144,12 @@ preview by itself. If the file type changes (e.g. `.png` to `.jpg`), update the 
 | `event-haldi.png`, `event-evening.png`, `event-wedding.png` | portrait 4:5 | 1122×1402 | important details inside the central 80% |
 | `ivory-floral-paper-v1.png` | 3:2 | 1536×1024 | blank centre: paper texture for the cards |
 
-- [ ] **Keepsake cards with real photos (optional).** The three journey cards currently show
-      crops of the hero, journey and closing paintings. To use photos of the two of you, add
-      three portrait (2:3) photos to `src/assets/nature-stories/` and point the `image` entries in
-      `src/components/nature/Keepsakes.astro` at them. This is a small code change; ask if needed.
-- [ ] **Favicon.** `public/favicon.svg` still has the dark navy background from the retired
-      Royal theme. Change `fill="#17172C"` to the Nature green `#213B32`, or replace the file
-      with your own icon.
+- [ ] **Keepsake cards with real photos (optional).** The three journey cards show crops of the
+      paintings. To use photos of the two of you, drop `1.jpg`, `2.jpg` and `3.jpg` into
+      `src/assets/keepsakes/`; no code change is needed. A missing number keeps its painting.
+      Tips are in `src/assets/keepsakes/README.md`.
+- [ ] **Favicon (optional).** `public/favicon.svg` is a gold lotus on Nature green. Replace the
+      file if you want your own icon.
 
 The prompts used to make every painting are in `src/assets/nature-stories/README.md`. Use them
 to generate a matching replacement.
@@ -176,10 +175,10 @@ The quickest way is to open `/hi/`, scroll through, then open the RSVP form and 
       npm run build
       node --test tests/*.test.mjs
       ```
-      Two tests still expect the placeholder names "Partner One & Partner Two":
-      `tests/nature-static.test.mjs` (line 18) and `tests/nature-final-note-browser.mjs`
-      (line 49). Update them to the real names, or ask for them to read the names from
-      `site-content.json`.
+      The tests read the couple's names from `site-content.json`, so they keep passing after you
+      fill them in. One check blocks real names from appearing in the build while
+      `_placeholderNotice` is still in the data (a guard against an early leak). Deleting that
+      line, as section 1 says, turns the guard off.
 - [ ] Deploy the `dist/` folder to any static host (Netlify, Vercel, Cloudflare Pages, GitHub
       Pages). No server or database is needed.
 - [ ] On a real phone, open `/`, `/hi/`, `/invitation` and `/hi/invitation`. Check every section,
