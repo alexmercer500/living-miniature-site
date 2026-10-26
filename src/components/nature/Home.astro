@@ -18,13 +18,15 @@ import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t } from '../../lib/content';
 import { natureHref, natureCopy } from '../../lib/nature-content';
 import { landscapes } from '../../lib/nature-assets';
+import { artPreview } from '../../lib/art-preview';
 import '../../styles/nature.css';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang];
+const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero.mobile), artPreview(landscapes.hero.desktop)]);
 ---
 <Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
-  <OpeningVeil />
+  <OpeningVeil scene={veilScene} sceneWide={veilSceneWide} />
   <Header lang={lang} />
   <main id="main" class="ns-home" data-nature-root>
     <HeroJourneyBridge />

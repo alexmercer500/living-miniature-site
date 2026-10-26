@@ -12,12 +12,14 @@ painting slot drew until its image arrived are gone; each slot instead carries i
 own painting as an inline blurred preview (32px WebP inside an SVG blur, about
 1.5 KB, `art-preview.ts`), so the first paint is the real scene, softly. The camera
 bridges opt out (`preview={false}`): they only appear after `decode()`. The home
-page opens under a short veil (`OpeningVeil.astro`): the lotus draws itself on
-the theme green until the hero image is decoded and the faces the hero names use
+page opens under a short veil (`OpeningVeil.astro`): the hero painting's own preview,
+heavily blurred at dusk with drifting lantern specks, while the lotus draws itself,
+until the hero image is decoded and the faces the hero names use
 are loaded (on a `#section` link, until the scroll has settled there); 3.5s at
 most, skipped on revisits in the same tab, hidden without JS, with a CSS 6s
 failsafe. The hero names' entrance waits for the veil, so it is never played
-unseen. The fonts the names use are preloaded with the HTML. Throttled check
+unseen. Lifting is a focus pull (static blur; the scene settles by transform while
+the dusk and veil fade), so it reads as the film's first shot. The fonts the names use are preloaded with the HTML. Throttled check
 (1.6 Mbps, 4× CPU, 390×844): veil, then the sharp hero, no intermediate states;
 at 0.3 Mbps the veil times out onto the blurred preview with readable names.
 Cost: about +10 KB gzipped HTML for the previews.

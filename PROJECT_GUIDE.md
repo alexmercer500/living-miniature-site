@@ -67,7 +67,7 @@ The **EN | हिंदी** toggle switches routes and keeps your place (it car
 
 | # | Scene (`#id`) | What happens | Interaction |
 |---|---|---|---|
-| — | **Opening veil** | A short green veil with the lotus and monogram covers the page until the first painting and fonts are ready (at most a few seconds; skipped on revisits in the same session). | — |
+| — | **Opening veil** | The welcome painting, out of focus at dusk, with drifting lantern light; the gold lotus draws itself and the monogram appears. When the painting and fonts are ready (a few seconds at most; skipped on revisits in the same tab) the dusk clears and the camera pulls focus into the sharp scene. | — |
 | 1 | **Welcome** (`#welcome`) | A sunset garden terrace under a flowering tree; the names arrive line by line. | Tap the hanging lantern to warm it; tap ✿ for a petal burst. Tilt the phone (or move the mouse) for depth. |
 | 2 | **Our journey** (`#journey`) | The camera glides from the terrace onto two paths that meet under a pergola. Three hanging keepsakes. | Tap a keepsake to open its little story. |
 | 3 | **The letter** (`#invitation`) | An envelope on the garden table. Scrolling breaks the wax seal, opens the flap and raises the card. | Tap the seal to open or close it; "View full invitation". |

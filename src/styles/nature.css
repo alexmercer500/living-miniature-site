@@ -377,25 +377,39 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   /* The names wait behind the opening veil, then arrive as it lifts. */
   html:not([data-nature-loaded]) :is(.ns-hero-copy > *, .ns-hero-copy h1 > *) { animation-play-state: paused; }
 }
-/* Opening veil (OpeningVeil.astro): the lotus draws itself while the first painting loads. */
-.ns-veil { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; pointer-events: none; color: #efd2a0;
-  background: radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e);
-  transition: opacity .9s cubic-bezier(.4,0,.2,1), visibility 0s linear .9s;
+/* Opening veil (OpeningVeil.astro): the welcome painting itself, out of focus at dusk,
+   while the lotus draws itself. Lifting is a focus pull: the soft scene settles, its dusk
+   clears and it dissolves into the sharp painting beneath. Filters are static; only
+   transform and opacity move. */
+.ns-veil { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow: hidden; pointer-events: none; color: #efd2a0; background: #10241e;
+  transition: opacity 1.3s cubic-bezier(.45,0,.25,1) .2s, visibility 0s linear 1.5s;
   /* Last resort if the veil's script never runs: it still steps aside. */
   animation: ns-veil-away .6s ease 6s forwards; }
 html[data-nature-loaded] .ns-veil { opacity: 0; visibility: hidden; }
-.ns-veil-mark { display: grid; justify-items: center; gap: .85rem; transition: transform 1.1s cubic-bezier(.2,.7,.2,1), opacity .6s ease; }
+.ns-veil-scene { position: absolute; inset: -6%; background: var(--veil-scene, none) center / cover no-repeat, radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e);
+  filter: blur(14px) saturate(1.2) brightness(1.08); transform: scale(1.08); transition: transform 1.6s cubic-bezier(.2,.7,.2,1); will-change: transform; }
+@media (min-width: 768px) and (min-aspect-ratio: 1/1) { .ns-veil-scene { background-image: var(--veil-scene-wide, var(--veil-scene, none)), radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e); } }
+html[data-nature-loaded] .ns-veil-scene { transform: scale(1); }
+/* Dusk over the scene keeps the gold legible; it clears first as the veil lifts. */
+.ns-veil::before { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(70% 45% at 50% 46%, #10241e38, #10241e8c 60%, #0b1c17d6); transition: opacity .9s ease; }
+html[data-nature-loaded] .ns-veil::before { opacity: 0; }
+.ns-veil-mark { position: relative; z-index: 2; display: grid; justify-items: center; gap: .85rem; transition: transform 1.1s cubic-bezier(.2,.7,.2,1), opacity .55s ease; }
 html[data-nature-loaded] .ns-veil-mark { opacity: 0; transform: translate3d(0,-8px,0) scale(1.06); }
-.ns-veil-lotus { width: 4.4rem; overflow: visible; }
+.ns-veil-lotus { width: 4.4rem; overflow: visible; filter: drop-shadow(0 0 6px #10241e); }
 .ns-veil-lotus path { stroke-dasharray: 90; stroke-dashoffset: 90; animation: ns-veil-draw 1.9s cubic-bezier(.45,0,.2,1) .1s forwards; }
-.ns-veil .monogram { font-size: 1.3rem; opacity: 0; animation: ns-veil-in 1s ease .75s forwards; }
+.ns-veil .monogram { font-size: 1.3rem; opacity: 0; text-shadow: 0 0 12px #10241e; animation: ns-veil-in 1s ease .75s forwards; }
 .ns-veil-line { width: 5.5rem; height: 1px; background: linear-gradient(90deg, transparent, currentColor, transparent); transform: scaleX(0); animation: ns-veil-grow 1.3s cubic-bezier(.3,0,.2,1) .55s forwards; }
-@media (prefers-reduced-motion: no-preference) { .ns-veil-mark { animation: ns-veil-breathe 2.6s ease-in-out 2s infinite alternate; } }
+/* Warm specks of lantern light drifting up through the soft focus. */
+.ns-veil-motes { position: absolute; inset: 0; z-index: 2; }
+.ns-veil-motes i { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff3d1 0%, #ffd58fcc 22%, #f4b36a44 48%, #f4b36a00 70%); animation: ns-veil-mote var(--d) ease-in-out var(--delay) infinite; }
+@media (max-width: 767px) { .ns-veil-motes i:nth-child(3n) { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ns-veil-motes { display: none; } }
 @media (scripting: none) { .ns-veil { display: none; } }
 @keyframes ns-veil-draw { to { stroke-dashoffset: 0; } }
 @keyframes ns-veil-in { to { opacity: 1; } }
 @keyframes ns-veil-grow { to { transform: scaleX(1); } }
-@keyframes ns-veil-breathe { from { filter: drop-shadow(0 0 0 #efd2a000); } to { filter: drop-shadow(0 0 10px #efd2a055); } }
+@keyframes ns-veil-mote { 0% { opacity: 0; transform: translate3d(0,0,0) scale(.6); } 25% { opacity: var(--a); } 75% { opacity: calc(var(--a) * .7); } 100% { opacity: 0; transform: translate3d(var(--dx),-22vh,0) scale(1); } }
 @keyframes ns-veil-away { to { opacity: 0; visibility: hidden; } }
 .ns-home[data-ambient-paused] .ns-lantern-swing,
 .ns-home[data-ambient-paused] .ns-lantern-flame,
