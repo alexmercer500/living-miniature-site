@@ -23,6 +23,8 @@ Requires Node 22.23+.
 | `/royal`, `/nature` (+ `/invitation`, `/hi/…`) | Old preview links; they forward to the pages above |
 
 ## Replacing placeholder data
+**Step-by-step list of everything left to fill in: [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)**
+
 Edit **only** `src/data/site-content.json`:
 - `couple.*` — names (the `displayName` must keep ` & ` / ` एवं ` between partners).
 - `site.weddingDate` — real `YYYY-MM-DD` turns on the countdown.
