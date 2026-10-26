@@ -1,8 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// Static-first. React / R3F and GSAP are added in later milestones,
-// scoped to the one interactive island that needs them.
+// Static-first; GSAP is loaded only by the home page's scroll scenes.
 export default defineConfig({
   site: 'https://example.com',
   trailingSlash: 'ignore',

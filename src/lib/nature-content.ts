@@ -23,7 +23,7 @@ export const natureCopy = {
     decorative: 'Decorative wishes, not guest submissions.',
     closingOne: 'Different paths.', closingTwo: 'A shared tomorrow.',
     finalNote: 'A Final Note', finalNoteIntro: 'A new chapter begins.',
-    light: 'Warm the lantern', petals: 'Scatter a few petals', royal: 'Royal Heritage',
+    light: 'Warm the lantern', petals: 'Scatter a few petals',
     opened: 'The invitation is open.', closed: 'The invitation is rolled closed.',
   },
   hi: {
@@ -48,7 +48,7 @@ export const natureCopy = {
     decorative: 'ये सजावटी शुभकामनाएँ हैं, अतिथियों के संदेश नहीं।',
     closingOne: 'अलग राहें।', closingTwo: 'साझा कल।',
     finalNote: 'स्नेह का संदेश', finalNoteIntro: 'एक नए अध्याय की शुरुआत।',
-    light: 'दीप का उजाला बढ़ाएँ', petals: 'कुछ पंखुड़ियाँ बिखेरें', royal: 'रॉयल हेरिटेज',
+    light: 'दीप का उजाला बढ़ाएँ', petals: 'कुछ पंखुड़ियाँ बिखेरें',
     opened: 'निमंत्रण खुल गया है।', closed: 'निमंत्रण पत्र समेट दिया गया है।',
   },
 };

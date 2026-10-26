@@ -123,11 +123,9 @@
   "ui": {
     "en": {
       "scrollToBegin": "Scroll to begin",
-      "skipIntro": "Skip intro",
       "jumpToDetails": "Jump to details",
       "viewMap": "View map",
       "backToTop": "Back to beginning",
-      "loading": "Preparing the celebration…",
       "close": "Close",
       "skipToContent": "Skip to content",
       "menu": "Menu",
@@ -135,7 +133,6 @@
       "welcome": "Welcome",
       "celebrations": "Celebrations",
       "venue": "Venue",
-      "rsvpNav": "RSVP",
       "invitation": "Invitation",
       "dateTbc": "Date to be confirmed",
       "countdownHeading": "Counting the days",
@@ -157,24 +154,15 @@
       "envelopeOpened": "The invitation is open. The card is ready to read.",
       "envelopeClosed": "The envelope is closed.",
       "continueJourney": "Continue the journey",
-      "openGateway": "Open the gateway",
-      "tapToOpen": "Tap to open",
       "addToCalendar": "Add to calendar",
-      "openWithMusic": "Open with music",
-      "openQuietly": "Open quietly",
-      "introHint": "Best enjoyed with sound",
       "musicOn": "Play music",
-      "musicOff": "Mute music",
-      "peacock": "Peacock — tap to see it dance",
-      "pushSwing": "Push the swing"
+      "musicOff": "Mute music"
     },
     "hi": {
       "scrollToBegin": "आगे बढ़ने के लिए स्क्रॉल करें",
-      "skipIntro": "प्रारंभिक दृश्य छोड़ें",
       "jumpToDetails": "विवरण देखें",
       "viewMap": "मानचित्र देखें",
       "backToTop": "शुरुआत पर लौटें",
-      "loading": "उत्सव तैयार हो रहा है…",
       "close": "बंद करें",
       "skipToContent": "मुख्य सामग्री पर जाएँ",
       "menu": "मेनू",
@@ -182,7 +170,6 @@
       "welcome": "स्वागत",
       "celebrations": "उत्सव",
       "venue": "विवाह स्थल",
-      "rsvpNav": "उपस्थिति",
       "invitation": "निमंत्रण",
       "dateTbc": "तिथि शीघ्र घोषित होगी",
       "countdownHeading": "शुभ दिन की प्रतीक्षा",
@@ -204,16 +191,9 @@
       "envelopeOpened": "निमंत्रण खुल गया है। अब आप पत्र पढ़ सकते हैं।",
       "envelopeClosed": "लिफाफा बंद है।",
       "continueJourney": "आगे बढ़ें",
-      "openGateway": "द्वार खोलें",
-      "tapToOpen": "खोलने के लिए छुएँ",
       "addToCalendar": "कैलेंडर में जोड़ें",
-      "openWithMusic": "संगीत के साथ खोलें",
-      "openQuietly": "शांति से खोलें",
-      "introHint": "ध्वनि के साथ और भी सुंदर",
       "musicOn": "संगीत चलाएँ",
-      "musicOff": "संगीत बंद करें",
-      "peacock": "मोर — नाचते देखने के लिए छुएँ",
-      "pushSwing": "झूला झुलाएँ"
+      "musicOff": "संगीत बंद करें"
     }
   },
   "music": {
@@ -230,12 +210,6 @@
     "line": {
       "en": "With love, we look forward to celebrating with you.",
       "hi": "स्नेह सहित, आपके साथ उत्सव मनाने की प्रतीक्षा में।"
-    }
-  },
-  "journey": {
-    "title": {
-      "en": "Two families, one beautiful union",
-      "hi": "दो परिवार, एक सुंदर संगम"
     }
   }
 }

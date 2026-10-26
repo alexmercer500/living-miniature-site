@@ -1,5 +1,10 @@
 # Implementation Notes — Phase 1 Visual Reconstruction
 
+> **2026-10-26: Royal Heritage retired.** Nature & Stories is now the only theme, at
+> `/` and `/hi/`. The Royal pages, components, scripts, art and tests were removed
+> (they remain in git history, last present in commit 4abfe05). Old `/royal/…` and
+> `/nature/…` links forward to the matching Nature page. Earlier sections describe the Royal build and are kept for history.
+
 ## Nature & Stories — independent second theme (2026-10-25)
 
 Fancier handoffs (2026-10-26, `development`), all scroll-driven, reversible and

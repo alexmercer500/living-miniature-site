@@ -1,6 +1,6 @@
 # Nature & Stories artwork
 
-Fifteen bitmap assets created with the built-in image tool on 2026-10-25.
+Fifteen scene bitmaps (plus the paper material below) created with the built-in image tool on 2026-10-25.
 Reference: RIGHT Nature & Stories / A Journey Together panels of both boards
 under wedding-cinematic-two-theme-spec/assets/reference/. Original tool outputs
 remain intact; final source copies are here. No third-party stock, personal
@@ -92,3 +92,10 @@ Use case: stylized-concept. One PORTRAIT 2:3 text-free CLOSING garden terrace im
 
 Use case: stylized-concept. One WIDE LANDSCAPE 16:9 text-free CLOSING garden terrace image for Nature & Stories Indian wedding website. Reference hero defines exact same river valley, layered hills, flowering tree, brass, flowers and sandstone. Quiet romantic final view: two EMPTY carved wooden chairs with dusty rose/ivory embroidered cushions side by side near low sandstone terrace balustrade, facing sunset river horizon. Flowering tree and pink bougainvillea frame upper left, hanging jasmine/marigold strands and warm brass lanterns, small low diya table between seats, petals and floral rangoli at foreground edges. Tiny peacock resting at lower side as secondary detail, not center. Central upper 25–50% open peach sky for real HTML closing message; chairs in lower third, scenic vista visible. Tender intimate new-chapter mood, physically plausible lush cinematic rendered realism, warm amber practical lights, peach/rose/forest/ivory/gold. Expand scene wide with paired chairs near lower center and generous sunset sky. No people, couple silhouettes, portraits, text/writing/names/numbers/monograms, UI, cards, logos/watermarks or collage. No domes/minarets/Taj/Mughal/Moorish/Islamic motifs/European castle. Single full-bleed artwork matching RIGHT reference board's closing terrace, without copied text.
 
+
+## Paper material
+
+`ivory-floral-paper-v1.png` (moved here from the retired Royal Heritage assets) is the
+flat embossed ivory paper used by the envelope, the invitation card and the final note.
+It was generated with the built-in image tool as a flat, text-free material scan; the
+centre stays blank for HTML typography. The build emits it as WebP.

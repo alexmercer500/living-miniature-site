@@ -19,9 +19,6 @@ export function href(lang: Lang, path = '/') {
   return `${base}${prefix}${clean === '/' && prefix ? '/' : clean}`;
 }
 
-/** Royal Heritage is the secondary experience; href itself stays locale-only. */
-export const royalHref = (lang: Lang, path = '/') => href(lang, `/royal${path === '/' ? '' : path}`);
-
 /** Returns a Date only for real ISO dates; placeholders like `YYYY-MM-DD` return null. */
 export function parseDate(iso: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;

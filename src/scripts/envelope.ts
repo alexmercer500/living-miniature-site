@@ -18,7 +18,6 @@ export async function setupEnvelope() {
   gsap.registerPlugin(ScrollTrigger);
   const media = gsap.matchMedia();
   media.add('(prefers-reduced-motion: no-preference)', () => {
-    const nature = scene.classList.contains('envelope-nature');
     let lastState = '';
     let openingByTap = false;
     const driver = { progress: 0 };
@@ -35,7 +34,7 @@ export async function setupEnvelope() {
     let footerTop = scene.querySelector<HTMLElement>('.envelope-footer')!.offsetTop;
     let layout = envelopeLayout(viewport.offsetHeight, rig.offsetHeight, cardHeight, 60);
     const measure = () => {
-      const header = document.querySelector<HTMLElement>('[data-header], [data-nature-header]');
+      const header = document.querySelector<HTMLElement>('[data-nature-header]');
       cardHeight = card.offsetHeight;
       rigHeight = rig.offsetHeight;
       sealHeight = button.querySelector<HTMLElement>('.wax-seal')!.offsetHeight;
@@ -43,7 +42,7 @@ export async function setupEnvelope() {
       layout = envelopeLayout(viewport.offsetHeight, rigHeight, cardHeight, header?.offsetHeight ?? 60);
     };
     const render = () => {
-      const state = envelopeState(nature ? envelopeScrollProgress(driver.progress) : driver.progress);
+      const state = envelopeState(envelopeScrollProgress(driver.progress));
       // The wax seal cracks: a short haptic, only while opening (never on the way back).
       if (lastSeal !== undefined && lastSeal < .5 && state.seal >= .5) sealHaptic();
       lastSeal = state.seal;
@@ -104,19 +103,19 @@ export async function setupEnvelope() {
     button.hidden = false;
     hint.hidden = false;
     // Keep the visual stage one viewport tall while scroll drives every pose.
-    // Nature's long track and readable end hold replace the entry autoplay.
+    // A long track and a readable end hold replace any entry autoplay.
     const animation = gsap.to(driver, {
       progress: 1, ease: 'none', onUpdate: render,
       scrollTrigger: {
         trigger: scene, start: 'top top',
         end: () => `+=${Math.max(180, scene.offsetHeight - (scene.firstElementChild as HTMLElement).offsetHeight)}`,
-        scrub: nature ? 1.8 : 1.4, invalidateOnRefresh: true,
+        scrub: 1.8, invalidateOnRefresh: true,
         onRefresh: trigger => {
           measure(); render();
-          if (nature) document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
+          document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
         },
         onToggle: trigger => {
-          if (nature) document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
+          document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
         },
       },
     });
@@ -134,7 +133,7 @@ export async function setupEnvelope() {
       const scroll = { y: window.scrollY };
       scrollTween = gsap.to(scroll, {
         y: close ? trigger.start : trigger.end + 1,
-        duration: nature ? (close ? 4.5 : 8) : (close ? envelopeTimings.tapClose : envelopeTimings.tapOpen),
+        duration: close ? envelopeTimings.tapClose : envelopeTimings.tapOpen,
         ease: 'power2.inOut', onUpdate: () => window.scrollTo({ top: scroll.y, behavior: 'instant' }),
       });
     };
@@ -159,7 +158,7 @@ export async function setupEnvelope() {
       scrollTween?.kill();
       card.removeEventListener('focusout', releaseFocus);
       resize.disconnect();
-      if (nature) document.documentElement.removeAttribute('data-envelope-active');
+      document.documentElement.removeAttribute('data-envelope-active');
       animation.scrollTrigger?.kill();
       animation.kill();
       delete scene.dataset.enhanced;

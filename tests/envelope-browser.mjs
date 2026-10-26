@@ -28,7 +28,7 @@ const evaluate = async (expression) => {
   if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
   return result.result.value;
 };
-const settle = () => new Promise(resolve => setTimeout(resolve, process.argv.includes('--nature') ? 2200 : 1400));
+const settle = () => new Promise(resolve => setTimeout(resolve, 2200));
 const waitFor = async (expression, timeout = 14000) => {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
@@ -37,13 +37,11 @@ const waitFor = async (expression, timeout = 14000) => {
   }
   throw new Error(`Timed out waiting for: ${expression}`);
 };
-const nature = process.argv.includes('--nature');
-const output = nature ? '.astro/nature-envelope-qa' : '.astro/envelope-qa';
+const output = '.astro/envelope-qa';
 await fs.mkdir(output, { recursive: true });
 await command('Runtime.enable');
 await command('Page.enable');
 await command('Page.bringToFront');
-await command('Page.addScriptToEvaluateOnNewDocument', { source: "sessionStorage.setItem('lm-intro','1')" });
 const records = [];
 try {
   for (const view of [
@@ -53,17 +51,17 @@ try {
     { name: 'reduced-hindi', width: 320, height: 568, path: '/hi/', reduced: true },
     { name: 'no-js-mobile', width: 390, height: 844, path: '/', noJs: true },
   ]) {
-    if (process.argv[2] && process.argv[2] !== '--nature' && view.name !== process.argv[2]) continue;
+    if (process.argv[2] && view.name !== process.argv[2]) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: false });
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: view.reduced ? 'reduce' : 'no-preference' }] });
     await command('Emulation.setScriptExecutionDisabled', { value: Boolean(view.noJs) });
-    const path = nature ? view.path : (view.path === '/hi/' ? '/hi/royal/' : '/royal/');
+    const path = view.path;
     await command('Page.navigate', { url: `http://127.0.0.1:4321${path}` });
     await settle();
     await evaluate('document.fonts.ready.then(() => true)');
     await settle();
     const fallback = view.reduced || view.noJs;
-    if (nature) {
+    {
       assert.equal(await evaluate("document.querySelector('.ns-scroll-rig')"), null, 'Old scroll letter is removed');
       assert.equal(await evaluate("document.querySelector('.card-link').getAttribute('href')"), `${path.replace(/\/$/, '')}/invitation`);
       assert.equal(await evaluate("document.querySelector('.envelope-footer a:last-child').getAttribute('href')"), '#celebrations');
@@ -72,7 +70,7 @@ try {
     for (const [name, progress] of fallback ? [['static', 0]] : [['rest', 0], ['float', .25], ['paper', .62], ['settled', .9], ['open', 1], ['reverse', 0]]) {
       await evaluate(`(() => { const s=document.querySelector('[data-envelope]'); window.scrollTo({top:scrollY+s.getBoundingClientRect().top+${progress}*(s.offsetHeight-s.firstElementChild.offsetHeight),behavior:'instant'}); return true; })()`);
       await settle();
-      if (nature && !fallback) {
+      if (!fallback) {
         const stage=await evaluate("(()=>{const s=document.querySelector('[data-envelope]'),v=s.firstElementChild,r=v.getBoundingClientRect();return {top:r.top,height:r.height,travel:s.offsetHeight-v.offsetHeight,snap:getComputedStyle(document.documentElement).scrollSnapType}})()");
         assert.ok(Math.abs(stage.top)<2 && Math.abs(stage.height-view.height)<2,'Stage stays pinned at exactly one viewport');
         assert.ok(stage.travel>=2800,'Slow reveal has sufficient scroll distance');

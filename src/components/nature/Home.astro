@@ -11,10 +11,10 @@ import Celebrations from './Celebrations.astro';
 import Venue from './Venue.astro';
 import Wishes from './Wishes.astro';
 import FinalNote from './FinalNote.astro';
-import Envelope from '../sections/Envelope.astro';
+import Envelope from './Envelope.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, royalHref } from '../../lib/content';
+import { type Lang, content, loc, t } from '../../lib/content';
 import { natureHref, natureCopy } from '../../lib/nature-content';
 import { landscapes } from '../../lib/nature-assets';
 import '../../styles/nature.css';
@@ -22,7 +22,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang];
 ---
-<Base lang={lang} theme="nature" routePath="/" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
+<Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
   <Header lang={lang} />
   <main id="main" class="ns-home" data-nature-root>
     <HeroJourneyBridge />
@@ -58,7 +58,7 @@ const c = natureCopy[lang];
       <p class="ns-keepsake-hint">{c.keepsakeHint}</p>
     </section>
 
-    <Envelope lang={lang} id="invitation" variant="nature" invitationHref={natureHref(lang, '/invitation')} continueHref="#celebrations">
+    <Envelope lang={lang} invitationHref={natureHref(lang, '/invitation')}>
       <Art slot="backdrop" {...landscapes.letter} />
     </Envelope>
 
@@ -70,7 +70,7 @@ const c = natureCopy[lang];
 
     <FinalNote lang={lang} />
   </main>
-  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{c.theme} · <a href={royalHref(lang)}>{c.royal} ↗</a></p></footer>
+  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{c.theme}</p></footer>
   <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={natureHref(lang, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>

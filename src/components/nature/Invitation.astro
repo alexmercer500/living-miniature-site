@@ -11,7 +11,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang], p = content.invitation.placeholders;
 ---
-<Base lang={lang} theme="nature" routePath="/invitation" page="invitation" title={`${loc(content.invitation.label, lang)} — ${c.theme}`}>
+<Base lang={lang} routePath="/invitation" page="invitation" title={`${loc(content.invitation.label, lang)} — ${c.theme}`}>
   <Header lang={lang} invitation />
   <main id="main" class="ns-invite-page">
     <article class="ns-invite-card" aria-labelledby="ns-invite-title">

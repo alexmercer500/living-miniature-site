@@ -17,32 +17,32 @@ Requires Node 22.23+.
 ## Routes
 | Path | Content |
 |---|---|
-| `/`, `/hi/` | Cinematic journey (EN / HI) |
+| `/`, `/hi/` | Nature & Stories: the scroll journey (EN / HI) |
 | `/invitation`, `/hi/invitation` | Full printable invitation (family names, schedule, hosts) |
+| `/royal`, `/nature` (+ `/invitation`, `/hi/…`) | Old preview links; they forward to the pages above |
 
 ## Replacing placeholder data
 Edit **only** `src/data/site-content.json`:
 - `couple.*` — names (the `displayName` must keep ` & ` / ` एवं ` between partners).
 - `site.weddingDate` — real `YYYY-MM-DD` turns on the countdown.
-- `venue.mapUrl` — an `https://` link turns on *View map / Get directions*.
-- `rsvp.enabled` + `rsvp.url` — turns on the RSVP button (section, menu and action bar).
-- `events[]` — `date`, `time` (`HH:MM`), `title`, `shortDescription`, `visualKey`: `floral-courtyard` | `lantern-garden` | `mandap-courtyard` | `haldi` | `mehndi` | `sangeet` | `baraat` | `reception` (preview them at `/preview/vignettes` while running `npm run dev`). A real date also adds an *Add to calendar* button.
-- `music.enabled` — shows the *Open with music / Open quietly* intro and a mute button. `music.src` empty = music generated in the browser; or put an audio file in `public/` and set its path.
-- `journey.title` — the Scene 4 heading.
+- `venue.mapUrl` — an `https://` link turns on the map and directions.
+- `rsvp.enabled` + `rsvp.url` — turns on the RSVP button in the Wishes chapter.
+- `events[]` — `date`, `time` (`HH:MM`), `title`, `shortDescription`, `visualKey` (`haldi`, `mehndi`, `sangeet`, `varmala`, …; see PROJECT_GUIDE §5). A real date also adds an *Add to calendar* button.
+- `music.enabled` — shows the header music button. `music.src` empty = music generated in the browser; or put an audio file in `public/` and set its path.
 - `invitation.placeholders.*` — replace with approved family / invocation / host text.
 - `invitation.downloadUrl` — adds a download button on the invitation page.
 
-Unconfigured actions are hidden in production; in `npm run dev` a dashed note shows where they will appear.
+Chapter copy (headings, keepsakes, wishes) is in `src/lib/nature-content.ts`. Unconfigured actions stay hidden.
 
 ## Structure
 ```
 src/
   data/site-content.json     content model (bilingual)
-  lib/content.ts             typed content + i18n helpers
-  lib/art.ts                 procedural SVG (palace, domes, arches, foliage)
-  components/scene/          reusable art: SceneDefs, Lantern, Diya, Lotus, Foliage, Garland, ArchFrame, Vignette
-  components/sections/       Hero, Reveal, Celebrations, Venue, Rsvp, Closing
-  components/                Header, ActionBar, Home, Invitation, icons
-  styles/                    tokens.css, global.css
+  assets/nature-stories/     painted scenes (the build emits AVIF/WebP)
+  lib/                       content helpers, chapter copy, scroll-pose maths
+  components/nature/         Home, Invitation, Header, every chapter, camera bridges
+  components/scene/          shared SVG defs and bougainvillea
+  scripts/                   scroll scenes, envelope, music, interactions
+  styles/                    tokens.css, global.css, nature.css
 ```
 See `IMPLEMENTATION_NOTES.md` for architecture decisions and milestone status.

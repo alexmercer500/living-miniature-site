@@ -1,37 +1,12 @@
 ---
-import { haveliMarkup, foliageMarkup, CUSPED_ARCH } from '../../lib/art';
-
-// Normalise the 100×120 stepped doorway to objectBoundingBox units for responsive clipping.
-const cuspedBox = CUSPED_ARCH.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_, x, y) => `${+x / 100},${+y / 120}`)
-  .replace(/V(\d+)/g, (_, y) => `V${+y / 120}`);
+/** Shared SVG paint for the hero lantern and the bougainvillea fronds (scene/Foliage.astro). */
+import { foliageMarkup } from '../../lib/art';
 ---
 <svg class="scene-defs" width="0" height="0" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="lm-sandstone" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#D79A6D" /><stop offset=".55" stop-color="#B87950" /><stop offset="1" stop-color="#7E4938" />
-    </linearGradient>
-    <linearGradient id="lm-sandstone-dark" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6E392F" /><stop offset="1" stop-color="#321B20" />
-    </linearGradient>
-    <linearGradient id="lm-wood" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5B201E" /><stop offset=".5" stop-color="#321517" /><stop offset="1" stop-color="#1F1112" />
-    </linearGradient>
     <linearGradient id="lm-brass-deep" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#E6C27B" /><stop offset=".5" stop-color="#B88945" /><stop offset="1" stop-color="#65401D" />
     </linearGradient>
-    <linearGradient id="lm-mandap-light" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFF1C4" /><stop offset=".55" stop-color="#F4B451" /><stop offset="1" stop-color="#B83A32" />
-    </linearGradient>
-    <linearGradient id="lm-lit" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFF1C4" />
-      <stop offset=".6" stop-color="#F7C977" />
-      <stop offset="1" stop-color="#E4914F" />
-    </linearGradient>
-    <radialGradient id="lm-lit-bright" cx=".5" cy=".7" r=".7">
-      <stop offset="0" stop-color="#FFF8DD" />
-      <stop offset=".5" stop-color="#FFD98A" />
-      <stop offset="1" stop-color="#E9984F" />
-    </radialGradient>
     <linearGradient id="lm-brass" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#F2D59A" />
       <stop offset=".5" stop-color="#C49A55" />
@@ -52,55 +27,8 @@ const cuspedBox = CUSPED_ARCH.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_
       <stop offset=".5" stop-color="#FFF0C4" />
       <stop offset="1" stop-color="#E88A44" />
     </linearGradient>
-    <linearGradient id="lm-lotus" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FBD3DC" />
-      <stop offset="1" stop-color="#D9567C" />
-    </linearGradient>
-
-      <linearGradient id="vg-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".55" stop-color="#4B1020" /><stop offset="1" stop-color="#D67A50" /></linearGradient>
-      <linearGradient id="vg-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".7" stop-color="#321B20" /><stop offset="1" stop-color="#40533A" /></linearGradient>
-      <linearGradient id="vg-rose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#321B20" /><stop offset=".5" stop-color="#4B1020" /><stop offset="1" stop-color="#8F3D3A" /></linearGradient>
-
-    <linearGradient id="vg-haldi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7AE" /><stop offset=".55" stop-color="#F7B538" /><stop offset="1" stop-color="#E9822A" /></linearGradient>
-    <linearGradient id="vg-mehndi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#21140F" /><stop offset=".6" stop-color="#40533A" /><stop offset="1" stop-color="#6A7A4A" /></linearGradient>
-    <linearGradient id="lm-door" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#B8404F" />
-      <stop offset=".55" stop-color="#9C3540" />
-      <stop offset="1" stop-color="#7A2836" />
-    </linearGradient>
-    <linearGradient id="lm-door-shade" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#17172C" stop-opacity=".45" />
-      <stop offset=".35" stop-color="#17172C" stop-opacity="0" />
-      <stop offset=".9" stop-color="#F2D59A" stop-opacity=".08" />
-      <stop offset="1" stop-color="#17172C" stop-opacity=".3" />
-    </linearGradient>
-
-    <filter id="lm-glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="3.2" result="b" />
-      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-    </filter>
-    <filter id="lm-glow-small" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="1.6" result="b" />
-      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-    </filter>
-
-    <path id="lm-leaf" d="M0,0 C6,-6 18,-6 24,0 C18,6 6,6 0,0Z" />
-    <g id="lm-bloom">
-      <path d="M0,0 C-7,-3 -9,-12 0,-15 C9,-12 7,-3 0,0Z" />
-      <path d="M0,0 C-7,-3 -9,-12 0,-15 C9,-12 7,-3 0,0Z" transform="rotate(120)" />
-      <path d="M0,0 C-7,-3 -9,-12 0,-15 C9,-12 7,-3 0,0Z" transform="rotate(240)" />
-      <circle r="1.8" fill="#FFF3E2" />
-    </g>
-
-    <clipPath id="lm-arch-clip" clipPathUnits="objectBoundingBox">
-      <path d={cuspedBox} />
-    </clipPath>
-
     <symbol id="lm-foliage-a" viewBox="-20 -20 440 400" overflow="visible" set:html={foliageMarkup(3)} />
     <symbol id="lm-foliage-b" viewBox="-20 -20 440 400" overflow="visible" set:html={foliageMarkup(11)} />
-    <!-- Compatibility id retained for existing consumers; the rendered world is now the haveli. -->
-    <symbol id="lm-palace" viewBox="0 0 1000 420" set:html={haveliMarkup()} />
-    <symbol id="lm-haveli" viewBox="0 0 1000 420" set:html={haveliMarkup()} />
   </defs>
 </svg>
 

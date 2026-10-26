@@ -1,5 +1,10 @@
 # Nature & Stories — complete second theme
 
+> **2026-10-26: Royal Heritage retired.** Nature & Stories is now the only theme, at
+> `/` and `/hi/`. The Royal pages, components, scripts, art and tests were removed
+> (they remain in git history, last present in commit 4abfe05). Old `/royal/…` and
+> `/nature/…` links forward to the matching Nature page. References below to Royal routes and regression checks are historical.
+
 Owner authorization (2026-10-25): independently plan, generate assets, implement
 the entire second theme and verify it without intermediate approval gates.
 This supersedes the per-scene approval gates for this theme only. Royal Heritage

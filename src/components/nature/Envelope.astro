@@ -1,24 +1,22 @@
 ---
-import { Picture, getImage } from 'astro:assets';
-import { type Lang, content, loc, royalHref as href, t, formatDate } from '../../lib/content';
+import { getImage } from 'astro:assets';
+import { type Lang, content, loc, href, t, formatDate } from '../../lib/content';
 import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
-import table from '../../assets/royal-heritage/invitation-table-v1.png';
-import paper from '../../assets/royal-heritage/ivory-floral-paper-v1.png';
+import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
 
-interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; variant?: 'nature' }
-const { lang, id = 'invitation-reveal', invitationHref = href(lang, '/invitation'), continueHref = '#journey', variant } = Astro.props;
+/** The letter chapter: an envelope on the garden table that opens as the guest scrolls. The backdrop slot holds the scene art. */
+interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string }
+const { lang, id = 'invitation', invitationHref = href(lang, '/invitation'), continueHref = '#celebrations' } = Astro.props;
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
 ---
-<section id={id} class:list={['envelope-scene', { 'envelope-nature': variant === 'nature' }]} data-envelope aria-labelledby="envelope-title"
+<section id={id} class="envelope-scene" data-envelope aria-labelledby="envelope-title"
   style={`--paper-material: url('${paperMaterial.src}')`}>
-  <div class:list={['envelope-viewport', { 'ns-scene': variant === 'nature' }]}>
+  <div class="envelope-viewport ns-scene">
     <div class="envelope-backdrop" aria-hidden="true">
-      {Astro.slots.has('backdrop') ? <slot name="backdrop" /> : <Picture src={table} formats={['avif', 'webp']} fallbackFormat="webp" widths={[768, 1280, 1672]}
-        sizes="(max-aspect-ratio: 16/9) 178svh, 100vw" quality={55}
-        alt="" loading="lazy" decoding="async" />}
+      <slot name="backdrop" />
     </div>
     <header class="envelope-heading">
       <p class="eyebrow">{t(lang, 'invitation')}</p>
@@ -88,25 +86,13 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     --sheen-position: 140%;
     --sheen-opacity: 0;
     position: relative;
-    background: #21140f;
+    background: #172e28;
     isolation: isolate;
   }
-  .envelope-scene[data-enhanced] { min-height: calc(max(34rem, 100svh) + clamp(2000px, 280svh, 3400px)); }
-  .envelope-nature { background: #172e28; }
-  .envelope-nature .envelope-backdrop::after { background: var(--ns-shade-invitation,linear-gradient(#172e2877, #172e2844 15%, transparent 40% 70%, #172e28)); }
-  .envelope-nature .envelope-backdrop :global(img) { object-position: center; }
-  .envelope-nature[data-enhanced] { min-height: 0; }
-  .envelope-nature .envelope-viewport { height: var(--ns-screen, 100svh); }
-  .envelope-nature[data-enhanced] .envelope-viewport { position: sticky; top: 0; }
-  .envelope-viewport { position: relative; height: max(34rem, 100svh); overflow: clip; }
+  .envelope-viewport { position: relative; height: var(--ns-screen, 100svh); overflow: clip; }
   [data-enhanced] .envelope-viewport { position: sticky; top: 0; }
   .envelope-backdrop { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-  .envelope-backdrop :global(picture), .envelope-backdrop :global(img) { display: block; width: 100%; height: 100%; }
-  .envelope-backdrop :global(img) { object-fit: cover; object-position: 50% 64%; }
-  .envelope-backdrop::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(#21140f 0%, rgb(33 20 15 / .55) 12%, rgb(33 20 15 / .12) 40% 70%, #21140f 100%);
-  }
+  .envelope-backdrop::after { content: ''; position: absolute; inset: 0; background: var(--ns-shade-invitation); }
   .envelope-heading {
     position: relative; z-index: 2; text-align: center;
     padding: calc(var(--header-h) + 1.5rem) var(--gutter) 0;

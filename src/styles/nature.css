@@ -1,4 +1,4 @@
-/* Isolated second-theme palette. Royal Heritage does not match this selector. */
+/* Nature & Stories palette (the site's only theme), layered over tokens.css. */
 html[data-theme='nature'] {
   --color-midnight: #172e28; --color-indigo: #213b32; --color-plum: #304b3c;
   --color-ivory: #fff3e4; --color-parchment: #f1ddc3; --color-antique-gold: #b08a52;
@@ -151,7 +151,6 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-menu summary::-webkit-details-marker { display: none; }
 .ns-menu nav { position: absolute; right: max(1rem,4vw); top: 76px; width: min(320px, calc(100vw - 2rem)); padding: 1rem 1.5rem; background: #172e28f5; border: 1px solid #efd2a055; border-radius: 8px; backdrop-filter: blur(18px); box-shadow: 0 20px 60px #0005; }
 .ns-menu nav a { display: block; padding: .65rem 0; min-height: 44px; text-decoration: none; font-family: var(--font-display); font-size: 1.35rem; border-bottom: 1px solid #efd2a022; }
-.ns-menu nav .ns-compare { font-family: var(--font-ui); font-size: .8rem; color: #efd2a0; }
 .ns-kicker { font-size: .72rem; font-weight: 500; text-transform: uppercase; letter-spacing: .22em; }
 :lang(hi) .ns-kicker { letter-spacing: .02em; font-size: .85rem; text-transform: none; }
 .ns-scene { position: relative; isolation: isolate; }
@@ -282,9 +281,9 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-home :is(.ns-hero > .ns-art,.ns-hero-shade,.ns-story-landscape > .ns-art,.ns-story-shade,.envelope-backdrop,.ns-celebrations > .ns-art,.ns-celebrations-shade,.ns-venue-landscape,.ns-venue-shade,.ns-wishes-landscape,.ns-wishes-shade,.ns-closing > .ns-art,.ns-closing-shade) { bottom: auto; height: var(--ns-canvas); }
 /* The sticky envelope stage lets its backdrop reach under collapsed browser bars; the
    chapter itself still clips. */
-.ns-home .envelope-nature .envelope-viewport { overflow: visible; }
+.ns-home .envelope-scene .envelope-viewport { overflow: visible; }
 .ns-home > section { height: var(--ns-screen); min-height: 0; max-height: none; scroll-margin-top: 0; scroll-snap-align: start; overflow: clip; }
-.ns-home > .envelope-nature[data-enhanced] {
+.ns-home > .envelope-scene[data-enhanced] {
   height: calc(var(--ns-screen) + clamp(2800px, 360svh, 4400px));
   scroll-snap-align: none;
 }
@@ -742,7 +741,7 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
   .ns-wish-atmosphere { display: none; }
 }
 
-/* Final note: Royal-inspired stationery, kept inside Nature's original terrace. */
+/* Final note: ivory stationery on the closing terrace. */
 .ns-closing { position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0,1fr); gap: 1rem; padding: calc(var(--ns-top) + 16px) clamp(1.3rem,5vw,6rem) calc(var(--ns-bottom) + 6px); color: #fff1dc; }
 .ns-closing-shade { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: var(--ns-shade-closing); }
 .ns-note-head { display: flex; align-items: center; gap: 1.2rem; text-shadow: 0 2px 16px #21352ad9; }

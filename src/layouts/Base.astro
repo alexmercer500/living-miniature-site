@@ -10,7 +10,7 @@ import '../styles/global.css';
 import SceneDefs from '../components/scene/SceneDefs.astro';
 import { type Lang, content, loc, t, href } from '../lib/content';
 
-interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: 'nature' }
+interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string }
 const { lang, page = 'home' } = Astro.props;
 const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displayName, 'hi')} — विवाह उत्सव` : content.site.title);
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
@@ -18,13 +18,13 @@ const path = Astro.props.routePath ?? (page === 'invitation' ? '/invitation' : '
 const canonical = new URL(href(lang, path), Astro.site);
 ---
 <!doctype html>
-<html lang={lang} data-theme={Astro.props.theme}>
+<html lang={lang} data-theme="nature">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content={Astro.props.theme === 'nature' ? '#213B32' : '#17172C'} />
+    <meta name="theme-color" content="#213B32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={new URL(href('en', path), Astro.site)} />
