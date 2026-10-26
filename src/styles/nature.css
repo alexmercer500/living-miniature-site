@@ -22,10 +22,18 @@ html[data-theme='nature'] {
   --ns-rim-halo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.9'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
   scroll-padding-top: 0;
 }
-html[data-theme='nature'][data-nature-ready]:has(.ns-home) { scroll-snap-type: y proximity; }
+/* No proximity snapping on the enhanced home. With full-screen chapters it grabbed every
+   small gesture and yanked the page to the nearest boundary, which read as "stuck"; the
+   glide already settles each camera on its end pose at a chapter. Only the dialog scroll
+   locks below still need to force it off. */
 html[data-theme='nature'][data-envelope-active]:has(.ns-home) { scroll-snap-type: none; }
 html[data-theme='nature'][data-journey-scroll]:has(.ns-home) { scroll-snap-type: none; }
 html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: none; }
+/* The shared glide already smooths the visual position. Native smooth-scroll would animate
+   the real position on top of it (two lags stacked), so the paintings fall far behind during
+   any header/dock/anchor jump and the gesture reads as slow. Only the enhanced home opts out;
+   printable pages keep smooth scrolling. */
+html[data-theme='nature']:has(.ns-home) { scroll-behavior: auto; }
 [data-theme='nature'] body { background: #172e28; }
 .ns-home { overflow: clip; }
 /* One decorative fixed camera bridges only the first two normal-flow chapters.
@@ -220,6 +228,16 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-countdown > div { display: grid; min-width: 60px; padding: .7rem; border: 1px solid #efd2a055; }
 .ns-countdown strong { font: 500 2rem var(--font-display); } .ns-countdown span { font-size: .75rem; }
 .ns-footer { padding: 2rem 1rem 7rem; color: #d5d8c6; background: #172e28; text-align: center; font-size: .85rem; display: grid; gap: .5rem; }
+/* The home page ends on the closing painting, not a flat colour slab: the footer turns
+   transparent and is lifted by its own measured height, so the scene's own artwork shows
+   behind the names. --ns-footer-lift is set once the footer has been measured. */
+html[data-theme='nature']:has(.ns-home) .ns-footer {
+  background: transparent;
+  margin-top: calc(-1 * var(--ns-footer-lift, 0px));
+  /* Match the chapters' own bottom clearance so the end-card text clears the dock. */
+  padding-bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 4.75rem));
+}
+html[data-theme='nature']:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0 1px 2px #08140f; }
 .ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28f0; box-shadow: 0 8px 30px #0003; }
 .ns-dock a { display: flex; gap: .4rem; align-items: center; justify-content: center; min-height: 44px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; text-decoration: none; }
 .ns-dock a:hover { color: #efd2a0; }
@@ -431,9 +449,9 @@ html[data-nature-loaded] .ns-veil-mark { opacity: 0; transform: translate3d(0,-8
   100% { opacity: 0; transform: translate3d(calc(var(--drift) * -.4),106vh,0) rotate(var(--turn)); }
 }
 @keyframes ns-hero-arrive {
-  0% { opacity: 0; transform: translate3d(0,24px,0) scale(.975); filter: blur(6px); }
-  72% { opacity: 1; transform: translate3d(0,-1px,0) scale(1.002); filter: blur(0); }
-  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); filter: blur(0); }
+  0% { opacity: 0; transform: translate3d(0,24px,0) scale(.975); }
+  72% { opacity: 1; transform: translate3d(0,-1px,0) scale(1.002); }
+  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
 }
 
 /* Journey: paper keepsakes, actual cord/peg anchors, independent wind pivots. */

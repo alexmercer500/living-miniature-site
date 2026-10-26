@@ -55,6 +55,7 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta property="og:image:alt" content={loc(content.couple.displayName, lang)} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">{t(lang, 'skipToContent')}</a>

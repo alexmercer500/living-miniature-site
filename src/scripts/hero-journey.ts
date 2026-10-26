@@ -15,9 +15,10 @@ export function setupHeroJourney(root: HTMLElement,ScrollTrigger: ScrollTriggerT
   if(!hero||!journey||!bridge) return ()=>{};
   const images=[...bridge.querySelectorAll<HTMLImageElement>('img')];
   const imageAttributes=images.map(img=>({img,loading:img.loading,priority:img.getAttribute('fetchpriority')}));
-  // Only no-preference clients request this decorative camera ahead of time.
-  // Identical approved URLs share the browser cache with the original artwork.
-  images.forEach(img=>{img.loading='eager';img.fetchPriority='low';});
+  // Only no-preference clients request this decorative camera ahead of time. These are the
+  // images that gate the handoff, so they are pulled above ordinary below-the-fold art; the
+  // identical approved URLs still share the browser cache with the original artwork.
+  images.forEach(img=>{img.loading='eager';img.fetchPriority='high';});
   const hangers=[...journey.querySelectorAll<HTMLElement>('[data-memory-hanger]')];
   const path=journey.querySelector<SVGPathElement>('.ns-path path');
   // Variables live on the few elements that read them: writing them on <main> would
