@@ -29,7 +29,15 @@ export function flourishState(progress:number) {
   });
   // A warm band of light glides across the new scene while it settles.
   const settle=scenePhase(s.progress,.5,.97);
+  // Depth: near-foreground bougainvillea hang into the top corners, then grow and slide
+  // outward faster than the painting zooms, as if the camera passes through them.
+  const pass=scenePhase(s.progress,.04,.72);
+  const fronds={
+    scale:1+.85*pass,x:-(4+30*pass),y:-(2+26*pass),
+    opacity:scenePhase(s.progress,0,.12)*(1-scenePhase(s.progress,.45,.74))*.95,
+  };
   return {
+    fronds,
     sweep:{x:-75+150*settle,opacity:settle===0||settle===1?0:Math.sin(Math.PI*settle)*.9},
     petals,
     // The rim rides the wipe layer itself; it traces the edge's half-opacity contour.

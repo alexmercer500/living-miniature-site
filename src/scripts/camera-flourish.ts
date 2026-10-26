@@ -7,12 +7,19 @@ type Set = (el:HTMLElement|SVGElement|null|undefined,key:string,value:string|num
 export function cameraFlourish(bridge:HTMLElement) {
   const rim=bridge.querySelector<HTMLElement>('.ns-flourish-rim');
   const sweep=bridge.querySelector<HTMLElement>('.ns-flourish-sweep');
+  const frondLeft=bridge.querySelector<HTMLElement>('.ns-flourish-frond.left');
+  const frondRight=bridge.querySelector<HTMLElement>('.ns-flourish-frond.right');
   const petals=[...bridge.querySelectorAll<HTMLElement>('.ns-flourish-petal')];
   // Camera-height unit, matching the bridge's own lvh height.
   const unit=CSS.supports('height','1lvh')?'lvh':'vh';
   return (progress:number,set:Set)=>{
     const f=flourishState(progress);
     set(rim,'transform',`translate3d(0,${round(f.rim.wipe)}%,0)`);set(rim,'opacity',f.rim.opacity);
+    set(frondLeft,'opacity',f.fronds.opacity);set(frondRight,'opacity',f.fronds.opacity);
+    if(f.fronds.opacity>0){
+      set(frondLeft,'transform',`translate3d(${round(f.fronds.x)}%,${round(f.fronds.y)}%,0) scale(${round(f.fronds.scale)})`);
+      set(frondRight,'transform',`translate3d(${round(-f.fronds.x)}%,${round(f.fronds.y)}%,0) scale(${round(f.fronds.scale)})`);
+    }
     set(sweep,'opacity',f.sweep.opacity);
     if(f.sweep.opacity>0)set(sweep,'transform',`translate3d(${round(f.sweep.x)}%,0,0)`);
     petals.forEach((el,i)=>{

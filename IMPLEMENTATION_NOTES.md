@@ -2,6 +2,19 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Fancier handoffs (2026-10-26, `development`), all scroll-driven, reversible and
+invisible at both camera endpoints (`camera-flourish-state.ts`, `CameraFlourish.astro`):
+candle-gold rim tracing the reveal edge (static SVG contour XOR-masks, flicker via
+wrapper opacity only), petals and sparks lifting off the edge, a late-sun light
+sweep, and near-foreground bougainvillea that pass the camera for depth (code-only;
+true layered art would need segmented paintings). Elsewhere: the visible
+envelope/Final Note card morphs into the invitation page (cross-document View
+Transitions, `invitation-morph.ts`); hero tilt/pointer parallax (`tilt-parallax.ts`,
+iOS asks on the lantern tap); a short seal-crack haptic (`haptics.ts`); and
+per-chapter music moods incl. synthesised keherwa tabla and chimes (`music.ts`).
+Rule kept: per-frame changes only on composited wrappers; never inside masked or
+filtered layers (that re-rasterises them every frame).
+
 Transition smoothness pass (2026-10-26, `development`): same poses, cheaper frames.
 - Reveal: the feathered edge is a static mask on a 125%-tall layer that moves by
   transform while its camera counter-moves (`wipe`/`counter` in

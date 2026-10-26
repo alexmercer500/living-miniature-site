@@ -4,7 +4,7 @@ import { flourishState } from '../src/lib/camera-flourish-state.ts';
 import { heroJourneyState } from '../src/lib/hero-journey-state.ts';
 
 test('flourishes are invisible at both camera endpoints, so handoffs stay exact',()=>{
-  for(const p of [0,1,-1,2]){const f=flourishState(p);assert.equal(f.rim.opacity,0);assert.equal(f.sweep.opacity,0);assert.ok(f.petals.every(x=>x.opacity===0));}
+  for(const p of [0,1,-1,2]){const f=flourishState(p);assert.equal(f.rim.opacity,0);assert.equal(f.sweep.opacity,0);assert.equal(f.fronds.opacity,0);assert.ok(f.petals.every(x=>x.opacity===0));}
 });
 test('rim rides the reveal edge and glows only mid-handoff',()=>{
   for(let i=1;i<100;i++){
@@ -22,4 +22,8 @@ test('petals are pure functions of progress: scrolling back replays them exactly
 test('light sweep crosses once, only while the new scene settles',()=>{
   assert.equal(flourishState(.4).sweep.opacity,0);assert.ok(flourishState(.73).sweep.opacity>.85);
   let last=-Infinity;for(let i=0;i<=100;i++){const x=flourishState(i/100).sweep.x;assert.ok(x>=last);last=x;}
+});
+test('near-foreground fronds pass the camera early and are gone well before the end',()=>{
+  assert.ok(flourishState(.2).fronds.opacity>.8);assert.equal(flourishState(.75).fronds.opacity,0);
+  assert.ok(flourishState(.6).fronds.scale>flourishState(.2).fronds.scale);
 });
