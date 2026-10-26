@@ -840,3 +840,13 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
   .ns-note-floral { width: 65px; }
 }
 @media (prefers-reduced-motion: reduce), (scripting: none) { .ns-note-atmosphere { display: none; } }
+
+/* Page transition into the full invitation (scripts/invitation-morph.ts): the card a guest
+   is looking at morphs into the invitation card; every other navigation cross-fades. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-group(root) { animation-duration: .55s; }
+  ::view-transition-group(ns-invitation),::view-transition-group(ns-invitation-names) { animation-duration: .85s; animation-timing-function: cubic-bezier(.22,.8,.2,1); }
+  ::view-transition-image-pair(ns-invitation) { overflow: hidden; border-radius: 4px; box-shadow: 0 30px 90px #0006; }
+  ::view-transition-old(ns-invitation-names),::view-transition-new(ns-invitation-names) { height: 100%; object-fit: contain; }
+}

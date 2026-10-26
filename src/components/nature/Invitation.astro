@@ -35,6 +35,9 @@ const c = natureCopy[lang], p = content.invitation.placeholders;
 </script>
 <style>
   .ns-invite-page { min-height: 100svh; padding: 110px var(--gutter) 70px; background: radial-gradient(at 15% 0,#516c50,transparent 60%), #213b32; display: grid; justify-items: center; gap: 2rem; }
+  /* Morph targets for the page transition from the home page (scripts/invitation-morph.ts). */
+  .ns-invite-card { view-transition-name: ns-invitation; }
+  #ns-invite-title { view-transition-name: ns-invitation-names; }
   .ns-invite-card { max-width: 700px; width: 100%; padding: .8rem; color: #42513d; background: #fff3e4; box-shadow: 0 30px 90px #0005; }
   .ns-invite-border { display: grid; justify-items: center; gap: 1.3rem; padding: 3rem clamp(1rem,5vw,3rem); border: 1px solid #b08a5280; outline: 1px solid #b08a5233; outline-offset: -6px; text-align: center; background: radial-gradient(at 0 0,#a1b18c33,transparent 45%),radial-gradient(at 100% 100%,#f2a27d33,transparent 45%); }
   h1 { font-size: clamp(2.4rem,6vw,4rem); color: #425d43; }

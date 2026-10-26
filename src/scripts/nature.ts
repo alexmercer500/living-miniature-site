@@ -4,6 +4,7 @@ import { setupWishes } from './wishes';
 import { setupHeroJourney } from './hero-journey';
 import { setupSceneTransitions } from './scene-transitions';
 import { scrollGlide } from './scroll-glide';
+import { setupInvitationMorph } from './invitation-morph';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -33,6 +34,7 @@ export async function setupNature() {
   cleanups.push(setupKeepsakes(root, motion));
   cleanups.push(setupVenue(root, motion));
   cleanups.push(setupWishes(root, motion));
+  cleanups.push(setupInvitationMorph(root));
 
   document.querySelectorAll<HTMLAnchorElement>('[data-nature-locale]').forEach(link => {
     link.addEventListener('click', () => {
