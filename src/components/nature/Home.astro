@@ -19,13 +19,30 @@ import { type Lang, content, loc, t, formatDate } from '../../lib/content';
 import { natureHref, natureCopy } from '../../lib/nature-content';
 import { landscapes } from '../../lib/nature-assets';
 import { artPreview } from '../../lib/art-preview';
+import { artSources } from '../../lib/art-sources';
 import '../../styles/nature.css';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang];
 const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero.mobile), artPreview(landscapes.hero.desktop)]);
+// Ask for every chapter painting with the HTML, before anything has to be laid out: the scene you
+// scroll into then never shows its soft inline placeholder, and each camera handoff has its art
+// decoded by the time it is needed. AVIF only — a browser without AVIF skips the hint and loads
+// the WebP the <picture> asks for, and the URL matches the srcset exactly, so nothing loads twice.
+const paintingPreloads = (await Promise.all(Object.values(landscapes).map(async painting => {
+  const { sources } = await artSources(painting.mobile, painting.desktop);
+  return sources.find(source => source.type === 'image/avif')!;
+}))).filter(p => p.desktop);
 ---
 <Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
+  <Fragment slot="head">
+    {paintingPreloads.map(p => (
+      <Fragment>
+        {p.desktop && <link rel="preload" as="image" type="image/avif" media="(min-width: 768px) and (min-aspect-ratio: 1/1)" imagesrcset={p.desktop} imagesizes="100vw" />}
+        <link rel="preload" as="image" type="image/avif" media="(max-width: 767px), (max-aspect-ratio: 1/1)" imagesrcset={p.mobile} imagesizes="100vw" />
+      </Fragment>
+    ))}
+  </Fragment>
   <script is:inline>
     // Personal links (`?to=Sharma Parivar`) greet the family by name. The name lives only in
     // the link and on this device; it is written as text, never as HTML.
@@ -97,6 +114,11 @@ const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero
   import { setupEnvelope } from '../../scripts/envelope';
   const initialHash = location.hash;
   let interrupted = false;
+  // Ask for the chapter paintings as soon as this module runs — the DOM is parsed by then, and
+  // this is well before the camera scripts finish loading GSAP or the fonts settle. They are
+  // requested at low priority, so the hero (eager, high) and the art of the chapter you are
+  // heading into (requested eagerly by the camera bridges) still win a slow connection.
+  for (const image of document.querySelectorAll<HTMLImageElement>('[data-nature-image][loading="lazy"]')) { image.loading = 'eager'; image.fetchPriority = 'low'; }
   const interrupt = () => { interrupted = true; };
   const inputEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown'] as const;
   inputEvents.forEach(event => window.addEventListener(event, interrupt, { passive: true }));
@@ -107,7 +129,7 @@ const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero
     await document.fonts.ready;
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
     // ScrollTrigger/font initialization can restore the pre-hash scroll position.
-    // Resolve the original deep link once, before enabling proximity snapping.
+    // Resolve the original deep link once, before the cameras start following scroll.
     // Never override a guest who has already started scrolling or navigating.
     if (!interrupted && initialHash && location.hash === initialHash) {
       let target: HTMLElement | null = null;
@@ -115,6 +137,14 @@ const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero
       if (target?.closest('[data-nature-root]')) window.scrollTo({ top: scrollY + target.getBoundingClientRect().top, behavior: 'instant' });
     }
     document.documentElement.dataset.natureReady = '';
+    // The footer rides over the closing painting by its own height, so measure it once the
+    // fonts are in (and again on resize) and hand the value to the stylesheet.
+    const footer = document.querySelector<HTMLElement>('.ns-footer');
+    if (footer) {
+      const lift = () => document.documentElement.style.setProperty('--ns-footer-lift', `${footer.offsetHeight}px`);
+      lift();
+      window.addEventListener('resize', lift);
+    }
     inputEvents.forEach(event => window.removeEventListener(event, interrupt));
   });
 </script>

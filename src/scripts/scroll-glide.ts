@@ -1,27 +1,30 @@
 type GsapType = typeof import('gsap').gsap;
 
-/** The cameras' original glide: ScrollTrigger `scrub: .85` (expo-out over .85s) expressed
- *  as exponential smoothing. One coordinate is shared by every camera, so neighbouring
- *  handoffs always agree and none can snap to its end pose while another is mid-flight. */
-export const GLIDE_SECONDS=.85;
+/** How long the smoothed coordinate takes to catch the real scroll. This is the whole "weight"
+ *  of every camera move: raise it for a slower, softer glide. It is plain exponential smoothing,
+ *  so the pose is always continuous — nothing is ever clamped or cut mid-scroll. */
+export const GLIDE_SECONDS=.7;
 const TAU=GLIDE_SECONDS/(10*Math.LN2);
 
 export type Glide = ReturnType<typeof scrollGlide>;
 
 export function scrollGlide(gsap:GsapType) {
-  let y=scrollY,scroll=y,running=false,disposed=false;
+  let y=scrollY,scroll=y,running=false,resting=true,disposed=false;
   const listeners=new Set<()=>void>();
   const notify=()=>listeners.forEach(fn=>fn());
   // Runs first in GSAP's frame (before tweens write styles), so reading scrollY is free.
   const tick=(_time:number,deltaMs:number)=>{
     scroll=scrollY;
     const gap=scroll-y;
-    // Hash links/scripted jumps of more than a screen and a half land immediately.
-    if(Math.abs(gap)<.5||Math.abs(gap)>innerHeight*1.5){y=scroll;stop();}
+    const fromRest=resting;resting=false;
+    // A hash link or a scripted jump lands at once — but only when it arrives while the glide is
+    // at rest. A fast flick opens a wide gap too, and that one has to glide: cutting it is exactly
+    // the "snap" the eye reads as a broken animation. Mid-flight only an absurd gap lands at once.
+    if(Math.abs(gap)<.5||Math.abs(gap)>innerHeight*(fromRest?1.5:4)){y=scroll;stop();}
     else y+=gap*(1-Math.exp(-Math.min(deltaMs,100)/1000/TAU));
     notify();
   };
-  const stop=()=>{if(running){running=false;gsap.ticker.remove(tick);}};
+  const stop=()=>{if(running){running=false;resting=true;gsap.ticker.remove(tick);}};
   const wake=()=>{if(!disposed&&!running){running=true;gsap.ticker.add(tick,false,true);}};
   window.addEventListener('scroll',wake,{passive:true});
   return {

@@ -80,7 +80,7 @@ export function setupSceneTransitions(root:HTMLElement,ScrollTrigger:ScrollTrigg
     };
     const prepare=()=>{
       if(prepared)return;
-      prepared=true;bridge.dataset.prepared='';images.forEach(img=>{img.loading='eager';img.fetchPriority='low';});check();
+      prepared=true;bridge.dataset.prepared='';images.forEach(img=>{img.loading='eager';img.fetchPriority='high';});check();
     };
     images.forEach(img=>{img.addEventListener('load',check);img.addEventListener('error',check);});
     return [{bridge,source,target,raw,render,
