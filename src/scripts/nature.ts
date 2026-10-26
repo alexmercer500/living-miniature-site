@@ -5,6 +5,7 @@ import { setupHeroJourney } from './hero-journey';
 import { setupSceneTransitions } from './scene-transitions';
 import { scrollGlide } from './scroll-glide';
 import { setupInvitationMorph } from './invitation-morph';
+import { setupTiltParallax } from './tilt-parallax';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -103,6 +104,8 @@ export async function setupNature() {
     let clearHeroJourney=()=>{};
     let clearScenes=()=>{};
     const glide=scrollGlide(gsap);
+    const hero=q('#welcome');
+    const clearTilt=hero?setupTiltParallax(hero):()=>{};
     const context = gsap.context(() => {
       clearHeroJourney=setupHeroJourney(root,ScrollTrigger,glide);
       clearScenes=setupSceneTransitions(root,ScrollTrigger,glide);
@@ -110,7 +113,7 @@ export async function setupNature() {
     }, root);
 
     document.fonts.ready.then(() => ScrollTrigger.refresh());
-    return () => { context.revert(); clearHeroJourney(); clearScenes(); glide.dispose(); };
+    return () => { context.revert(); clearHeroJourney(); clearScenes(); glide.dispose(); clearTilt(); };
   });
   cleanups.push(() => media.revert());
   window.addEventListener('pagehide', () => cleanups.forEach(clean => clean()), { once: true });
