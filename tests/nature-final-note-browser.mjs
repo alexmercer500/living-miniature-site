@@ -39,7 +39,7 @@ try {
       names:s.querySelector('#ns-note-names').textContent,message:s.querySelector('.ns-note-message').textContent,
       copy:[...s.querySelector('.ns-note-copy').children].map(e=>{const b=e.getBoundingClientRect();return {text:e.textContent,top:b.top,bottom:b.bottom,left:b.left,right:b.right};}),
       actions:[...s.querySelectorAll('.ns-note-actions a')].map(e=>{const b=e.getBoundingClientRect();return {top:b.top,bottom:b.bottom,height:b.height,left:b.left,right:b.right,href:e.getAttribute('href')};}),
-      opacity:getComputedStyle(s.querySelector('[data-note-arrival]')).opacity,float:getComputedStyle(s.querySelector('.ns-note-float')).animationName,
+      opacity:getComputedStyle(s.querySelector('[data-note-arrival]')).opacity,float:getComputedStyle(s.querySelector('[data-note-arrival]')).animationName,
       glint:getComputedStyle(s.querySelector('.ns-note-glint')).opacity,ready:s.querySelector('img').naturalWidth>0,src:s.querySelector('img').currentSrc,
       floral:s.querySelectorAll('.ns-note-floral').length,overflow:getComputedStyle(s).overflowY,
       refs:[...s.querySelectorAll('*')].flatMap(e=>[...e.attributes].flatMap(a=>[...a.value.matchAll(/url\\(#([^)]*)\\)/g)].map(m=>m[1]).concat(a.name==='href'&&a.value.startsWith('#')?[a.value.slice(1)]:[]))).filter(id=>!document.getElementById(id))

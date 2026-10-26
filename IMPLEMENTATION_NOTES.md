@@ -2,6 +2,30 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Transition smoothness pass (2026-10-26, `development`): same poses, cheaper frames.
+- Reveal: the feathered edge is a static mask on a 125%-tall layer that moves by
+  transform while its camera counter-moves (`wipe`/`counter` in
+  `hero-journey-state.ts`); no mask/clip-path string is regenerated per frame.
+- Cameras write `transform`/`opacity` on each layer, never inherited custom
+  properties on `<main>` or the bridge (those restyled both foliage `<use>`
+  clones every frame). `style-writer.ts` skips unchanged writes and restores.
+- One shared glide (`scroll-glide.ts`, the former `scrub: .85` expo-out as
+  exponential smoothing) drives every camera, so neighbouring handoffs can't
+  overlap or snap at boundaries; jumps over 1.5 screens land at once.
+- Bridge art is `decode()`d before use; `will-change` only while a camera is active.
+- Envelope: ARIA/label text written only on change (was every frame, forcing
+  layout and `html:has()` re-matching); variables skip unchanged values.
+- Chapters use `svh` (stable while mobile browser bars hide/show; `dvh` resized
+  every chapter mid-gesture and left scroll ranges stale). Full-bleed art,
+  shades and fixed cameras use `lvh` so their crops match exactly.
+- Lantern flame and festoon bulbs animate as whole `<svg>` boxes (compositor),
+  not SVG children; the final-note shadow sits inside its breathing wrapper.
+- Header/dock backdrop blur removed (≥90% opaque, re-blurred the scene per frame).
+- Mobile `.ns-events` no longer has vertical overflow capturing page swipes.
+Measured, 390×844, 4× CPU slowdown, wheel gestures: handoff median frame time
+33–117 ms → 16.7 ms on the first five handoffs. Mid-transition screenshots match
+the previous build (mean pixel difference ≈1/255). Real-device check still needed.
+
 All-chapter scroll flow (2026-10-26): the approved Hero/Journey camera is retained
 and five later unpinned cameras reuse its feathered reveal and timing, through
 the Final Note. `SceneBridges.astro` contains only inert decorative Art/Foliage;

@@ -1,4 +1,5 @@
 import { envelopeLayout, envelopeState, envelopeTimings, envelopeScrollProgress } from '../lib/envelope-state';
+import { styleWriter } from './style-writer';
 
 export async function setupEnvelope() {
   const scene = document.querySelector<HTMLElement>('[data-envelope]');
@@ -22,11 +23,10 @@ export async function setupEnvelope() {
     const driver = { progress: 0 };
     const viewport = scene.firstElementChild as HTMLElement;
     const rig = scene.querySelector<HTMLElement>('.envelope-rig')!;
-    const properties = new Set<string>();
-    const set = (key: string, value: string | number) => {
-      properties.add(`--${key}`);
-      scene.style.setProperty(`--${key}`, String(value));
-    };
+    // Unchanged values are skipped, so a held pose costs no style work at all.
+    const writer = styleWriter();
+    const set = (key: string, value: string | number) => writer.set(scene, `--${key}`, value);
+    let lastUsable: boolean | undefined;
     let cardHeight = card.offsetHeight;
     let rigHeight = rig.offsetHeight;
     let sealHeight = button.querySelector<HTMLElement>('.wax-seal')!.offsetHeight;
@@ -77,11 +77,16 @@ export async function setupEnvelope() {
       set('control-top', `${rigHeight * .4 + (finalControlTop - rigHeight * .4) * pose.present}px`);
       // Never hide focused invitation content when a guest reverses scroll.
       const usable = state.present === 1 || focusedCard;
-      card.inert = !usable;
-      card.setAttribute('aria-hidden', String(!usable));
-      button.setAttribute('aria-expanded', String(usable));
-      label.textContent = (usable ? button.dataset.labelClose : button.dataset.labelOpen) ?? '';
-      button.setAttribute('aria-label', label.textContent);
+      // DOM/ARIA writes only on change: rewriting the label text every frame forced
+      // layout and document-wide :has() re-matching on each scroll frame.
+      if (usable !== lastUsable) {
+        lastUsable = usable;
+        card.inert = !usable;
+        card.setAttribute('aria-hidden', String(!usable));
+        button.setAttribute('aria-expanded', String(usable));
+        label.textContent = (usable ? button.dataset.labelClose : button.dataset.labelOpen) ?? '';
+        button.setAttribute('aria-label', label.textContent);
+      }
       const name = usable ? 'open' : state.progress <= .01 ? 'closed' : 'moving';
       if (name !== lastState && name !== 'moving') status.textContent = status.dataset[name] ?? '';
       lastState = name;
@@ -153,7 +158,7 @@ export async function setupEnvelope() {
       animation.scrollTrigger?.kill();
       animation.kill();
       delete scene.dataset.enhanced;
-      for (const key of properties) scene.style.removeProperty(key);
+      writer.restore();
       button.hidden = true;
       hint.hidden = true;
       card.inert = false;

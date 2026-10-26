@@ -6,7 +6,7 @@ import { sceneTransitionState,sceneEntryState,sceneHandoffRange } from '../src/l
 test('later cameras preserve the approved first transition at every scroll position',()=>{
   for(let i=0;i<=100;i++)assert.deepEqual(sceneTransitionState(i/100),heroJourneyState(i/100));
   const last=sceneTransitionState(.5,true),first=heroJourneyState(.5);
-  assert.equal(last.mask,first.mask);assert.equal(last.incomingScale,first.incomingScale);
+  assert.equal(last.wipe,first.wipe);assert.equal(last.counter,first.counter);assert.equal(last.incomingScale,first.incomingScale);
   assert.ok(last.outgoingScale<first.outgoingScale&&last.outgoingScale>1);
 });
 test('all arrival groups are bounded, staggered, reversible and readable before the anchor',()=>{

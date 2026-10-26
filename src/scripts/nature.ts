@@ -3,6 +3,7 @@ import { setupVenue } from './venue';
 import { setupWishes } from './wishes';
 import { setupHeroJourney } from './hero-journey';
 import { setupSceneTransitions } from './scene-transitions';
+import { scrollGlide } from './scroll-glide';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -99,14 +100,15 @@ export async function setupNature() {
   media.add('(prefers-reduced-motion: no-preference)', () => {
     let clearHeroJourney=()=>{};
     let clearScenes=()=>{};
+    const glide=scrollGlide(gsap);
     const context = gsap.context(() => {
-      clearHeroJourney=setupHeroJourney(root,gsap);
-      clearScenes=setupSceneTransitions(root,gsap);
+      clearHeroJourney=setupHeroJourney(root,ScrollTrigger,glide);
+      clearScenes=setupSceneTransitions(root,ScrollTrigger,glide);
       gsap.to(document.querySelector('[data-nature-progress]'), { scaleX: 1, ease: 'none', scrollTrigger: { trigger: root, start: 'top top', end: 'bottom bottom', scrub: .25 } });
     }, root);
 
     document.fonts.ready.then(() => ScrollTrigger.refresh());
-    return () => { context.revert(); clearHeroJourney(); clearScenes(); };
+    return () => { context.revert(); clearHeroJourney(); clearScenes(); glide.dispose(); };
   });
   cleanups.push(() => media.revert());
   window.addEventListener('pagehide', () => cleanups.forEach(clean => clean()), { once: true });
