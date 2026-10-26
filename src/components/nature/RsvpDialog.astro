@@ -1,0 +1,56 @@
+---
+/**
+ * RSVP without a server: the guest fills a short form and it opens WhatsApp with the
+ * reply already written, addressed to `rsvp.whatsapp` (scripts/rsvp.ts). Nothing is
+ * stored anywhere except a draft on the guest's own device.
+ */
+import Icon from '../Icon.astro';
+import LotusMark from '../LotusMark.astro';
+import Contacts from './Contacts.astro';
+import { type Lang, content, loc, t, formatDate } from '../../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const deadline = formatDate(content.rsvp.deadline, lang);
+const labels = {
+  heading: `${loc(content.rsvp.label, lang)} · ${loc(content.couple.displayName, lang)}`,
+  yes: t(lang, 'rsvpYes'), no: t(lang, 'rsvpNo'), guests: t(lang, 'rsvpGuests'),
+  events: t(lang, 'rsvpEvents'), note: t(lang, 'rsvpMessageNote'),
+};
+---
+<dialog id="ns-rsvp" class="ns-sheet-dialog" aria-labelledby="ns-rsvp-title">
+  <form class="ns-sheet" data-rsvp-form data-whatsapp={content.rsvp.whatsapp} data-labels={JSON.stringify(labels)}>
+    <button class="ns-sheet-close" type="button" data-sheet-close aria-label={t(lang, 'close')}><Icon name="close" /></button>
+    <header class="ns-sheet-head">
+      <LotusMark class="ns-lotus" />
+      <h2 id="ns-rsvp-title">{t(lang, 'rsvpTitle')}</h2>
+      <p>{t(lang, 'rsvpIntro')}</p>
+      {deadline && <p class="ns-sheet-deadline">{t(lang, 'rsvpBy').replace('{date}', deadline)}</p>}
+    </header>
+    <fieldset class="ns-rsvp-attend">
+      <legend class="visually-hidden">{t(lang, 'rsvpTitle')}</legend>
+      <label><input type="radio" name="attend" value="yes" checked /><span>{t(lang, 'rsvpYes')}</span></label>
+      <label><input type="radio" name="attend" value="no" /><span>{t(lang, 'rsvpNo')}</span></label>
+    </fieldset>
+    <label class="ns-field"><span>{t(lang, 'rsvpName')}</span><input name="name" required maxlength="60" autocomplete="name" /></label>
+    <div class="ns-rsvp-coming" data-rsvp-coming>
+      <div class="ns-field ns-guests">
+        <span id="ns-rsvp-guests-label">{t(lang, 'rsvpGuests')}</span>
+        <div class="ns-stepper">
+          <button type="button" data-step="-1" aria-label={t(lang, 'rsvpFewer')}>−</button>
+          <input name="guests" type="number" inputmode="numeric" min="1" max="20" value="1" aria-labelledby="ns-rsvp-guests-label" />
+          <button type="button" data-step="1" aria-label={t(lang, 'rsvpMore')}>+</button>
+        </div>
+      </div>
+      {content.events.length > 1 && (
+        <fieldset class="ns-field ns-rsvp-events">
+          <legend>{t(lang, 'rsvpEvents')}</legend>
+          {content.events.map(event => <label><input type="checkbox" name="events" value={loc(event.title, lang)} checked /><span>{loc(event.title, lang)}</span></label>)}
+        </fieldset>
+      )}
+    </div>
+    <label class="ns-field"><span>{t(lang, 'rsvpNote')}</span><textarea name="note" rows="2" maxlength="300"></textarea></label>
+    <button class="ns-button" type="submit"><Icon name="chat" />{t(lang, 'rsvpSend')}</button>
+    <p class="ns-sheet-status" role="status" data-rsvp-status data-sent={t(lang, 'rsvpSent')}></p>
+    <Contacts lang={lang} />
+  </form>
+</dialog>

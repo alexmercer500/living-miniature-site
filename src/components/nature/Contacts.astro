@@ -1,0 +1,24 @@
+---
+/** Call / WhatsApp buttons for the family contacts; renders nothing until a real number is set. */
+import Icon from '../Icon.astro';
+import { type Lang, contacts, loc, t, telHref, whatsappHref } from '../../lib/content';
+interface Props { lang: Lang; class?: string }
+const { lang, class: cls } = Astro.props;
+const people = contacts();
+---
+{people.length > 0 && (
+  <div class:list={['ns-contacts', cls]}>
+    <p class="ns-contacts-title">{t(lang, 'contactsTitle')}</p>
+    <ul>
+      {people.map(person => (
+        <li>
+          <span class="ns-contact-name">{loc(person.name, lang)}<small>{loc(person.role, lang)}</small></span>
+          <span class="ns-contact-actions">
+            {person.phone && <a href={telHref(person.phone)} aria-label={`${t(lang, 'call')}: ${loc(person.name, lang)}`}><Icon name="phone" />{t(lang, 'call')}</a>}
+            {(person.whatsapp || person.phone) && <a href={whatsappHref(person.whatsapp || person.phone)} target="_blank" rel="noopener" aria-label={`${t(lang, 'whatsapp')}: ${loc(person.name, lang)}`}><Icon name="chat" />{t(lang, 'whatsapp')}</a>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

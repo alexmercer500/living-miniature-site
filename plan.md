@@ -1,5 +1,10 @@
 # Cinematic Luxury Indian Wedding Invitation
 
+> **2026-10-26: Royal Heritage retired.** Nature & Stories is now the only theme, at
+> `/` and `/hi/`. The Royal pages, components, scripts, art and tests were removed
+> (they remain in git history, last present in commit 4abfe05). Old `/royal/…` and
+> `/nature/…` links forward to the matching Nature page. This plan is kept as the historical record of the Royal build.
+
 ## Source of truth
 
 2026-10-25 update: owner authorized a complete, independent Nature & Stories

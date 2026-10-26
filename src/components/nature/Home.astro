@@ -4,6 +4,7 @@ import Header from './Header.astro';
 import Art from './Art.astro';
 import HeroLantern from './HeroLantern.astro';
 import HeroAtmosphere from './HeroAtmosphere.astro';
+import OpeningVeil from './OpeningVeil.astro';
 import HeroJourneyBridge from './HeroJourneyBridge.astro';
 import SceneBridges from './SceneBridges.astro';
 import Keepsakes from './Keepsakes.astro';
@@ -11,18 +12,34 @@ import Celebrations from './Celebrations.astro';
 import Venue from './Venue.astro';
 import Wishes from './Wishes.astro';
 import FinalNote from './FinalNote.astro';
-import Envelope from '../sections/Envelope.astro';
+import Envelope from './Envelope.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, royalHref } from '../../lib/content';
+import { type Lang, content, loc, t, formatDate } from '../../lib/content';
 import { natureHref, natureCopy } from '../../lib/nature-content';
 import { landscapes } from '../../lib/nature-assets';
+import { artPreview } from '../../lib/art-preview';
 import '../../styles/nature.css';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang];
+const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero.mobile), artPreview(landscapes.hero.desktop)]);
 ---
-<Base lang={lang} theme="nature" routePath="/" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
+<Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
+  <script is:inline>
+    // Personal links (`?to=Sharma Parivar`) greet the family by name. The name lives only in
+    // the link and on this device; it is written as text, never as HTML.
+    (() => {
+      let name = '';
+      try {
+        name = [...(new URLSearchParams(location.search).get('to') || '')].filter(ch => ch >= ' ' && !'<>{}'.includes(ch)).join('').replace(/ +/g, ' ').trim().slice(0, 48);
+        if (name) localStorage.setItem('ns-guest', name); else name = localStorage.getItem('ns-guest') || '';
+      } catch { /* storage blocked: greet only from the link */ }
+      window.nsGuest = name;
+      window.nsGreet = el => { if (name && el) { el.textContent = el.dataset.template.replace('{name}', name); el.hidden = false; } };
+    })();
+  </script>
+  <OpeningVeil scene={veilScene} sceneWide={veilSceneWide} greeting={t(lang, 'guestGreeting')} />
   <Header lang={lang} />
   <main id="main" class="ns-home" data-nature-root>
     <HeroJourneyBridge />
@@ -32,6 +49,7 @@ const c = natureCopy[lang];
       <div class="ns-hero-shade"></div>
       <div class="ns-hero-copy">
         <LotusMark class="ns-lotus" />
+        <p class="ns-greeting" data-template={t(lang, 'guestGreeting')} hidden></p><script is:inline>nsGreet(document.currentScript.previousElementSibling)</script>
         <p class="ns-kicker">{c.chapter}</p>
         <h1 id="nature-title"><span>{c.heroOne}</span><em>{c.heroTwo}</em></h1>
         <p class="ns-couple">{loc(content.couple.displayName, lang)}</p>
@@ -58,7 +76,7 @@ const c = natureCopy[lang];
       <p class="ns-keepsake-hint">{c.keepsakeHint}</p>
     </section>
 
-    <Envelope lang={lang} id="invitation" variant="nature" invitationHref={natureHref(lang, '/invitation')} continueHref="#celebrations">
+    <Envelope lang={lang} invitationHref={natureHref(lang, '/invitation')}>
       <Art slot="backdrop" {...landscapes.letter} />
     </Envelope>
 
@@ -70,7 +88,7 @@ const c = natureCopy[lang];
 
     <FinalNote lang={lang} />
   </main>
-  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{c.theme} · <a href={royalHref(lang)}>{c.royal} ↗</a></p></footer>
+  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang)}</p></footer>
   <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={natureHref(lang, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>

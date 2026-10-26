@@ -1,6 +1,85 @@
 # Implementation Notes — Phase 1 Visual Reconstruction
 
+> **2026-10-26: Royal Heritage retired.** Nature & Stories is now the only theme, at
+> `/` and `/hi/`. The Royal pages, components, scripts, art and tests were removed
+> (they remain in git history, last present in commit 4abfe05). Old `/royal/…` and
+> `/nature/…` links forward to the matching Nature page. Earlier sections describe the Royal build and are kept for history.
+
 ## Nature & Stories — independent second theme (2026-10-25)
+
+Guest features without a backend (2026-10-26, `development`). The site stays fully
+static and stores no guest data. RSVP: a parchment form (attending, name, guests,
+events, note) composes a WhatsApp message to `rsvp.whatsapp` (`rsvp.ts`); the draft
+stays in localStorage. Blessings: the last garland tag opens a form; the blessing
+hangs on that device only and can be sent on WhatsApp (`blessing.ts`). Personal links:
+`?to=` is read by an inline script before paint (text only, control characters and
+`<>{}` stripped, 48 chars), remembered on the device, and greets on the veil, the hero
+and the RSVP name. `/invite-links` (noindex, unlinked) makes those links. Also: Call /
+WhatsApp contacts, a directions link built from the venue address (distinct from the
+map link), venue notes, a photo-album button, per-section labels, formatted event
+times, a "Today" badge, a warmer lantern, a 1200×630 link-preview image, and the
+internal theme name removed from titles and footer.
+
+Typography (2026-10-26, `development`). Fraunces (soft axis) headings, Jost text and
+spaced capitals, Great Vibes script for the large romantic accents only; Hindi keeps
+Tiro Devanagari / Mukta through the font fallbacks. Legibility: dark hero copy over a
+feathered warm haze, light headings (Journey, Letter, Venue, Wishes, Final Note) over
+a feathered dusk shade; both static pseudo-elements that move with their copy. The
+three Latin faces are preloaded on English pages; Cormorant was removed.
+
+First paint (2026-10-26, `development`). The flat SVG "mountains" that every
+painting slot drew until its image arrived are gone; each slot instead carries its
+own painting as an inline blurred preview (32px WebP inside an SVG blur, about
+1.5 KB, `art-preview.ts`), so the first paint is the real scene, softly. The camera
+bridges opt out (`preview={false}`): they only appear after `decode()`. The home
+page opens under a short veil (`OpeningVeil.astro`): the hero painting's own preview,
+heavily blurred at dusk with drifting lantern specks, while the lotus draws itself,
+until the hero image is decoded and the faces the hero names use
+are loaded (on a `#section` link, until the scroll has settled there); 3.5s at
+most, skipped on revisits in the same tab, hidden without JS, with a CSS 6s
+failsafe. The hero names' entrance waits for the veil, so it is never played
+unseen. Lifting is a focus pull (static blur; the scene settles by transform while
+the dusk and veil fade), so it reads as the film's first shot. The fonts the names use are preloaded with the HTML. Throttled check
+(1.6 Mbps, 4× CPU, 390×844): veil, then the sharp hero, no intermediate states;
+at 0.3 Mbps the veil times out onto the blurred preview with readable names.
+Cost: about +10 KB gzipped HTML for the previews.
+
+Fancier handoffs (2026-10-26, `development`), all scroll-driven, reversible and
+invisible at both camera endpoints (`camera-flourish-state.ts`, `CameraFlourish.astro`):
+candle-gold rim tracing the reveal edge (static SVG contour XOR-masks, flicker via
+wrapper opacity only), petals and sparks lifting off the edge, a late-sun light
+sweep, and near-foreground bougainvillea that pass the camera for depth (code-only;
+true layered art would need segmented paintings). Elsewhere: the visible
+envelope/Final Note card morphs into the invitation page (cross-document View
+Transitions, `invitation-morph.ts`); hero tilt/pointer parallax (`tilt-parallax.ts`,
+iOS asks on the lantern tap); a short seal-crack haptic (`haptics.ts`); and
+per-chapter music moods incl. synthesised keherwa tabla and chimes (`music.ts`).
+Rule kept: per-frame changes only on composited wrappers; never inside masked or
+filtered layers (that re-rasterises them every frame).
+
+Transition smoothness pass (2026-10-26, `development`): same poses, cheaper frames.
+- Reveal: the feathered edge is a static mask on a 125%-tall layer that moves by
+  transform while its camera counter-moves (`wipe`/`counter` in
+  `hero-journey-state.ts`); no mask/clip-path string is regenerated per frame.
+- Cameras write `transform`/`opacity` on each layer, never inherited custom
+  properties on `<main>` or the bridge (those restyled both foliage `<use>`
+  clones every frame). `style-writer.ts` skips unchanged writes and restores.
+- One shared glide (`scroll-glide.ts`, the former `scrub: .85` expo-out as
+  exponential smoothing) drives every camera, so neighbouring handoffs can't
+  overlap or snap at boundaries; jumps over 1.5 screens land at once.
+- Bridge art is `decode()`d before use; `will-change` only while a camera is active.
+- Envelope: ARIA/label text written only on change (was every frame, forcing
+  layout and `html:has()` re-matching); variables skip unchanged values.
+- Chapters use `svh` (stable while mobile browser bars hide/show; `dvh` resized
+  every chapter mid-gesture and left scroll ranges stale). Full-bleed art,
+  shades and fixed cameras use `lvh` so their crops match exactly.
+- Lantern flame and festoon bulbs animate as whole `<svg>` boxes (compositor),
+  not SVG children; the final-note shadow sits inside its breathing wrapper.
+- Header/dock backdrop blur removed (≥90% opaque, re-blurred the scene per frame).
+- Mobile `.ns-events` no longer has vertical overflow capturing page swipes.
+Measured, 390×844, 4× CPU slowdown, wheel gestures: handoff median frame time
+33–117 ms → 16.7 ms on the first five handoffs. Mid-transition screenshots match
+the previous build (mean pixel difference ≈1/255). Real-device check still needed.
 
 All-chapter scroll flow (2026-10-26): the approved Hero/Journey camera is retained
 and five later unpinned cameras reuse its feathered reveal and timing, through

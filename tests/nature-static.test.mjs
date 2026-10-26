@@ -1,44 +1,57 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const routes = ['/', '/hi/', '/invitation/', '/hi/invitation/', '/royal/', '/hi/royal/', '/royal/invitation/', '/hi/royal/invitation/', '/nature/', '/hi/nature/', '/nature/invitation/', '/hi/nature/invitation/', '/preview/vignettes/'];
-for (const route of routes) test(`built route ${route} retains its theme and local assets`, () => {
+const routes = ['/', '/hi/', '/invitation/', '/hi/invitation/'];
+for (const route of routes) test(`built route ${route} is Nature with local assets`, () => {
   const file = `dist${route}index.html`;
   const html = fs.readFileSync(file, 'utf8');
-  const nature = !route.includes('/royal/') && !route.includes('/preview/');
-  assert.equal(html.includes('data-theme="nature"'), nature);
-  if (!route.includes('/preview/')) {
-    const canonical=html.match(/<link rel="canonical" href="([^"]+)"/);
-    assert.ok(canonical, 'Canonical URL exists');
-    assert.equal(new URL(canonical[1]).pathname.replace(/\/$/, ''), route.replace('/nature/', '/').replace(/\/$/, ''), 'Canonical uses the primary route for each theme');
-    for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
-      const path=match[1];
-      assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/,'')}/index.html`), `Broken internal route ${path} from ${route}`);
-    }
+  assert.ok(html.includes('data-theme="nature"'));
+  const canonical=html.match(/<link rel="canonical" href="([^"]+)"/);
+  assert.ok(canonical, 'Canonical URL exists');
+  assert.equal(new URL(canonical[1]).pathname.replace(/\/$/, ''), route.replace(/\/$/, ''));
+  for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
+    const path=match[1];
+    assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/,'')}/index.html`), `Broken internal route ${path} from ${route}`);
   }
   if (route === '/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
-  if (route === '/royal/' || route === '/hi/royal/') {
-    const prefix=route.startsWith('/hi/')?'/hi':'';
-    assert.ok(!html.includes('data-nature-root'));
-    assert.ok(html.includes(`href="${prefix}/royal/invitation"`));
-    assert.ok(html.includes(`href="${prefix}/royal#venue"`));
-    assert.ok(html.includes(`https://example.com${prefix}/royal`));
-  }
-  if (nature) {
-    assert.ok(html.includes('Partner One') || html.includes('साथी एक'));
-    assert.ok(!html.includes('RATNESH') && !html.includes('PALLAVI'));
-    assert.ok(!html.includes('src/assets/nature-stories/'));
-    assert.ok(html.includes('rel="canonical"'));
-  }
+  assert.ok(!/royal/i.test(html), 'No Royal Heritage links or assets remain');
+  const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
+  const names=route.startsWith('/hi/')?data.couple.displayName.hi.split(' एवं '):[data.couple.partnerOne,data.couple.partnerTwo];
+  for (const name of names) assert.ok(html.includes(name), `${name} (from site-content.json) appears on ${route}`);
+  // While the placeholder notice is in the data, no real names may leak into the build.
+  if (data._placeholderNotice) assert.ok(!html.includes('RATNESH') && !html.includes('PALLAVI'));
+  assert.ok(!html.includes('src/assets/nature-stories/'));
   for (const m of html.matchAll(/(?:src|href)="(\/_astro\/[^"?#]+)"/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing ${m[1]}`);
   for (const m of html.matchAll(/(\/_astro\/[^\s,"()]+\.(?:avif|webp))/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing image ${m[1]}`);
 });
-test('Nature assets and theme entrypoints exist without replacing Royal Heritage', () => {
+test('first paint shows each painting as its own blurred preview, under the opening veil', () => {
+  for (const route of ['/', '/hi/']) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    assert.ok(!html.includes('ns-fallback'), 'The old flat SVG placeholder is gone');
+    const art = [...html.matchAll(/<div class="ns-art[^"]*"[^>]*>/g)].map(m => m[0]);
+    const scenes = art.filter(tag => tag.includes('--preview: url(&quot;data:image/svg+xml,') || tag.includes("--preview: url(\"data:image/svg+xml,"));
+    assert.ok(scenes.length >= 10, `Visible scenes carry an inline preview (${scenes.length}/${art.length})`);
+    assert.equal([...html.matchAll(/class="ns-veil"/g)].length, 1);
+    assert.ok(html.indexOf('class="ns-veil"') < html.indexOf('id="welcome"'), 'Veil paints before the hero');
+    for (const font of route === '/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
+      assert.match(html, new RegExp(`rel="preload" href="/_astro/${font}\.[^"]+\.woff2" as="font"`));
+  }
+  assert.ok(!fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-veil'), 'Only the home page has a veil');
+});
+test('retired theme URLs forward to the Nature pages, keeping the hash', () => {
+  for (const [from, to] of [['/royal/', '/'], ['/nature/', '/'], ['/royal/invitation/', '/invitation'], ['/hi/royal/', '/hi/'], ['/hi/nature/invitation/', '/hi/invitation']]) {
+    const html = fs.readFileSync(`dist${from}index.html`, 'utf8');
+    assert.ok(html.includes(`content="0;url=${to}"`), `${from} refreshes to ${to}`);
+    assert.ok(html.includes('location.hash'), `${from} keeps the section hash`);
+    assert.ok(html.includes('noindex'));
+  }
+});
+test('Nature assets and entrypoints exist', () => {
   const sources = fs.readdirSync('src/assets/nature-stories').filter(n => n.endsWith('.png'));
-  assert.equal(sources.length, 15);
+  assert.equal(sources.length, 16);
+  assert.ok(sources.includes('ivory-floral-paper-v1.png'));
   for(const orientation of ['mobile','desktop']) assert.ok(sources.includes(`wishes-${orientation}-v1.png`));
   for (const scene of ['hero','journey','letter','venue','closing']) for (const orientation of ['mobile','desktop']) assert.ok(sources.includes(`${scene}-${orientation}.png`));
-  assert.ok(fs.existsSync('src/components/sections/Hero.astro'));
   assert.ok(fs.existsSync('src/components/nature/Home.astro'));
   assert.ok(fs.existsSync('src/assets/nature-stories/README.md'));
 });
@@ -46,7 +59,7 @@ test('Nature assets and theme entrypoints exist without replacing Royal Heritage
 test('Nature venue has three semantic signs, gated maps and a printable fallback', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const hasMap=/^https?:\/\//.test(data.venue.mapUrl);
-  for(const route of ['/','/hi/','/nature/','/hi/nature/']) {
+  for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="venue"[\s\S]*?<\/section>/)?.[0];
     assert.ok(scene);
@@ -62,23 +75,41 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
   }
 });
 
-test('Nature wishes are six decorative blessings, with no fake submission service', () => {
-  for(const route of ['/','/hi/','/nature/','/hi/nature/']) {
+test('Nature wishes: six blessings (one the guest writes), RSVP by WhatsApp, nothing sent to a server', () => {
+  for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="wishes"[\s\S]*?<\/section>/)?.[0];
     assert.ok(scene);
     assert.equal([...scene.matchAll(/data-wish-tag(?=[\s=>])/g)].length,6);
     assert.equal([...scene.matchAll(/data-wish-arrival(?=[\s=>])/g)].length,6);
-    assert.ok(scene.includes('aria-describedby="ns-wishes-demo"'));
-    assert.ok(!scene.includes('<form')&&!scene.includes('id="rsvp"'));
-    assert.ok(scene.includes(route.startsWith('/hi/')?'अतिथियों के संदेश नहीं':'not guest submissions'));
+    assert.equal([...scene.matchAll(/data-wish-own(?=[\s=>])/g)].length,1,'Exactly one writable tag');
+    assert.ok(scene.includes('aria-describedby="ns-wishes-hint"')&&scene.includes('id="ns-wishes-hint"'));
+    assert.ok(!scene.includes('not guest submissions')&&!scene.includes('अतिथियों के संदेश नहीं'),'No disclaimer');
+    assert.ok(!/<form[^>]*\saction=/.test(scene),'No form posts anywhere');
+    assert.ok(scene.includes('data-rsvp-open')&&scene.includes('href="https://wa.me/'),'RSVP falls back to a WhatsApp link');
+    assert.ok(scene.includes('id="ns-rsvp"')&&scene.includes('id="ns-blessing"'));
     assert.ok(scene.includes('wishes-mobile-v1.')&&scene.includes('wishes-desktop-v1.'));
   }
 });
 
+test('personal links, contacts, directions and link previews', () => {
+  const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
+  for(const route of ['/','/hi/']) {
+    const html=fs.readFileSync(`dist${route}index.html`,'utf8');
+    assert.ok(html.includes("get('to')")&&html.includes('class="ns-greeting"'),'Greeting reads ?to= before paint');
+    assert.match(html,/property="og:image" content="https:\/\/[^"]+\.jpg"/);
+    assert.ok(!html.includes('Nature &amp; Stories')&&!html.includes('प्रकृति और कहानियाँ'),'Internal theme name never shown to guests');
+    if(!data.contacts.some(c=>/\d{8}/.test(c.phone+c.whatsapp))) assert.ok(!html.includes('ns-contacts"'),'Placeholder contacts stay hidden');
+    if(/^https?:/.test(data.venue.mapUrl)) assert.ok(html.includes('google.com/maps/dir/'),'Directions differ from the map link');
+  }
+  const links=fs.readFileSync('dist/invite-links/index.html','utf8');
+  assert.ok(links.includes('noindex'));
+  for(const route of ['/','/hi/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
+});
+
 test('Nature final note retains its landscape, real names, message and locale links', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  for(const route of ['/','/hi/','/nature/','/hi/nature/']) {
+  for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="closing"[\s\S]*?<\/section>/)?.[0];
     const lang=route.startsWith('/hi/')?'hi':'en';
@@ -97,7 +128,7 @@ test('Nature final note retains its landscape, real names, message and locale li
 });
 
 test('Hero/Journey bridge is decorative and preserves original sections and routes',()=>{
-  for(const route of ['/','/hi/','/nature/','/hi/nature/']){
+  for(const route of ['/','/hi/']){
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     assert.equal([...html.matchAll(/data-journey-bridge(?=[\s=>])/g)].length,1);
     assert.ok(html.includes('data-journey-bridge aria-hidden="true" inert'));
@@ -107,17 +138,16 @@ test('Hero/Journey bridge is decorative and preserves original sections and rout
     assert.ok(!html.includes('data-journey-ready')&&!html.includes('data-journey-transition'),'Enhancement flags must not be server-rendered');
     for(const id of ['lm-foliage-a','lm-foliage-b'])assert.ok(html.includes(`id="${id}"`),'Bridge uses existing, valid SVG symbols');
   }
-  for(const route of ['/royal/','/hi/royal/'])assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('data-journey-bridge'));
 });
 
-test('five later bridges reuse Nature art without replacing semantic sections or Royal',()=>{
+test('five later bridges reuse Nature art without replacing semantic sections',()=>{
   const targets=['invitation','celebrations','venue','wishes','closing'];
-  for(const route of ['/','/hi/','/nature/','/hi/nature/']){
+  for(const route of ['/','/hi/']){
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     assert.equal([...html.matchAll(/data-scene-bridge(?=[\s=>])/g)].length,5);
     assert.deepEqual([...html.matchAll(/data-scene-bridge data-from="[^"]+" data-to="([^"]+)" aria-hidden="true" inert/g)].map(m=>m[1]),targets);
     for(const id of ['welcome','journey',...targets])assert.equal([...html.matchAll(new RegExp(`<section id="${id}"`,'g'))].length,1);
     assert.ok(!html.includes('data-scenes-ready')&&!html.includes('data-scenes-scroll'),'Static rendering never depends on animation');
   }
-  for(const route of ['/royal/','/hi/royal/','/invitation/','/hi/invitation/'])assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('data-scene-bridge'));
+  for(const route of ['/invitation/','/hi/invitation/'])assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('data-scene-bridge'));
 });

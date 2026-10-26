@@ -1,7 +1,7 @@
 ---
 import Art from './Art.astro';
 import CalendarButton from '../CalendarButton.astro';
-import { type Lang, content, loc, t, formatDate } from '../../lib/content';
+import { type Lang, content, loc, t, formatDate, formatTime } from '../../lib/content';
 import { natureCopy } from '../../lib/nature-content';
 import { landscapes, natureEvents, eventFallback } from '../../lib/nature-assets';
 interface Props { lang: Lang }
@@ -12,22 +12,29 @@ const lights=[[25,30],[95,51],[165,60],[235,56],[305,38],[375,9],[445,37],[515,5
 <section id="celebrations" class="ns-celebrations ns-scene" aria-labelledby="ns-events-title">
   <Art {...landscapes.closing} class="ns-celebrations-garden" />
   <div class="ns-celebrations-shade" aria-hidden="true"></div>
-  <svg class="ns-event-festoon" viewBox="0 0 1000 110" preserveAspectRatio="xMidYMin meet" aria-hidden="true" focusable="false">
-    <path d="M-35 0Q165 120 375 9Q575 120 795 11Q1000 125 1200 0" fill="none" stroke="#bb985b" stroke-width="1.2" />
-    {lights.map(([x,y],i)=><g style={`--bulb-delay:${i*-.4}s`}><path d={`M${x} ${y}v9`} stroke="#c39a5a" /><circle cx={x} cy={y+11} r="9" fill="url(#lm-halo)" /><circle cx={x} cy={y+11} r="2.1" fill="#ffe2a1" /></g>)}
-  </svg>
+  <div class="ns-event-festoon" aria-hidden="true">
+    <svg viewBox="0 0 1000 110" preserveAspectRatio="xMidYMin meet" focusable="false">
+      <path d="M-35 0Q165 120 375 9Q575 120 795 11Q1000 125 1200 0" fill="none" stroke="#bb985b" stroke-width="1.2" />
+    </svg>
+    <!-- Each bulb is its own tiny <svg> placed in the wire's viewBox space, so its
+         twinkle is a compositor opacity animation rather than an SVG repaint. -->
+    <div class="ns-festoon-bulbs">
+      {lights.map(([x,y],i)=><svg class="ns-festoon-bulb" style={`--bulb-delay:${i*-.4}s;left:${(x-9)/10}%;top:${y/1.1}%`} viewBox={`${x-9} ${y} 18 20`} focusable="false"><path d={`M${x} ${y}v9`} stroke="#c39a5a" /><circle cx={x} cy={y+11} r="9" fill="url(#lm-halo)" /><circle cx={x} cy={y+11} r="2.1" fill="#ffe2a1" /></svg>)}
+    </div>
+  </div>
   <header class="ns-section-head ns-celebrations-head">
     <span class="ns-celebrations-index" aria-hidden="true">03</span>
-    <div><p class="ns-kicker">{c.chapter}</p><h2 id="ns-events-title">{t(lang,'celebrations')}</h2><p class="ns-celebrations-intro">{c.eventLine}</p></div>
+    <div><p class="ns-kicker">{c.celebrationsKicker}</p><h2 id="ns-events-title">{t(lang,'celebrations')}</h2><p class="ns-celebrations-intro">{c.eventLine}</p></div>
   </header>
   <ol class="ns-events" tabindex="0" aria-label={t(lang,'celebrations')}>
-    {content.events.map((event,i)=><li class="ns-event" data-nature-event={event.id}>
-      <div class="ns-event-art"><Art mobile={natureEvents[event.visualKey] ?? eventFallback} /><span class="ns-event-number" aria-hidden="true">0{i+1}</span></div>
+    {content.events.map((event,i)=><li class="ns-event" data-nature-event={event.id} data-event-date={event.date}>
+      <div class="ns-event-art"><Art mobile={natureEvents[event.visualKey] ?? eventFallback} /><span class="ns-event-number" aria-hidden="true">0{i+1}</span><span class="ns-event-today" data-event-today hidden>{t(lang,'today')}</span></div>
       <div class="ns-event-copy">
         <svg class="ns-event-scallop" viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0Q150 54 300 0V30H0Z" fill="#f3dfbe" /><path d="M0 1Q150 55 300 1" fill="none" stroke="#b99761" stroke-width="1.2" /></svg>
         <svg class="ns-event-mark" viewBox="0 0 28 28" aria-hidden="true" focusable="false"><path d="M14 1L18 7L14 12L10 7ZM27 14L21 18L16 14L21 10ZM14 27L10 21L14 16L18 21ZM1 14L7 10L12 14L7 18Z" fill="#39442f" stroke="#c09c61" stroke-width=".7" /><circle cx="14" cy="14" r="1.4" fill="#b08a52" /></svg>
         <h3>{loc(event.title,lang)}</h3>
-        <p class="ns-event-date">{formatDate(event.date,lang,true) ?? t(lang,'dateTbc')}{event.time && <> · {event.time}</>}</p>
+        <p class="ns-event-date">{formatDate(event.date,lang,true) ?? t(lang,'dateTbc')}{event.time && <> · {formatTime(event.time,lang)}</>}</p>
+        {event.venueName && event.venueName !== content.venue.name && <p class="ns-event-place">{event.venueName}</p>}
         <span class="ns-event-rule" aria-hidden="true"></span>
         <p class="ns-event-description">{loc(event.shortDescription,lang)}</p>
         <CalendarButton lang={lang} event={event} tone="dark" />

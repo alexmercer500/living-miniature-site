@@ -1,6 +1,7 @@
 // Production preview :4321; isolated headless Chrome CDP :9333. No packages.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+const couple=JSON.parse(await fs.readFile('src/data/site-content.json','utf8')).couple.displayName;
 const target=await(await fetch('http://127.0.0.1:9333/json/new?about:blank',{method:'PUT'})).json();
 const socket=new WebSocket(target.webSocketDebuggerUrl);await new Promise(r=>socket.addEventListener('open',r,{once:true}));
 let id=0;const pending=new Map(),errors=[];
@@ -39,14 +40,14 @@ try {
       names:s.querySelector('#ns-note-names').textContent,message:s.querySelector('.ns-note-message').textContent,
       copy:[...s.querySelector('.ns-note-copy').children].map(e=>{const b=e.getBoundingClientRect();return {text:e.textContent,top:b.top,bottom:b.bottom,left:b.left,right:b.right};}),
       actions:[...s.querySelectorAll('.ns-note-actions a')].map(e=>{const b=e.getBoundingClientRect();return {top:b.top,bottom:b.bottom,height:b.height,left:b.left,right:b.right,href:e.getAttribute('href')};}),
-      opacity:getComputedStyle(s.querySelector('[data-note-arrival]')).opacity,float:getComputedStyle(s.querySelector('.ns-note-float')).animationName,
+      opacity:getComputedStyle(s.querySelector('[data-note-arrival]')).opacity,float:getComputedStyle(s.querySelector('[data-note-arrival]')).animationName,
       glint:getComputedStyle(s.querySelector('.ns-note-glint')).opacity,ready:s.querySelector('img').naturalWidth>0,src:s.querySelector('img').currentSrc,
       floral:s.querySelectorAll('.ns-note-floral').length,overflow:getComputedStyle(s).overflowY,
       refs:[...s.querySelectorAll('*')].flatMap(e=>[...e.attributes].flatMap(a=>[...a.value.matchAll(/url\\(#([^)]*)\\)/g)].map(m=>m[1]).concat(a.name==='href'&&a.value.startsWith('#')?[a.value.slice(1)]:[]))).filter(id=>!document.getElementById(id))
     };})()`);
     await shot(`${view.name}-settled`);
     assert.equal(layout.height,view.height);assert.ok(Math.abs(layout.top)<2);assert.ok(layout.width<=view.width);assert.ok(layout.headingTop>=64);assert.equal(layout.overflow,'clip');assert.equal(layout.opacity,'1');assert.equal(layout.floral,2);assert.deepEqual(layout.refs,[]);
-    assert.equal(layout.names,view.hi?'साथी एक एवं साथी दो':'Partner One & Partner Two');assert.ok(layout.message);
+    assert.equal(layout.names,couple[view.hi?'hi':'en']);assert.ok(layout.message);
     assert.ok(layout.card.top>=64&&layout.card.bottom<=view.height-65&&layout.card.left>=0&&layout.card.right<=view.width,`${view.name}: card fits ${JSON.stringify(layout.card)}`);
     for(const copy of layout.copy)assert.ok(copy.top>=layout.card.top&&copy.bottom<=layout.card.bottom&&copy.left>=layout.card.left&&copy.right<=layout.card.right,`${view.name}: copy fits paper ${JSON.stringify(copy)}`);
     for(const action of layout.actions)assert.ok(action.top>=64&&action.bottom<=view.height-65&&action.height>=44&&action.left>=0&&action.right<=view.width,`${view.name}: link fits ${JSON.stringify(action)}`);

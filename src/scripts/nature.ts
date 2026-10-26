@@ -3,6 +3,11 @@ import { setupVenue } from './venue';
 import { setupWishes } from './wishes';
 import { setupHeroJourney } from './hero-journey';
 import { setupSceneTransitions } from './scene-transitions';
+import { scrollGlide } from './scroll-glide';
+import { setupInvitationMorph } from './invitation-morph';
+import { setupTiltParallax } from './tilt-parallax';
+import { setupRsvp } from './rsvp';
+import { setupBlessing } from './blessing';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -32,6 +37,17 @@ export async function setupNature() {
   cleanups.push(setupKeepsakes(root, motion));
   cleanups.push(setupVenue(root, motion));
   cleanups.push(setupWishes(root, motion));
+  cleanups.push(setupInvitationMorph(root));
+  cleanups.push(setupRsvp(root));
+  cleanups.push(setupBlessing(root));
+
+  // On a celebration's own day its card says "Today" (local date, so it is right in India).
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  all('[data-event-date]').forEach(card => {
+    const badge = card.querySelector<HTMLElement>('[data-event-today]');
+    if (badge) badge.hidden = card.dataset.eventDate !== today;
+  });
 
   document.querySelectorAll<HTMLAnchorElement>('[data-nature-locale]').forEach(link => {
     link.addEventListener('click', () => {
@@ -61,10 +77,20 @@ export async function setupNature() {
   if (sound) {
     sound.hidden = false;
     let player: import('./music').Player | undefined;
+    // The chapter crossing the middle of the screen sets the music's mood.
+    let chapter = 'welcome';
+    const chapters = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      chapter = e.target.id;
+      player?.setChapter(chapter);
+    }), { rootMargin: '-50% 0px -49% 0px' });
+    all(':scope > section[id]').forEach(section => chapters.observe(section));
+    cleanups.push(() => chapters.disconnect());
     sound.addEventListener('click', async () => {
       sound.disabled = true;
       try {
         player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
+        player.setChapter(chapter);
         if (player.playing) player.stop(); else await player.play();
         sound.setAttribute('aria-pressed', String(player.playing));
         sound.setAttribute('aria-label', (player.playing ? sound.dataset.on : sound.dataset.off) ?? '');
@@ -99,14 +125,17 @@ export async function setupNature() {
   media.add('(prefers-reduced-motion: no-preference)', () => {
     let clearHeroJourney=()=>{};
     let clearScenes=()=>{};
+    const glide=scrollGlide(gsap);
+    const hero=q('#welcome');
+    const clearTilt=hero?setupTiltParallax(hero):()=>{};
     const context = gsap.context(() => {
-      clearHeroJourney=setupHeroJourney(root,gsap);
-      clearScenes=setupSceneTransitions(root,gsap);
+      clearHeroJourney=setupHeroJourney(root,ScrollTrigger,glide);
+      clearScenes=setupSceneTransitions(root,ScrollTrigger,glide);
       gsap.to(document.querySelector('[data-nature-progress]'), { scaleX: 1, ease: 'none', scrollTrigger: { trigger: root, start: 'top top', end: 'bottom bottom', scrub: .25 } });
     }, root);
 
     document.fonts.ready.then(() => ScrollTrigger.refresh());
-    return () => { context.revert(); clearHeroJourney(); clearScenes(); };
+    return () => { context.revert(); clearHeroJourney(); clearScenes(); glide.dispose(); clearTilt(); };
   });
   cleanups.push(() => media.revert());
   window.addEventListener('pagehide', () => cleanups.forEach(clean => clean()), { once: true });

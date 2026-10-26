@@ -1,7 +1,14 @@
 import { heroJourneyState,journeyMemoryState } from '../lib/hero-journey-state';
+import { styleWriter,decodedImages,round } from './style-writer';
+import { type Glide,glideProgress } from './scroll-glide';
+import { cameraFlourish } from './camera-flourish';
 
-/** One short, unpinned camera handoff. Existing 100dvh sections remain in flow. */
-export function setupHeroJourney(root: HTMLElement,gsap: typeof import('gsap').gsap) {
+type ScrollTriggerType = typeof import('gsap/ScrollTrigger').ScrollTrigger;
+
+/** One short, unpinned camera handoff. Existing 100svh sections remain in flow.
+ *  The pose follows the shared glide coordinate and each frame only changes
+ *  transform/opacity (no mask, clip-path or page-wide variable is rewritten). */
+export function setupHeroJourney(root: HTMLElement,ScrollTrigger: ScrollTriggerType,glide: Glide) {
   const hero=root.querySelector<HTMLElement>('#welcome');
   const journey=root.querySelector<HTMLElement>('#journey');
   const bridge=root.querySelector<HTMLElement>('[data-journey-bridge]');
@@ -13,54 +20,60 @@ export function setupHeroJourney(root: HTMLElement,gsap: typeof import('gsap').g
   images.forEach(img=>{img.loading='eager';img.fetchPriority='low';});
   const hangers=[...journey.querySelectorAll<HTMLElement>('[data-memory-hanger]')];
   const path=journey.querySelector<SVGPathElement>('.ns-path path');
-  const originals=hangers.map(el=>({el,transform:el.style.transform,opacity:el.style.opacity}));
-  const oldPath=path?.style.strokeDashoffset??'';
-  const driver={progress:0};
-  const properties=new Set<string>();
+  // Variables live on the few elements that read them: writing them on <main> would
+  // restyle the whole page every frame.
+  const heroCopy=hero.querySelector<HTMLElement>('.ns-hero-copy');
+  const heroFoot=hero.querySelector<HTMLElement>('.ns-hero-foot');
+  const storyCopy=journey.querySelector<HTMLElement>('.ns-story-copy');
+  // Camera layers get plain transform/opacity: custom properties on the bridge would be
+  // inherited by (and restyle) every node of both foliage <use> clones each frame.
+  const layer=(s:string)=>bridge.querySelector<HTMLElement>(s);
+  const outgoing=layer('.ns-bridge-outgoing'),incoming=layer('.ns-bridge-incoming'),camera=layer('.ns-bridge-incoming-camera');
+  const glow=layer('.ns-bridge-shade'),boughLeft=layer('.ns-bridge-bough.left'),boughRight=layer('.ns-bridge-bough.right');
+  const flourish=cameraFlourish(bridge);
+  const {set,restore}=styleWriter();
   let ready=false,disposed=false;
-  const property=(name: string,value: string|number)=>{
-    const key=`--bridge-${name}`;properties.add(key);root.style.setProperty(key,String(value));
-  };
+  let trigger:ReturnType<typeof ScrollTrigger.create>|undefined;
   const render=()=>{
-    const trigger=tween?.scrollTrigger;
-    const raw=trigger?(scrollY-trigger.start)/Math.max(1,trigger.end-trigger.start):0;
-    // Anchors/fast jumps must land fully readable, never at a stale scrub pose.
-    const p=raw<=0?0:raw>=1?1:driver.progress;
+    if(disposed||!trigger)return;
+    const p=glideProgress(glide,trigger);
     const s=heroJourneyState(p);
-    const active=ready&&raw>0&&raw<1;
-    root.toggleAttribute('data-journey-transition',active);
-    document.documentElement.toggleAttribute('data-journey-scroll',ready&&raw>=0&&raw<1);
+    root.toggleAttribute('data-journey-transition',ready&&p>0&&p<1);
+    document.documentElement.toggleAttribute('data-journey-scroll',glideProgress(glide,trigger,glide.scroll)<1);
     bridge.dataset.progress=s.progress.toFixed(4);
-    property('outgoing-scale',s.outgoingScale);property('outgoing-x',`${s.outgoingX}%`);
-    property('incoming-scale',s.incomingScale);property('incoming-x',`${s.incomingX}%`);
-    property('reveal',s.clip);property('mask',s.mask);property('hero-y',`${s.heroCopyY}px`);property('hero-opacity',s.heroCopyOpacity);
-    property('foot-opacity',s.heroFootOpacity);property('story-y',`${s.journeyCopyY}px`);property('story-opacity',s.journeyCopyOpacity);
-    property('branch-opacity',s.branchOpacity);property('branch-y',`${s.branchY}%`);property('branch-x',`${s.branchX}%`);
-    hangers.forEach((el,i)=>{const m=journeyMemoryState(p,i);el.style.transform=`translate3d(0,${m.y}px,0) rotate(${m.rotation}deg)`;el.style.opacity=String(m.opacity);});
-    if(path)path.style.strokeDashoffset=String(s.pathOffset);
+    set(outgoing,'transform',`translate3d(${round(s.outgoingX)}%,0,0) scale(${round(s.outgoingScale)})`);
+    set(incoming,'transform',`translate3d(0,${round(s.wipe)}%,0)`);
+    set(camera,'transform',`translate3d(${round(s.incomingX)}%,${round(s.counter)}%,0) scale(${round(s.incomingScale)})`);
+    set(glow,'opacity',s.branchOpacity);
+    set(boughLeft,'transform',`translate3d(${round(s.branchX)}%,${round(s.branchY)}%,0) rotate(-12deg)`);
+    set(boughRight,'transform',`translate3d(${round(-s.branchX)}%,${round(s.branchY)}%,0) rotate(12deg)`);
+    set(boughLeft,'opacity',s.branchOpacity*.4);set(boughRight,'opacity',s.branchOpacity*.4);
+    flourish(p,set);
+    set(heroCopy,'--bridge-hero-y',`${round(s.heroCopyY)}px`);set(heroCopy,'--bridge-hero-opacity',s.heroCopyOpacity);
+    set(heroFoot,'--bridge-foot-opacity',s.heroFootOpacity);
+    set(storyCopy,'--bridge-story-y',`${round(s.journeyCopyY)}px`);set(storyCopy,'--bridge-story-opacity',s.journeyCopyOpacity);
+    hangers.forEach((el,i)=>{const m=journeyMemoryState(p,i);set(el,'transform',`translate3d(0,${round(m.y)}px,0) rotate(${round(m.rotation)}deg)`);set(el,'opacity',m.opacity);});
+    set(path,'stroke-dashoffset',s.pathOffset);
   };
-  let tween: ReturnType<typeof gsap.to>|undefined;
-  tween=gsap.to(driver,{progress:1,ease:'none',onUpdate:render,scrollTrigger:{
-    trigger:hero,start:'top top',endTrigger:journey,end:'top top',scrub:.85,invalidateOnRefresh:true,
-    onUpdate:render,onRefresh:render,
-  }});
+  // ScrollTrigger only measures the range (and re-measures on resize); the glide drives it.
+  trigger=ScrollTrigger.create({trigger:hero,start:'top top',endTrigger:journey,end:'top top',invalidateOnRefresh:true,onRefresh:()=>render()});
+  const unsubscribe=glide.subscribe(render);
+  const art=decodedImages(images,()=>checkImages());
   const checkImages=()=>{
     if(disposed)return;
     // A loading/failed decorative image must never replace a usable original.
-    ready=CSS.supports('clip-path','polygon(0 0,100% 0,100% 100%,0 100%)')&&images.every(img=>img.complete&&img.naturalWidth>0);
+    art.check();ready=art.ready;
     root.toggleAttribute('data-journey-ready',ready);
     render();
   };
   images.forEach(img=>{img.addEventListener('load',checkImages);img.addEventListener('error',checkImages);});
-  checkImages();render();
+  checkImages();
   return ()=>{
-    disposed=true;tween?.kill();
+    disposed=true;trigger?.kill();unsubscribe();
     images.forEach(img=>{img.removeEventListener('load',checkImages);img.removeEventListener('error',checkImages);});
     imageAttributes.forEach(({img,loading,priority})=>{img.loading=loading;if(priority===null)img.removeAttribute('fetchpriority');else img.setAttribute('fetchpriority',priority);});
     delete root.dataset.journeyReady;delete root.dataset.journeyTransition;delete document.documentElement.dataset.journeyScroll;
     delete bridge.dataset.progress;
-    properties.forEach(key=>root.style.removeProperty(key));
-    originals.forEach(({el,transform,opacity})=>{el.style.transform=transform;el.style.opacity=opacity;});
-    if(path)path.style.strokeDashoffset=oldPath;
+    restore();
   };
 }

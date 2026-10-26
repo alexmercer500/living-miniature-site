@@ -1,4 +1,4 @@
-/* Isolated second-theme palette. Royal Heritage does not match this selector. */
+/* Nature & Stories palette (the site's only theme), layered over tokens.css. */
 html[data-theme='nature'] {
   --color-midnight: #172e28; --color-indigo: #213b32; --color-plum: #304b3c;
   --color-ivory: #fff3e4; --color-parchment: #f1ddc3; --color-antique-gold: #b08a52;
@@ -13,6 +13,13 @@ html[data-theme='nature'] {
   --ns-shade-venue: linear-gradient(100deg,#1029237a,transparent 60%),linear-gradient(#10292380,transparent 38%,#10292355 62%,#102923e0);
   --ns-shade-wishes: linear-gradient(#0b211a70,transparent 35%,#0b211a22 68%,#0b211ab3);
   --ns-shade-closing: linear-gradient(#172e284f,transparent 36% 67%,#172e288c);
+  /* Static botanical edge for the camera wipe. It moves with its layer (transform only),
+     so it is rasterised once instead of being regenerated and repainted every frame. */
+  --ns-wipe-mask: linear-gradient(transparent 6.4%,#000 16.8%),radial-gradient(ellipse 45% 8.8% at 23% 10.4%,#000 8%,transparent 88%),radial-gradient(ellipse 48% 10.4% at 76% 12%,#000 8%,transparent 90%);
+  /* The wipe's half-opacity contour as a solid shape (same box, same lobes). XOR-ing it with
+     itself nudged down leaves a crescent that traces the reveal edge: the gold rim. */
+  --ns-rim-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.25'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
+  --ns-rim-halo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.9'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
   scroll-padding-top: 0;
 }
 html[data-theme='nature'][data-nature-ready]:has(.ns-home) { scroll-snap-type: y proximity; }
@@ -23,24 +30,28 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
 .ns-home { overflow: clip; }
 /* One decorative fixed camera bridges only the first two normal-flow chapters.
    It is never an interaction layer, a pin, or a replacement for semantic copy. */
-.ns-journey-bridge { display: none; position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; }
+.ns-journey-bridge { display: none; position: fixed; inset: 0 0 auto; height: var(--ns-canvas); z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; contain: strict; }
 .ns-home[data-journey-ready] { isolation: isolate; }
 .ns-home[data-journey-ready] > .ns-journey-bridge { display: block; visibility: hidden; }
 .ns-home[data-journey-transition] > .ns-journey-bridge { visibility: visible; }
 .ns-bridge-outgoing,.ns-bridge-incoming,.ns-bridge-incoming-camera,.ns-bridge-shade { position: absolute; inset: 0; }
-.ns-bridge-outgoing { transform: translate3d(var(--bridge-outgoing-x,0%),0,0) scale(var(--bridge-outgoing-scale,1)); transform-origin: 62% 52%; }
-.ns-bridge-incoming { clip-path: var(--bridge-reveal,inset(100% 0 0 0)); }
-@supports (mask-image: linear-gradient(#000,#000)) {
-  .ns-bridge-incoming { clip-path: none; mask-image: var(--bridge-mask,linear-gradient(transparent,transparent)); mask-composite: add; }
-}
-.ns-bridge-incoming-camera { transform: translate3d(var(--bridge-incoming-x,0%),0,0) scale(var(--bridge-incoming-scale,1)); transform-origin: 55% 52%; }
+/* Rest poses (progress 0); scripts write each layer's transform/opacity directly. */
+.ns-bridge-outgoing { transform-origin: 62% 52%; }
+.ns-bridge-incoming { bottom: auto; height: 125%; overflow: hidden; transform: translate3d(0,80%,0); -webkit-mask-image: var(--ns-wipe-mask); mask-image: var(--ns-wipe-mask); }
+.ns-bridge-incoming-camera { bottom: auto; height: 80%; transform: translate3d(3%,-100%,0) scale(1.1); transform-origin: 55% 52%; }
+/* Layers are promoted only while a camera is visible, so idle bridges cost no GPU memory.
+   The glowing path repaints as it draws; its own layer keeps that repaint small. */
+.ns-home[data-journey-transition] .ns-path { will-change: transform; }
+.ns-home[data-journey-transition] > .ns-journey-bridge :is(.ns-bridge-outgoing,.ns-bridge-incoming,.ns-bridge-incoming-camera,.ns-bridge-bough) { will-change: transform; }
+.ns-home[data-journey-transition] > .ns-journey-bridge .ns-bridge-shade,
+.ns-home[data-journey-transition] :is(.ns-hero-copy,.ns-hero-foot,.ns-story-copy,[data-memory-hanger]) { will-change: transform, opacity; }
 .ns-bridge-outgoing::after,.ns-bridge-incoming-camera::after { content: ''; position: absolute; inset: 0; }
 .ns-bridge-outgoing::after { background: linear-gradient(#172e2833,transparent 25% 65%,#172e28aa 100%); }
 .ns-bridge-incoming-camera::after { background: var(--ns-shade-journey); }
-.ns-bridge-shade { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: var(--bridge-branch-opacity,0); }
-.ns-bridge-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: calc(var(--bridge-branch-opacity,0) * .4); filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
-.ns-bridge-bough.left { left: -3%; transform: translate3d(var(--bridge-branch-x,-45%),var(--bridge-branch-y,24%),0) rotate(-12deg); }
-.ns-bridge-bough.right { right: -3%; transform: translate3d(calc(-1 * var(--bridge-branch-x,-45%)),var(--bridge-branch-y,24%),0) rotate(12deg); }
+.ns-bridge-shade { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: 0; }
+.ns-bridge-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: 0; filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
+.ns-bridge-bough.left { left: -3%; transform: translate3d(-45%,24%,0) rotate(-12deg); }
+.ns-bridge-bough.right { right: -3%; transform: translate3d(45%,24%,0) rotate(12deg); }
 .ns-bridge-bough > svg { width: 100%; height: 100%; }
 .ns-home[data-journey-transition] > .ns-hero > .ns-art,
 .ns-home[data-journey-transition] > .ns-hero > .ns-hero-shade,
@@ -60,17 +71,17 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
 
 /* Later chapters share the first handoff's feathered, normal-scroll camera.
    Only decorative backgrounds move; copy and controls remain in document flow. */
-.ns-scene-bridge { display: none; position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; }
+.ns-scene-bridge { display: none; position: fixed; inset: 0 0 auto; height: var(--ns-canvas); z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; contain: strict; }
 .ns-home[data-scenes-ready] { isolation: isolate; }
 .ns-home[data-scenes-ready] > .ns-scene-bridge[data-prepared] { display: block; visibility: hidden; }
 .ns-home[data-scenes-ready] > .ns-scene-bridge[data-active] { visibility: visible; }
 .ns-camera-outgoing,.ns-camera-incoming,.ns-camera-arrival,.ns-camera-landscape,.ns-camera-glow { position: absolute; inset: 0; }
-.ns-camera-outgoing { transform: translate3d(var(--camera-out-x,0%),0,0) scale(var(--camera-out-scale,1)); transform-origin: 62% 52%; }
-.ns-camera-incoming { clip-path: var(--camera-clip,inset(100% 0 0 0)); }
-@supports (mask-image: radial-gradient(ellipse,black,transparent)) {
-  .ns-camera-incoming { clip-path: none; mask-image: var(--camera-mask,linear-gradient(transparent,transparent)); mask-composite: add; }
-}
-.ns-camera-arrival { transform: translate3d(var(--camera-in-x,0%),0,0) scale(var(--camera-in-scale,1)); transform-origin: 55% 52%; }
+.ns-camera-outgoing { transform-origin: 62% 52%; }
+.ns-camera-incoming { bottom: auto; height: 125%; overflow: hidden; transform: translate3d(0,80%,0); -webkit-mask-image: var(--ns-wipe-mask); mask-image: var(--ns-wipe-mask); }
+.ns-camera-arrival { bottom: auto; height: 80%; transform: translate3d(3%,-100%,0) scale(1.1); transform-origin: 55% 52%; }
+.ns-scene-bridge[data-active] :is(.ns-camera-outgoing,.ns-camera-incoming,.ns-camera-arrival,.ns-camera-bough) { will-change: transform; }
+.ns-scene-bridge[data-active] .ns-camera-glow,
+.ns-home .ns-transition-target :is(.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],[data-note-arrival],.ns-celebrations-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost) { will-change: transform, opacity; }
 .ns-camera-landscape::after { content: ''; position: absolute; inset: 0; }
 .ns-camera-journey::after { background: var(--ns-shade-journey); }
 .ns-camera-invitation::after { background: var(--ns-shade-invitation); }
@@ -79,19 +90,52 @@ html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: 
 .ns-camera-venue::after { background: var(--ns-shade-venue); }
 .ns-camera-wishes::after { background: var(--ns-shade-wishes); }
 .ns-camera-closing::after { background: var(--ns-shade-closing); }
-.ns-camera-glow { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: var(--camera-leaf-opacity,0); }
-.ns-camera-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: calc(var(--camera-leaf-opacity,0) * .4); filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
-.ns-camera-bough.left { left: -3%; transform: translate3d(var(--camera-leaf-x,-45%),var(--camera-leaf-y,24%),0) rotate(-12deg); }
-.ns-camera-bough.right { right: -3%; transform: translate3d(calc(-1 * var(--camera-leaf-x,-45%)),var(--camera-leaf-y,24%),0) rotate(12deg); }
+.ns-camera-glow { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: 0; }
+.ns-camera-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: 0; filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
+.ns-camera-bough.left { left: -3%; transform: translate3d(-45%,24%,0) rotate(-12deg); }
+.ns-camera-bough.right { right: -3%; transform: translate3d(45%,24%,0) rotate(12deg); }
 .ns-camera-bough > svg { width: 100%; height: 100%; }
 .ns-home[data-scenes-ready] > :is(.ns-transition-source,.ns-transition-target) { background: transparent; }
 .ns-home :is(.ns-transition-source,.ns-transition-target) :is(.ns-story-landscape > .ns-art,.ns-story-shade,.envelope-backdrop,.ns-celebrations-shade,.ns-venue-landscape,.ns-venue-shade,.ns-wishes-landscape,.ns-wishes-shade,.ns-closing-shade),
 .ns-home > :is(.ns-transition-source,.ns-transition-target) > .ns-art { opacity: 0; }
 @media (max-width: 700px) { .ns-camera-bough { width: 110px; bottom: -7%; } }
 @media (prefers-reduced-motion: reduce), (scripting: none) { .ns-scene-bridge { display: none !important; } }
+
+/* Camera flourishes (CameraFlourish.astro), shared by every handoff. Explicit layer order:
+   outgoing art, incoming art, then decorations above. */
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-outgoing,.ns-camera-outgoing) { z-index: 0; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-incoming,.ns-camera-incoming) { z-index: 2; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-sweep { z-index: 3; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-rim { z-index: 4; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-shade,.ns-camera-glow) { z-index: 4; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-petal { z-index: 5; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-bough,.ns-camera-bough) { z-index: 6; }
+:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-frond { z-index: 7; }
+/* Candle-gold rim riding the reveal edge: a bright line plus a soft flickering halo. Both
+   are static masked layers; the wrapper only moves with the wipe and fades in and out. */
+.ns-flourish-rim { position: absolute; inset: 0 0 auto; height: 125%; opacity: 0; transform: translate3d(0,80%,0); pointer-events: none; }
+.ns-flourish-rim > i { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: xor; mask-composite: exclude; }
+.ns-flourish-rim > .line { -webkit-mask-image: var(--ns-rim-line),var(--ns-rim-line); mask-image: var(--ns-rim-line),var(--ns-rim-line); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .012); mask-position: 0 0,0 calc(var(--ns-canvas) * .012); background: linear-gradient(90deg,#f0a540,#ffd27a 22%,#fff0c4 50%,#ffd27a 78%,#f0a540); }
+.ns-flourish-rim > .halo { top: calc(var(--ns-canvas) * -.022); bottom: auto; height: 100%; opacity: .5; -webkit-mask-image: var(--ns-rim-halo),var(--ns-rim-halo); mask-image: var(--ns-rim-halo),var(--ns-rim-halo); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .05); mask-position: 0 0,0 calc(var(--ns-canvas) * .05); background: linear-gradient(90deg,#e58a2a,#ffbe5c 30%,#ffd98e 50%,#ffbe5c 70%,#e58a2a); }
+:is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) :is(.ns-flourish-rim,.ns-flourish-petal,.ns-flourish-sweep,.ns-flourish-frond) { will-change: transform, opacity; }
+/* Near-foreground bougainvillea: softly out of focus, scaled from their own corner. */
+.ns-flourish-frond { position: absolute; top: -7%; width: clamp(230px,58vw,640px); aspect-ratio: 1.1; opacity: 0; pointer-events: none; filter: blur(1.6px); }
+.ns-flourish-frond.left { left: -10%; transform-origin: 0 0; }
+.ns-flourish-frond.right { right: -10%; transform-origin: 100% 0; }
+.ns-flourish-frond > svg { width: 100%; height: 100%; }
+@media (max-width: 767px) { .ns-flourish-frond { width: 72vw; top: -4%; } }
+/* Late-sun sweep: one diagonal band of warm light, slid across while the new scene settles. */
+.ns-flourish-sweep { position: absolute; inset: 0 -10%; opacity: 0; pointer-events: none; background: linear-gradient(108deg,transparent 30%,#ffd9952e 40%,#ffe7b866 48%,#fff4d985 50%,#ffe7b866 52%,#ffd9952e 60%,transparent 70%),linear-gradient(108deg,transparent 56%,#ffe2a833 61%,transparent 66%); }
+/* Petals and candle sparks carried across the edge (positions from camera-flourish-state). */
+.ns-flourish-petal { position: absolute; top: 0; left: 0; width: var(--size); height: calc(var(--size) * 1.5); margin: calc(var(--size) * -.75) 0 0 calc(var(--size) * -.5); opacity: 0; pointer-events: none; }
+/* Gradients only (no box-shadows): cheaper to rasterise, same glow. */
+.ns-flourish-petal.petal { border-radius: 85% 12% 80% 15%; background: linear-gradient(135deg,#f9dcc4,#e08a8f 55%,#b8566a 92%,#8a3447); }
+.ns-flourish-petal.spark { height: calc(var(--size) * 1.6); width: calc(var(--size) * 1.6); margin: calc(var(--size) * -.8) 0 0 calc(var(--size) * -.8); border-radius: 50%; background: radial-gradient(circle,#fff6d8 0 14%,#ffd88acc 22%,#ffb04a40 42%,transparent 66%); }
+@media (max-width: 767px) { .ns-flourish-petal:nth-of-type(3n) { display: none; } }
+
 .ns-home section { scroll-margin-top: 60px; }
 .ns-header { position: fixed; inset: 0 0 auto; height: 70px; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(1rem,4vw,3.5rem); color: #fff3e4; background: linear-gradient(#172e28c4, #172e2800); transition: background .4s; }
-.ns-header[data-solid], .ns-header:has(.ns-menu[open]) { background: #172e28ee; backdrop-filter: blur(16px); border-bottom: 1px solid #efd2a033; }
+.ns-header[data-solid], .ns-header:has(.ns-menu[open]) { background: #172e28f2; border-bottom: 1px solid #efd2a033; }
 .ns-brand { display: flex; gap: 1rem; align-items: center; text-decoration: none; min-height: 44px; }
 .ns-brand > :first-child { font-size: 1.55rem; }
 .ns-brand > span:last-child { font-size: .65rem; text-transform: uppercase; letter-spacing: .2em; }
@@ -107,7 +151,6 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-menu summary::-webkit-details-marker { display: none; }
 .ns-menu nav { position: absolute; right: max(1rem,4vw); top: 76px; width: min(320px, calc(100vw - 2rem)); padding: 1rem 1.5rem; background: #172e28f5; border: 1px solid #efd2a055; border-radius: 8px; backdrop-filter: blur(18px); box-shadow: 0 20px 60px #0005; }
 .ns-menu nav a { display: block; padding: .65rem 0; min-height: 44px; text-decoration: none; font-family: var(--font-display); font-size: 1.35rem; border-bottom: 1px solid #efd2a022; }
-.ns-menu nav .ns-compare { font-family: var(--font-ui); font-size: .8rem; color: #efd2a0; }
 .ns-kicker { font-size: .72rem; font-weight: 500; text-transform: uppercase; letter-spacing: .22em; }
 :lang(hi) .ns-kicker { letter-spacing: .02em; font-size: .85rem; text-transform: none; }
 .ns-scene { position: relative; isolation: isolate; }
@@ -138,8 +181,8 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-scroll svg { width: 20px; }
 .ns-skip { font-size: .8rem; min-height: 44px; display: grid; place-items: center; text-underline-offset: 5px; }
 .ns-lantern-touch { position: absolute; z-index: 3; top: 64px; right: 3%; left: auto; width: clamp(65px,7.5vw,110px); height: clamp(210px,32vh,330px); padding: 0; border: 0; background: transparent; cursor: pointer; }
-.ns-lantern-swing { display: block; width: 100%; height: 100%; transform-origin: 50% 0; }
-.ns-lantern-swing > svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(2px 5px 3px #39261766); }
+.ns-lantern-swing { position: relative; display: block; width: 100%; height: 100%; transform-origin: 50% 0; }
+.ns-lantern-swing > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(2px 5px 3px #39261766); }
 .ns-lantern-halo { opacity: .65; transition: opacity .7s; }
 .ns-lantern-touch[aria-pressed='true'] .ns-lantern-halo { opacity: 1; }
 .ns-lantern-touch:focus-visible { outline: 2px solid #fff3e4; outline-offset: 4px; border-radius: 24px; }
@@ -177,7 +220,7 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-countdown > div { display: grid; min-width: 60px; padding: .7rem; border: 1px solid #efd2a055; }
 .ns-countdown strong { font: 500 2rem var(--font-display); } .ns-countdown span { font-size: .75rem; }
 .ns-footer { padding: 2rem 1rem 7rem; color: #d5d8c6; background: #172e28; text-align: center; font-size: .85rem; display: grid; gap: .5rem; }
-.ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28e6; backdrop-filter: blur(15px); box-shadow: 0 8px 30px #0003; }
+.ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28f0; box-shadow: 0 8px 30px #0003; }
 .ns-dock a { display: flex; gap: .4rem; align-items: center; justify-content: center; min-height: 44px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; text-decoration: none; }
 .ns-dock a:hover { color: #efd2a0; }
 .ns-dock svg { width: 17px; height: 17px; }
@@ -227,12 +270,20 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 @media (prefers-reduced-motion: reduce) { .ns-keepsake, .ns-button { transition: none; } }
 @media (scripting: none) { .ns-dock, .ns-petal-touch { display: none; } .ns-header { background: #172e28ee; } }
 
-/* One chapter per screen. Dynamic viewport units follow mobile browser chrome.
+/* One chapter per screen. Chapters use the small viewport (svh): dynamic units would
+   resize every chapter whenever mobile browser chrome shows or hides, shifting the page
+   and the scroll ranges mid-gesture. Full-bleed art and the fixed cameras use the large
+   viewport (lvh) instead, so the area under collapsed browser bars is never empty and a
+   camera's end pose crops exactly like the original artwork it hands over to.
    Card collections pan horizontally rather than growing the page vertically. */
-.ns-home { --ns-screen: 100vh; --ns-top: 86px; --ns-bottom: max(84px, calc(env(safe-area-inset-bottom) + 76px)); }
-@supports (height: 100dvh) { .ns-home { --ns-screen: 100dvh; } }
+.ns-home { --ns-screen: 100vh; --ns-canvas: 100vh; --ns-top: 86px; --ns-bottom: max(84px, calc(env(safe-area-inset-bottom) + 76px)); }
+@supports (height: 100svh) { .ns-home { --ns-screen: 100svh; --ns-canvas: 100lvh; } }
+.ns-home :is(.ns-hero > .ns-art,.ns-hero-shade,.ns-story-landscape > .ns-art,.ns-story-shade,.envelope-backdrop,.ns-celebrations > .ns-art,.ns-celebrations-shade,.ns-venue-landscape,.ns-venue-shade,.ns-wishes-landscape,.ns-wishes-shade,.ns-closing > .ns-art,.ns-closing-shade) { bottom: auto; height: var(--ns-canvas); }
+/* The sticky envelope stage lets its backdrop reach under collapsed browser bars; the
+   chapter itself still clips. */
+.ns-home .envelope-scene .envelope-viewport { overflow: visible; }
 .ns-home > section { height: var(--ns-screen); min-height: 0; max-height: none; scroll-margin-top: 0; scroll-snap-align: start; overflow: clip; }
-.ns-home > .envelope-nature[data-enhanced] {
+.ns-home > .envelope-scene[data-enhanced] {
   height: calc(var(--ns-screen) + clamp(2800px, 360svh, 4400px));
   scroll-snap-align: none;
 }
@@ -243,7 +294,7 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-story-copy { top: var(--ns-top); gap: .5rem; }
 .ns-keepsakes { position: absolute; inset-inline: 0; bottom: calc(var(--ns-bottom) + 34px); width: 100%; max-width: 960px; margin: 0 auto; gap: 1.5rem; }
 .ns-keepsake { min-width: 0; gap: .4rem; padding: .6rem .6rem .8rem; }
-.ns-photo { height: clamp(70px, 18dvh, 190px); aspect-ratio: auto; }
+.ns-photo { height: clamp(70px, 18svh, 190px); aspect-ratio: auto; }
 .ns-keepsake-title { font-size: clamp(1.2rem, 2.2vw, 1.8rem); }
 .ns-keepsake-body { font-size: .8rem; line-height: 1.4; }
 .ns-keepsake-hint { position: absolute; inset-inline: 1rem; bottom: var(--ns-bottom); margin: 0; color: #fff3e4; text-shadow: 0 1px 5px #172e28; }
@@ -261,10 +312,13 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   .ns-story-copy { left: 12%; width: 80%; }
   .ns-keepsakes, .ns-events { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 1rem; padding: .8rem 1rem; gap: 1rem; max-width: none; overscroll-behavior-x: contain; }
   .ns-keepsakes { grid-auto-columns: 76%; }
+  /* Horizontal carousels only: any vertical overflow (shadows, arrival offsets) would make
+     them capture vertical swipes and stall the page scroll. */
+  .ns-keepsakes, .ns-events { overflow-y: hidden; }
   .ns-keepsake { rotate: 0deg; scroll-snap-align: center; }
   .ns-keepsake-title { font-size: 1.4rem; }
   .ns-keepsake-body { font-size: .82rem; }
-  .ns-photo { height: clamp(65px,17dvh,180px); }
+  .ns-photo { height: clamp(65px,17svh,180px); }
   .ns-celebrations { padding-inline: 0; }
   .ns-celebrations .ns-section-head { padding-inline: 1rem; }
   .ns-event { scroll-snap-align: center; border-radius: 65px 65px 5px 5px; }
@@ -299,7 +353,9 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-drift-flower:nth-child(odd) { color: #f3d7bc; }
 @media (prefers-reduced-motion: no-preference) {
   .ns-lantern-swing { animation: ns-lantern-sway 7.5s ease-in-out infinite; }
-  .ns-lantern-flame { transform-origin: 50px 236px; animation: ns-candle-breathe 3.6s ease-in-out infinite alternate; }
+  /* The flame is its own <svg> box (origin = the original 50,236 in a 100x300 viewBox),
+     so this runs on the compositor instead of repainting the filtered lantern per frame. */
+  .ns-lantern-flame { transform-origin: 50% 78.667%; animation: ns-candle-breathe 3.6s ease-in-out infinite alternate; }
   .ns-drift { animation: ns-garden-drift var(--duration) linear var(--delay) infinite; }
 }
 /* Native first-paint entrance avoids hiding text while a JS bundle downloads.
@@ -318,7 +374,43 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   .ns-hero-copy > .ns-date { animation-delay: .95s; }
   .ns-hero[data-intro-complete] .ns-hero-copy > *,
   .ns-hero[data-intro-complete] .ns-hero-copy h1 > * { animation: none; }
+  /* The names wait behind the opening veil, then arrive as it lifts. */
+  html:not([data-nature-loaded]) :is(.ns-hero-copy > *, .ns-hero-copy h1 > *) { animation-play-state: paused; }
 }
+/* Opening veil (OpeningVeil.astro): the welcome painting itself, out of focus at dusk,
+   while the lotus draws itself. Lifting is a focus pull: the soft scene settles, its dusk
+   clears and it dissolves into the sharp painting beneath. Filters are static; only
+   transform and opacity move. */
+.ns-veil { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow: hidden; pointer-events: none; color: #efd2a0; background: #10241e;
+  transition: opacity 1.3s cubic-bezier(.45,0,.25,1) .2s, visibility 0s linear 1.5s;
+  /* Last resort if the veil's script never runs: it still steps aside. */
+  animation: ns-veil-away .6s ease 6s forwards; }
+html[data-nature-loaded] .ns-veil { opacity: 0; visibility: hidden; }
+.ns-veil-scene { position: absolute; inset: -6%; background: var(--veil-scene, none) center / cover no-repeat, radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e);
+  filter: blur(14px) saturate(1.2) brightness(1.08); transform: scale(1.08); transition: transform 1.6s cubic-bezier(.2,.7,.2,1); will-change: transform; }
+@media (min-width: 768px) and (min-aspect-ratio: 1/1) { .ns-veil-scene { background-image: var(--veil-scene-wide, var(--veil-scene, none)), radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e); } }
+html[data-nature-loaded] .ns-veil-scene { transform: scale(1); }
+/* Dusk over the scene keeps the gold legible; it clears first as the veil lifts. */
+.ns-veil::before { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(70% 45% at 50% 46%, #10241e38, #10241e8c 60%, #0b1c17d6); transition: opacity .9s ease; }
+html[data-nature-loaded] .ns-veil::before { opacity: 0; }
+.ns-veil-mark { position: relative; z-index: 2; display: grid; justify-items: center; gap: .85rem; transition: transform 1.1s cubic-bezier(.2,.7,.2,1), opacity .55s ease; }
+html[data-nature-loaded] .ns-veil-mark { opacity: 0; transform: translate3d(0,-8px,0) scale(1.06); }
+.ns-veil-lotus { width: 4.4rem; overflow: visible; filter: drop-shadow(0 0 6px #10241e); }
+.ns-veil-lotus path { stroke-dasharray: 90; stroke-dashoffset: 90; animation: ns-veil-draw 1.9s cubic-bezier(.45,0,.2,1) .1s forwards; }
+.ns-veil .monogram { font-size: 1.3rem; opacity: 0; text-shadow: 0 0 12px #10241e; animation: ns-veil-in 1s ease .75s forwards; }
+.ns-veil-line { width: 5.5rem; height: 1px; background: linear-gradient(90deg, transparent, currentColor, transparent); transform: scaleX(0); animation: ns-veil-grow 1.3s cubic-bezier(.3,0,.2,1) .55s forwards; }
+/* Warm specks of lantern light drifting up through the soft focus. */
+.ns-veil-motes { position: absolute; inset: 0; z-index: 2; }
+.ns-veil-motes i { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff3d1 0%, #ffd58fcc 22%, #f4b36a44 48%, #f4b36a00 70%); animation: ns-veil-mote var(--d) ease-in-out var(--delay) infinite; }
+@media (max-width: 767px) { .ns-veil-motes i:nth-child(3n) { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ns-veil-motes { display: none; } }
+@media (scripting: none) { .ns-veil { display: none; } }
+@keyframes ns-veil-draw { to { stroke-dashoffset: 0; } }
+@keyframes ns-veil-in { to { opacity: 1; } }
+@keyframes ns-veil-grow { to { transform: scaleX(1); } }
+@keyframes ns-veil-mote { 0% { opacity: 0; transform: translate3d(0,0,0) scale(.6); } 25% { opacity: var(--a); } 75% { opacity: calc(var(--a) * .7); } 100% { opacity: 0; transform: translate3d(var(--dx),-22vh,0) scale(1); } }
+@keyframes ns-veil-away { to { opacity: 0; visibility: hidden; } }
 .ns-home[data-ambient-paused] .ns-lantern-swing,
 .ns-home[data-ambient-paused] .ns-lantern-flame,
 .ns-home[data-ambient-paused] .ns-drift { animation-play-state: paused; }
@@ -413,6 +505,10 @@ html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; sc
 .ns-celebrations-head h2 { font-size: clamp(2rem,3.6vw,3.4rem); color: #fff1db; line-height: 1.05; }
 .ns-celebrations-intro { color: #e0d5c2; margin-top: .4rem; font-family: var(--font-display); font-size: clamp(1rem,1.5vw,1.2rem); }
 .ns-event-festoon { position: absolute; z-index: -1; top: 64px; right: 0; width: 70%; height: 110px; pointer-events: none; opacity: .7; }
+.ns-event-festoon > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Reproduces the wire's xMidYMin meet box, so bulbs land on the exact same points. */
+.ns-festoon-bulbs { position: absolute; top: 0; left: 50%; translate: -50% 0; width: min(100%,1000px); aspect-ratio: 1000 / 110; }
+.ns-festoon-bulb { position: absolute; width: 1.8%; height: 18.182%; overflow: visible; }
 .ns-celebrations .ns-events { max-width: 1140px; grid-template-columns: repeat(3,minmax(0,300px)); justify-content: center; align-items: center; gap: clamp(1rem,3vw,2.5rem); padding: 1rem; }
 .ns-event { position: relative; height: min(100%,520px); min-height: 0; grid-template-rows: minmax(0,1fr) auto; border: 1px solid #cfb37a; border-radius: 22px; background: #f3dfbe; box-shadow: 0 18px 38px #030e1080,0 0 0 3px #b797591a; transform-origin: center 70%; }
 .ns-event::after { content: ''; position: absolute; z-index: 4; inset: 4px; border: 1px solid #f1d5a777; border-radius: 18px; pointer-events: none; }
@@ -453,7 +549,7 @@ html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; sc
   .ns-event-mark { width: 18px; height: 18px; top: -12px; }
   .ns-event-rule { margin: .1rem 0; }
 }
-@media (prefers-reduced-motion: no-preference) { .ns-event-festoon g { animation: ns-celebration-glimmer 4s ease-in-out var(--bulb-delay) infinite alternate; } }
+@media (prefers-reduced-motion: no-preference) { .ns-festoon-bulb { animation: ns-celebration-glimmer 4s ease-in-out var(--bulb-delay) infinite alternate; } }
 @keyframes ns-celebration-glimmer { from { opacity: .55; } to { opacity: 1; } }
 
 /* Venue: the garden is the scene; real HTML wayfinding is its foreground. */
@@ -553,7 +649,7 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 }
 
 /* Wishes: independent paper, cord and wind pivots over a text-free garden. */
-.ns-wishes { --wish-tag-h: clamp(165px,27dvh,270px); --wish-gap: clamp(.8rem,2.5vw,2rem); position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0,1fr) auto; gap: 1rem; padding: calc(var(--ns-top) + 16px) clamp(1.4rem,6vw,7rem) calc(var(--ns-bottom) + 6px); background: #14281e; color: #fff0d9; }
+.ns-wishes { --wish-tag-h: clamp(165px,27svh,270px); --wish-gap: clamp(.8rem,2.5vw,2rem); position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0,1fr) auto; gap: 1rem; padding: calc(var(--ns-top) + 16px) clamp(1.4rem,6vw,7rem) calc(var(--ns-bottom) + 6px); background: #14281e; color: #fff0d9; }
 .ns-wishes-landscape { position: absolute; z-index: -2; inset: 0; overflow: hidden; }
 .ns-wishes-shade { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: var(--ns-shade-wishes); }
 .ns-wishes-head { display: flex; align-items: center; gap: 1.2rem; text-align: left; text-shadow: 0 2px 15px #071b12; }
@@ -588,7 +684,7 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 .ns-wishes .ns-countdown > div { min-width: 42px; padding: .3rem .5rem; background: #14281e88; }
 .ns-wishes .ns-countdown strong { font-size: 1.3rem; }
 .ns-wishes .ns-countdown span { font-size: .6rem; }
-.ns-wishes-with-details { --wish-tag-h: clamp(120px,21dvh,205px); }
+.ns-wishes-with-details { --wish-tag-h: clamp(120px,21svh,205px); }
 .ns-wish-atmosphere { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
 .ns-wish-drift { position: absolute; left: var(--x); top: -20px; width: 6px; height: 6px; opacity: 0; }
 .ns-wish-petal { width: 8px; height: 12px; border-radius: 80% 10% 75% 10%; background: linear-gradient(130deg,#edc0b3,#b76870); }
@@ -606,7 +702,7 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 @keyframes ns-wish-wind { from { rotate: calc(var(--tilt) - 1.6deg); } to { rotate: calc(var(--tilt) + 1.6deg); } }
 @keyframes ns-wish-glow { from { opacity: .45; } to { opacity: 1; } }
 @media (max-width: 767px), (max-width: 1024px) and (max-aspect-ratio: 1/1) {
-  .ns-wishes { --wish-tag-h: clamp(120px,19dvh,176px); --wish-gap: 1rem; padding: calc(var(--ns-top) + 12px) 1.4rem calc(var(--ns-bottom) + 5px); gap: .7rem; }
+  .ns-wishes { --wish-tag-h: clamp(120px,19svh,176px); --wish-gap: 1rem; padding: calc(var(--ns-top) + 12px) 1.4rem calc(var(--ns-bottom) + 5px); gap: .7rem; }
   .ns-wishes-head { gap: .75rem; }
   .ns-wishes-index { font-size: 3rem; padding-right: .7rem; }
   .ns-home .ns-wishes-head h2 { font-size: clamp(1.8rem,7vw,2.5rem); }
@@ -622,17 +718,17 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
   :lang(hi) .ns-wish-message { font-size: 1rem; line-height: 1.4; }
   .ns-wish-hint { font-size: .9rem; }
   #ns-wishes-demo { font-size: .61rem; }
-  .ns-wishes-with-details { --wish-tag-h: clamp(80px,14dvh,130px); }
+  .ns-wishes-with-details { --wish-tag-h: clamp(80px,14svh,130px); }
   .ns-wishes-with-details .ns-wish-garland { row-gap: .7rem; }
 }
 @media (min-width: 768px) and (max-width: 1024px) and (max-aspect-ratio: 1/1) {
-  .ns-wishes { --wish-tag-h: clamp(165px,23dvh,235px); padding-inline: clamp(2.4rem,8vw,5rem); }
+  .ns-wishes { --wish-tag-h: clamp(165px,23svh,235px); padding-inline: clamp(2.4rem,8vw,5rem); }
   .ns-wish-message { font-size: 1.6rem; }
   :lang(hi) .ns-wish-message { font-size: 1.3rem; }
-  .ns-wishes-with-details { --wish-tag-h: clamp(145px,18dvh,190px); }
+  .ns-wishes-with-details { --wish-tag-h: clamp(145px,18svh,190px); }
 }
 @media (max-height: 650px) {
-  .ns-wishes { --wish-tag-h: clamp(82px,17dvh,110px); padding-top: calc(var(--ns-top) + 2px); gap: .5rem; }
+  .ns-wishes { --wish-tag-h: clamp(82px,17svh,110px); padding-top: calc(var(--ns-top) + 2px); gap: .5rem; }
   .ns-wishes-head .ns-kicker { display: none; }
   .ns-wishes-index { font-size: 2.7rem; }
   .ns-home .ns-wishes-head h2 { font-size: 1.65rem; }
@@ -676,12 +772,20 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
   .ns-wishes-with-details .ns-wish-string { height: calc(var(--cord) + 20px); }
   .ns-wishes-with-details .ns-wish-message { font-size: .8rem; }
 }
+/* Landscape phones: the RSVP row moves up beside the heading, so the tags keep their height. */
+@media (min-width: 768px) and (max-height: 450px) {
+  .ns-wishes-with-details { --wish-tag-h: 78px; grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto minmax(0,1fr); column-gap: 1rem; }
+  .ns-wishes-with-details .ns-wishes-head { grid-column: 1; grid-row: 1; }
+  .ns-wishes-with-details .ns-wishes-foot { grid-column: 2; grid-row: 1; align-self: center; }
+  .ns-wishes-with-details .ns-wish-canopy { grid-column: 1 / -1; grid-row: 2; }
+  .ns-wishes-with-details .ns-wish-tag { padding-top: 26px; }
+}
 @media (prefers-reduced-motion: reduce), (scripting: none) {
   .ns-wish-tag { transition: none; }
   .ns-wish-atmosphere { display: none; }
 }
 
-/* Final note: Royal-inspired stationery, kept inside Nature's original terrace. */
+/* Final note: ivory stationery on the closing terrace. */
 .ns-closing { position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0,1fr); gap: 1rem; padding: calc(var(--ns-top) + 16px) clamp(1.3rem,5vw,6rem) calc(var(--ns-bottom) + 6px); color: #fff1dc; }
 .ns-closing-shade { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: var(--ns-shade-closing); }
 .ns-note-head { display: flex; align-items: center; gap: 1.2rem; text-shadow: 0 2px 16px #21352ad9; }
@@ -689,9 +793,12 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 .ns-note-head .ns-kicker { margin-bottom: .3rem; color: #ffe4b7; }
 .ns-home .ns-note-head h2 { font-size: clamp(2.3rem,4vw,3.8rem); line-height: 1.05; }
 .ns-note-head > div > p:last-child { font: italic 400 clamp(1rem,1.7vw,1.45rem)/1.4 var(--font-display); margin-top: .35rem; }
-.ns-note-stage { position: relative; z-index: 1; display: grid; justify-items: center; align-content: start; gap: 1.4rem; margin-top: clamp(10px,3dvh,32px); perspective: 1200px; }
-.ns-note-arrival { width: min(100%,780px); transform-origin: 50% 65%; filter: drop-shadow(0 20px 26px #36261355); }
-.ns-note-float { transform-origin: center; }
+.ns-note-stage { position: relative; z-index: 1; display: grid; justify-items: center; align-content: start; gap: 1.4rem; margin-top: clamp(10px,3svh,32px); perspective: 1200px; }
+/* Arrival (scroll transform + breathing translate/rotate) wraps the shadowed float, so the
+   large drop-shadow is rasterised once and moves with its layer instead of being
+   re-blurred every frame around an animating child. */
+.ns-note-arrival { width: min(100%,780px); transform-origin: 50% 65%; }
+.ns-note-float { transform-origin: center; filter: drop-shadow(0 20px 26px #36261355); }
 .ns-note-card { position: relative; isolation: isolate; display: grid; align-items: center; min-height: 300px; padding: clamp(32px,3.5vw,46px) clamp(36px,6vw,90px); clip-path: polygon(5% 0,95% 0,100% 9%,100% 91%,95% 100%,5% 100%,0 91%,0 9%); background: radial-gradient(ellipse at 4% 10%,#c29b5c33,transparent 32%),radial-gradient(ellipse at 95% 95%,#af793b33,transparent 30%),radial-gradient(ellipse at 45% 10%,#fff7df88,transparent 60%),linear-gradient(115deg,#f0d7b0,#f9e5c6 50%,#e6c494); color: #653f2e; }
 .ns-note-card::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .24; background: var(--note-fibers) center / 190% 190%; mix-blend-mode: multiply; pointer-events: none; }
 .ns-note-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -724,10 +831,10 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 .ns-note-drift.petal { width: 8px; height: 12px; border-radius: 85% 12% 80% 15%; background: linear-gradient(130deg,#f1cbb5,#bc6c72); }
 .ns-note-drift.mote { border-radius: 50%; background: #fff0c2; box-shadow: 0 0 8px #ffe1a5; }
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-  .ns-note-float { animation: ns-note-breathe 9s ease-in-out infinite alternate; }
+  .ns-note-arrival { animation: ns-note-breathe 9s ease-in-out infinite alternate; }
   .ns-note-drift { animation: ns-garden-drift var(--duration) linear var(--delay) infinite; --alpha: .4; --turn: 240deg; }
 }
-.ns-home[data-ambient-paused] .ns-note-float,.ns-home[data-ambient-paused] .ns-note-drift { animation-play-state: paused; }
+.ns-home[data-ambient-paused] .ns-note-arrival,.ns-home[data-ambient-paused] .ns-note-drift { animation-play-state: paused; }
 @keyframes ns-note-breathe { from { translate: 0 2px; rotate: -.12deg; } to { translate: 0 -3px; rotate: .12deg; } }
 @media (max-width: 767px) {
   .ns-closing { padding: calc(var(--ns-top) + 12px) 1.3rem calc(var(--ns-bottom) + 5px); gap: .6rem; }
@@ -782,3 +889,143 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
   .ns-note-floral { width: 65px; }
 }
 @media (prefers-reduced-motion: reduce), (scripting: none) { .ns-note-atmosphere { display: none; } }
+
+/* Page transition into the full invitation (scripts/invitation-morph.ts): the card a guest
+   is looking at morphs into the invitation card; every other navigation cross-fades. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-group(root) { animation-duration: .55s; }
+  ::view-transition-group(ns-invitation),::view-transition-group(ns-invitation-names) { animation-duration: .85s; animation-timing-function: cubic-bezier(.22,.8,.2,1); }
+  ::view-transition-image-pair(ns-invitation) { overflow: hidden; border-radius: 4px; box-shadow: 0 30px 90px #0006; }
+  ::view-transition-old(ns-invitation-names),::view-transition-new(ns-invitation-names) { height: 100%; object-fit: contain; }
+}
+
+/* Type and legibility over the paintings. Text never sits bare on a busy area: dark
+   copy gets a warm haze behind it, light copy a soft dusk shade, both feathered so the
+   painting still reads as a painting. Script is reserved for large romantic accents. */
+.ns-kicker { font-weight: 600; letter-spacing: .24em; }
+:lang(hi) .ns-kicker { font-weight: 500; }
+.ns-hero-copy { isolation: isolate; }
+.ns-hero-copy::before { inset: -10% -22% -6%; background: radial-gradient(closest-side, #fff3e0e6, #fff3e0a8 48%, #fff3e000); }
+.ns-hero-copy h1 { color: #24382c; text-shadow: 0 0 18px #fff3e0, 0 1px 0 #fff8ee; }
+.ns-hero-copy .ns-kicker, .ns-couple { color: #5a3a26; }
+.ns-couple { font-weight: 600; letter-spacing: .16em; }
+:lang(en) .ns-hero-copy h1 em { font: 400 1.15em/1.05 var(--font-script); }
+:is(.ns-story-copy, .ns-venue-head, .ns-wishes-head, .ns-note-head) { isolation: isolate; }
+.ns-home .envelope-heading { isolation: isolate; text-shadow: 0 1px 2px #10241e, 0 2px 18px #10241e; }
+:is(.ns-venue-head, .ns-wishes-head, .ns-note-head) { position: relative; }
+:is(.ns-story-copy, .ns-home .envelope-heading)::before,
+:is(.ns-venue-head, .ns-wishes-head, .ns-note-head)::before { content: ''; position: absolute; z-index: -1; inset: -18% -14%; pointer-events: none; background: radial-gradient(closest-side, #10241ecc, #10241e80 55%, #10241e00); }
+:is(.ns-venue-head, .ns-wishes-head, .ns-note-head)::before { inset: -35% -10%; opacity: .75; }
+.ns-story-copy { text-shadow: 0 1px 2px #10241e, 0 2px 18px #10241e; }
+:lang(en) .ns-note-copy h3 { font: 400 clamp(2.4rem,4.6vw,4rem)/1.05 var(--font-script); }
+
+
+/* Warming the lantern lights the terrace: the flame swells and a warm pool of light
+   spreads from it (one static layer fading in, nothing repaints per frame). */
+.ns-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1.2s ease;
+  background: radial-gradient(60% 45% at 90% 28%, #ffd58aa6, #ffb45a40 45%, #ffb45a00 72%); }
+.ns-hero:has(.ns-lantern-touch[aria-pressed='true'])::after { opacity: 1; }
+.ns-lantern-flame { transition: scale .9s cubic-bezier(.2,.7,.2,1.4); }
+.ns-lantern-touch[aria-pressed='true'] .ns-lantern-flame { scale: 1.18; }
+@media (max-width: 767px) { .ns-hero::after { background: radial-gradient(80% 42% at 88% 22%, #ffd58aa6, #ffb45a40 45%, #ffb45a00 72%); } }
+.ns-lantern-swing > svg { transition: filter .9s ease; }
+.ns-lantern-touch[aria-pressed='true'] .ns-lantern-swing > svg { filter: drop-shadow(0 0 16px #ffd27ad9) drop-shadow(2px 5px 3px #39261766); }
+
+/* Personal greeting from a `?to=` link. */
+.ns-greeting { font: 400 clamp(1.5rem,4.6vw,2.3rem)/1.1 var(--font-script); color: #6e3f2a; text-shadow: 0 0 14px #fff3e0; }
+:lang(hi) .ns-greeting { font: 400 clamp(1.1rem,3.6vw,1.6rem)/1.4 var(--font-display); }
+.ns-veil-greeting { margin-top: .4rem; font: 400 1.6rem/1.1 var(--font-script); text-shadow: 0 0 12px #10241e; opacity: 0; animation: ns-veil-in 1s ease 1s forwards; }
+:lang(hi) .ns-veil-greeting { font: 400 1.15rem/1.4 var(--font-display); }
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  .ns-hero-copy > .ns-greeting { animation: ns-hero-arrive 1.5s cubic-bezier(.2,.75,.25,1) both; }
+  html:not([data-nature-loaded]) .ns-hero-copy > .ns-greeting { animation-play-state: paused; }
+}
+
+/* Event cards: the place (when it differs from the main venue) and a "Today" badge. */
+.ns-event-place { font-size: .78rem; letter-spacing: .04em; color: #7a5a3a; }
+.ns-event-today { position: absolute; z-index: 2; top: .75rem; right: .75rem; padding: .2rem .7rem; border-radius: 20px; font: 600 .68rem/1.4 var(--font-ui); letter-spacing: .14em; text-transform: uppercase; color: #213b32; background: #f6dca8; box-shadow: 0 0 0 3px #f6dca855, 0 4px 14px #0004; }
+.ns-event-today[hidden] { display: none; }
+
+/* Venue notes in the "Explore venue" preview. */
+.ns-venue-notes { display: grid; gap: .25rem; margin: .3rem 0 0; padding: 0; list-style: none; font-size: .85rem; color: #4d4a38; }
+.ns-venue-notes li::before { content: '✦ '; color: #b08a52; }
+
+/* The guest's own blessing tag on the garland: an inviting blank until written. */
+.ns-wish-own:not([data-written]) { background: #f6e7c9; }
+.ns-wish-own:not([data-written]) .ns-wish-message { font: 500 clamp(.95rem,1.5vw,1.25rem)/1.25 var(--font-ui); letter-spacing: .02em; color: #6b4a2d; }
+.ns-wish-own:not([data-written]) .ns-wish-message::before { content: '✎'; display: block; margin-bottom: .25rem; font-size: 1.4em; color: #a47a41; }
+.ns-wish-own[data-written] .ns-wish-message { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; font: 400 clamp(1.05rem,1.8vw,1.5rem)/1.12 var(--font-script); overflow-wrap: anywhere; }
+:lang(hi) .ns-wish-own[data-written] .ns-wish-message { font-size: clamp(.95rem,1.6vw,1.3rem); line-height: 1.3; }
+@media (max-width: 767px) {
+  .ns-wish-own:not([data-written]) .ns-wish-message { font-size: .8rem; }
+  .ns-wish-own[data-written] .ns-wish-message { font-size: .95rem; -webkit-line-clamp: 3; line-clamp: 3; }
+  :lang(hi) .ns-wish-own[data-written] .ns-wish-message { font-size: .8rem; }
+}
+/* Short screens shrink every tag; the guest's blessing keeps to two lines there. */
+@media (max-height: 700px) {
+  .ns-wish-own[data-written] .ns-wish-message { -webkit-line-clamp: 2; line-clamp: 2; font-size: .8rem; line-height: 1.15; }
+  .ns-wish-own:not([data-written]) .ns-wish-message { font-size: .72rem; line-height: 1.2; }
+  .ns-wish-own:not([data-written]) .ns-wish-message::before { display: none; }
+}
+
+/* Parchment form dialogs (RSVP, blessing). */
+.ns-sheet-dialog { width: min(92vw, 30rem); max-width: none; max-height: calc(100dvh - 2rem); padding: 0; border: 0; overflow: visible; background: transparent; color: #334537; }
+.ns-sheet-dialog::backdrop { background: #081d18cf; backdrop-filter: blur(6px); }
+.ns-sheet { position: relative; display: grid; gap: 1rem; max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; padding: 1.6rem clamp(1.1rem,5vw,2rem) 1.4rem;
+  background: radial-gradient(at 0 0,#a1b18c2a,transparent 45%), radial-gradient(at 100% 100%,#f2a27d2a,transparent 45%), #fbf0dc;
+  border: 1px solid #b58e50; box-shadow: inset 0 0 0 5px #fbf0dc, inset 0 0 0 6px #b58e5080, 0 30px 90px #0008; }
+@media (prefers-reduced-motion: no-preference) {
+  .ns-sheet-dialog[open] { animation: ns-sheet-in .45s cubic-bezier(.2,.75,.25,1); }
+  .ns-sheet-dialog[open]::backdrop { animation: ns-sheet-fade .4s ease; }
+}
+@keyframes ns-sheet-in { from { opacity: 0; transform: translate3d(0,18px,0) scale(.97); } }
+@keyframes ns-sheet-fade { from { opacity: 0; } }
+.ns-sheet-close { position: absolute; top: .6rem; right: .6rem; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #4b3a28; cursor: pointer; }
+.ns-sheet-close svg { width: 20px; height: 20px; }
+.ns-sheet-head { display: grid; justify-items: center; gap: .35rem; text-align: center; padding-inline: 1.5rem; }
+.ns-sheet-head h2 { font-size: clamp(1.7rem,6vw,2.2rem); color: #2f4535; }
+.ns-sheet-head p { font-size: .88rem; line-height: 1.45; color: #5e5644; }
+.ns-sheet-head .ns-sheet-deadline { font-weight: 600; color: #7a4d2e; }
+.ns-field { display: grid; gap: .35rem; margin: 0; padding: 0; border: 0; font-size: .82rem; font-weight: 500; letter-spacing: .02em; color: #4d4a38; }
+.ns-field input:not([type='checkbox'],[type='radio']), .ns-field textarea { width: 100%; min-height: 46px; padding: .6rem .8rem; font: 400 1rem/1.4 var(--font-ui); color: #26372b; background: #fffaf0; border: 1px solid #c7a97a; border-radius: 10px; }
+.ns-field textarea { resize: vertical; min-height: 4.2rem; }
+.ns-field :focus-visible { outline: 2px solid #425d43; outline-offset: 1px; }
+.ns-blessing-text textarea { font: 400 1.5rem/1.3 var(--font-script); text-align: center; }
+:lang(hi) .ns-blessing-text textarea { font: 400 1.1rem/1.5 var(--font-display); }
+.ns-rsvp-attend { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin: 0; padding: 0; border: 0; }
+.ns-rsvp-attend label { position: relative; }
+.ns-rsvp-attend input { position: absolute; opacity: 0; }
+.ns-rsvp-attend span { display: grid; place-items: center; min-height: 48px; padding: .5rem; text-align: center; font-size: .86rem; line-height: 1.25; border: 1px solid #c7a97a; border-radius: 12px; background: #fffaf0; cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
+.ns-rsvp-attend input:checked + span { color: #fff6e6; background: #425d43; border-color: #425d43; }
+.ns-rsvp-attend input:focus-visible + span { outline: 2px solid #425d43; outline-offset: 2px; }
+.ns-rsvp-coming { display: grid; gap: 1rem; }
+.ns-rsvp-coming[hidden] { display: none; }
+.ns-stepper { display: grid; grid-template-columns: 46px 1fr 46px; gap: .4rem; }
+.ns-stepper button { min-height: 46px; border: 1px solid #c7a97a; border-radius: 10px; background: #f4e3c4; font-size: 1.3rem; color: #3a3a2a; cursor: pointer; }
+.ns-field .ns-stepper input { text-align: center; font-weight: 600; -moz-appearance: textfield; appearance: textfield; }
+.ns-stepper input::-webkit-inner-spin-button, .ns-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.ns-rsvp-events { display: flex; flex-wrap: wrap; gap: .45rem; }
+.ns-rsvp-events legend { width: 100%; margin-bottom: .35rem; }
+.ns-rsvp-events label { position: relative; }
+.ns-rsvp-events input { position: absolute; opacity: 0; }
+.ns-rsvp-events span { display: inline-flex; align-items: center; gap: .35rem; min-height: 40px; padding: .35rem .85rem; border: 1px solid #c7a97a; border-radius: 30px; background: #fffaf0; font-weight: 400; cursor: pointer; }
+.ns-rsvp-events input:checked + span { background: #e9dcbd; border-color: #8f7448; }
+.ns-rsvp-events input:checked + span::before { content: '✓'; color: #425d43; font-weight: 600; }
+.ns-rsvp-events input:focus-visible + span { outline: 2px solid #425d43; outline-offset: 2px; }
+.ns-sheet > .ns-button, .ns-sheet-actions .ns-button { width: 100%; }
+.ns-sheet-actions { display: grid; gap: .55rem; }
+.ns-sheet-status { min-height: 1.2em; text-align: center; font-size: .85rem; color: #425d43; }
+.ns-sheet-status:empty { display: none; }
+
+/* Family contacts: Call / WhatsApp. */
+.ns-contacts { display: grid; gap: .6rem; padding-top: .9rem; border-top: 1px solid #b58e5044; }
+.ns-contacts-title { text-align: center; font: italic 500 1.05rem/1.3 var(--font-display); color: #5b4630; }
+.ns-contacts ul { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.ns-contacts li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem .8rem; }
+.ns-contact-name { display: grid; font-weight: 500; }
+.ns-contact-name small { font-size: .75rem; font-weight: 400; color: #6b644f; }
+.ns-contact-actions { display: flex; gap: .4rem; }
+.ns-contact-actions a { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; padding: .35rem .8rem; border: 1px solid #c7a97a; border-radius: 30px; font-size: .82rem; text-decoration: none; color: #2f4535; background: #fffaf0; }
+.ns-contact-actions svg { width: 17px; height: 17px; }
+.ns-invite-contacts { width: 100%; text-align: left; }

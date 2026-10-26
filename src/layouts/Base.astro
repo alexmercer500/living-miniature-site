@@ -1,30 +1,45 @@
 ---
 // Per-weight files carry unicode-range for every subset, so a page only downloads the
 // scripts it actually renders (the per-subset files claim all characters and load everything).
-import '@fontsource/cormorant-garamond/500.css';
-import '@fontsource/cormorant-garamond/500-italic.css';
+import '@fontsource-variable/fraunces/soft.css';
+import '@fontsource-variable/fraunces/soft-italic.css';
+import '@fontsource-variable/jost/wght.css';
+import '@fontsource/great-vibes/400.css';
 import '@fontsource/mukta/400.css';
 import '@fontsource/mukta/500.css';
 import '@fontsource/tiro-devanagari-hindi/400.css';
 import '../styles/global.css';
 import SceneDefs from '../components/scene/SceneDefs.astro';
+// The faces the welcome names use, fetched with the HTML rather than after layout discovers them.
+// (Same files the fontsource CSS points at, so the browser downloads each only once.)
+import fraunces from '../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-soft-normal.woff2?url';
+import jost from '../../node_modules/@fontsource-variable/jost/files/jost-latin-wght-normal.woff2?url';
+import greatVibes from '../../node_modules/@fontsource/great-vibes/files/great-vibes-latin-400-normal.woff2?url';
+import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-normal.woff2?url';
+import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
+import { getImage } from 'astro:assets';
 import { type Lang, content, loc, t, href } from '../lib/content';
+import { landscapes } from '../lib/nature-assets';
 
-interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: 'nature' }
+interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string }
 const { lang, page = 'home' } = Astro.props;
 const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displayName, 'hi')} — विवाह उत्सव` : content.site.title);
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
 const path = Astro.props.routePath ?? (page === 'invitation' ? '/invitation' : '/');
 const canonical = new URL(href(lang, path), Astro.site);
+// Link preview (WhatsApp, Messages, social): the welcome painting at the 1.91:1 size they expect.
+const preview = await getImage({ src: landscapes.hero.desktop, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
+const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, greatVibes];
 ---
 <!doctype html>
-<html lang={lang} data-theme={Astro.props.theme}>
+<html lang={lang} data-theme="nature">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content={Astro.props.theme === 'nature' ? '#213B32' : '#17172C'} />
+    <meta name="theme-color" content="#213B32" />
+    {preloads.map(font => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={new URL(href('en', path), Astro.site)} />
@@ -33,7 +48,13 @@ const canonical = new URL(href(lang, path), Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={lang === 'hi' ? 'hi_IN' : 'en_IN'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(preview.src, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={loc(content.couple.displayName, lang)} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
   </head>
   <body>
     <a class="skip-link" href="#main">{t(lang, 'skipToContent')}</a>

@@ -5,18 +5,22 @@ import { heroJourneyState,journeyMemoryState } from '../src/lib/hero-journey-sta
 test('camera has exact original-art endpoints and an early readable end hold',()=>{
   const a=heroJourneyState(0),b=heroJourneyState(1);
   assert.equal(a.outgoingScale,1);assert.equal(a.outgoingX,0);assert.equal(a.heroCopyOpacity,1);
-  assert.equal(a.clip,'inset(100% 0 0 0)');assert.equal(b.clip,'inset(0)');
+  // Hidden below the screen at rest; fully opaque (feather above the screen) on arrival.
+  assert.equal(a.wipe,80);assert.equal(a.counter,-100);assert.equal(b.wipe,-20);assert.equal(b.counter,25);
   assert.equal(b.incomingScale,1);assert.equal(b.incomingX,0);assert.equal(b.journeyCopyY,0);assert.equal(b.journeyCopyOpacity,1);
-  assert.equal(heroJourneyState(.84).clip,'inset(0)');assert.equal(heroJourneyState(.96).pathOffset,0);
+  assert.equal(heroJourneyState(.84).wipe,-20);assert.equal(heroJourneyState(.96).pathOffset,0);
 });
-test('reveal is monotonic, bounded and uses an organic edge between endpoints',()=>{
+test('reveal is monotonic, bounded and keeps the artwork still while the wipe moves',()=>{
   let last=0;
   for(let i=0;i<=100;i++){
     const s=heroJourneyState(i/100);assert.ok(s.incoming>=last&&s.incoming<=1);last=s.incoming;
     assert.ok(s.outgoingScale>=1&&s.outgoingScale<=1.12);assert.ok(s.incomingScale>=1&&s.incomingScale<=1.11);
     assert.ok(s.branchOpacity>=0&&s.branchOpacity<=.76);
+    // Layer top (wipe, % of a 1.25-screen layer) plus camera offset (counter, % of a screen) is always 0.
+    assert.ok(Math.abs(s.wipe*1.25/100+s.counter/100)<1e-9);
+    if(i)assert.ok(s.wipe<=heroJourneyState((i-1)/100).wipe);
   }
-  assert.ok(heroJourneyState(.5).clip.startsWith('polygon('));
+  assert.ok(heroJourneyState(.5).wipe<80&&heroJourneyState(.5).wipe>-20);
 });
 test('reverse scrolling and repeated sampling never accumulate motion state',()=>{
   const states=Array.from({length:101},(_,i)=>heroJourneyState(i/100));

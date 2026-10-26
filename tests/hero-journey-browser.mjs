@@ -54,8 +54,8 @@ try {
         const s=await state(),original=snapshots.get(p);assert.equal(s.clip,original.clip,'Reverse reproduces the same edge');assert.equal(s.mask,original.mask);assert.equal(s.incoming,original.incoming);assert.deepEqual(s.memories,original.memories);
       }
       count++;
-      // Fast scroll/hash jumps bypass the intermediate camera, not the content.
-      await evaluate("document.getElementById('journey').scrollIntoView({behavior:'instant'});true");await wait(120);
+      // A jump finishes the camera's short glide (GLIDE_SECONDS) and lands fully readable.
+      await evaluate("document.getElementById('journey').scrollIntoView({behavior:'instant'});true");await wait(1000);
       const landed=await state();assert.equal(landed.active,false);assert.equal(landed.free,false,'Handoff returns snap ownership to later chapters');assert.equal(landed.originalJourney,'1');assert.equal(landed.copyOpacity,'1');assert.ok(landed.memories.every(m=>m.opacity==='1'));
       await shot(`${view.name}-journey`);count++;
       if(view.name==='desktop'){

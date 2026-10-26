@@ -6,7 +6,7 @@ export function scenePhase(progress:number,start:number,end:number) {
   return p*p*(3-2*p);
 }
 
-/** Match the approved first handoff, with a gentler final sunset arrival. */
+/** Match the approved first handoff (including its static-mask wipe), with a gentler final sunset arrival. */
 export function sceneTransitionState(progress:number,closing=false) {
   const state=heroJourneyState(progress);
   return {...state,outgoingScale:1+(state.outgoingScale-1)*(closing ? .65 : 1)};

@@ -8,10 +8,13 @@ import { landscapes } from '../../lib/nature-assets';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = natureCopy[lang];
+// Optional real photos: src/assets/keepsakes/1.jpg, 2.jpg, 3.jpg (any image type) replace the paintings card by card.
+const photos = import.meta.glob<ImageMetadata>('../../assets/keepsakes/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP}', { eager: true, import: 'default' });
+const photo = (n: number) => Object.entries(photos).find(([path]) => new RegExp(`/${n}\\.\\w+$`).test(path))?.[1];
 const items = [
-  { title:c.roots, body:c.rootsBody, image:landscapes.hero.mobile },
-  { title:c.paths, body:c.pathsBody, image:landscapes.journey.mobile },
-  { title:c.tomorrow, body:c.tomorrowBody, image:landscapes.closing.mobile },
+  { title:c.roots, body:c.rootsBody, image:photo(1) ?? landscapes.hero.mobile },
+  { title:c.paths, body:c.pathsBody, image:photo(2) ?? landscapes.journey.mobile },
+  { title:c.tomorrow, body:c.tomorrowBody, image:photo(3) ?? landscapes.closing.mobile },
 ];
 ---
 <div class="ns-keepsakes" tabindex="0" role="group" aria-label={c.story}>

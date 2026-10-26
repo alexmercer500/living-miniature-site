@@ -1,0 +1,26 @@
+---
+/**
+ * Retired theme URLs (Royal Heritage, and Nature's old /nature/ preview path) forward
+ * to the live pages, keeping any #section, so links that were already shared still work.
+ */
+import { href } from '../lib/content';
+export function getStaticPaths() {
+  return ['', 'hi/'].flatMap(prefix => ['royal', 'nature'].flatMap(theme => [
+    { params: { retired: `${prefix}${theme}` }, props: { to: href(prefix ? 'hi' : 'en', '/') } },
+    { params: { retired: `${prefix}${theme}/invitation` }, props: { to: href(prefix ? 'hi' : 'en', '/invitation') } },
+  ]));
+}
+const { to } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={new URL(to, Astro.site)} />
+    <script is:inline define:vars={{ to }}>location.replace(to + location.search + location.hash);</script>
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <title>Redirecting…</title>
+  </head>
+  <body><a href={to}>Continue</a></body>
+</html>

@@ -6,6 +6,8 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: var(--header-h);
+  /* Fraunces' soft, rounded terminals; fonts without the axis ignore it. */
+  font-variation-settings: 'SOFT' 100;
   background: var(--color-midnight);
   color-scheme: dark;
 }
@@ -32,7 +34,7 @@ img, svg { display: block; max-width: 100%; }
 
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 450;
   line-height: 1.1;
   margin: 0;
   text-wrap: balance;
@@ -102,47 +104,6 @@ a { color: inherit; }
   transform: rotate(45deg);
 }
 
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: var(--tap);
-  padding: var(--space-2) var(--space-5);
-  border-radius: var(--radius-pill);
-  font: 500 var(--fs-small)/1.2 var(--font-ui);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid var(--color-antique-gold);
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast);
-}
-:lang(hi) .btn { text-transform: none; letter-spacing: 0.02em; font-size: var(--fs-body); }
-.btn svg { width: 1.1em; height: 1.1em; flex: none; }
-
-.btn--solid { background: var(--color-vermilion); color: var(--color-ivory); border-color: var(--color-gold-highlight); }
-.btn--solid:hover { background: #7f2a35; }
-.btn--ghost-light { background: rgb(23 23 44 / 0.35); color: var(--color-text-light); }
-.btn--ghost-light:hover { background: rgb(242 213 154 / 0.14); }
-.btn--ghost-dark { background: transparent; color: var(--color-text-dark); border-color: var(--color-vermilion); }
-.btn--ghost-dark:hover { background: rgb(156 53 64 / 0.08); }
-
-/* Dev-only hint for unconfigured actions; never rendered in production builds */
-.dev-note {
-  font: 400 0.75rem/1.4 ui-monospace, monospace;
-  padding: var(--space-2) var(--space-3);
-  border: 1px dashed currentColor;
-  border-radius: var(--radius-sm);
-  opacity: 0.75;
-  max-width: 28rem;
-  margin-inline: auto;
-}
-
-/* Sections scrolled out of view pause their ambient loops (toggled by scripts/story.ts) */
-[data-offscreen] *, [data-offscreen] *::before, [data-offscreen] *::after { animation-play-state: paused !important; }
-
 /* Ambient motion is opt-in to motion preference */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -151,21 +112,3 @@ a { color: inherit; }
     transition-duration: 0.01ms !important;
   }
 }
-
-/* Petal burst layer (created by scripts/story.ts) */
-.petal-burst { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
-.petal-burst i {
-  position: absolute;
-  width: 10px;
-  height: 13px;
-  border-radius: 80% 0 80% 0;
-  background: linear-gradient(135deg, #E8648C, var(--color-vermilion));
-}
-.petal-burst i:nth-child(3n) { background: linear-gradient(135deg, #FFC24B, #E9822A); }
-
-/* Tappable diyas */
-.diya.is-tappable { pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.diya.is-bright .diya-halo { animation: diya-flare 1.6s var(--ease-out); }
-.diya.is-bright .diya-flame { animation: diya-flame 1.6s var(--ease-out); }
-@keyframes diya-flare { 0% { transform: scale(1); } 25% { transform: scale(2.3); opacity: 1; } 100% { transform: scale(1); } }
-@keyframes diya-flame { 0% { transform: scale(1); } 25% { transform: scale(1.5, 1.8); } 100% { transform: scale(1); } }

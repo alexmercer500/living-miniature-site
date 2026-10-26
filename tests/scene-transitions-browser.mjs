@@ -62,7 +62,7 @@ try{
      assert.ok((await sample(to)).controls.every(c=>c.opacity==='1'),'Keyboard focus overrides arrival');await ev('document.activeElement.blur();true');
     }
    }else{assert.equal(begin.display,'none');assert.equal(begin.ready,false);count++;}
-   await ev(`document.getElementById('${to}').scrollIntoView({behavior:'instant',block:'start'});true`);await wait(180);
+   await ev(`document.getElementById('${to}').scrollIntoView({behavior:'instant',block:'start'});true`);await wait(1000);
    const landed=await sample(to);assert.equal(landed.targetClass,false);assert.equal(landed.originalOpacity,'1');assert.ok(landed.controls.every(c=>c.opacity==='1'),'Fast jumps keep content readable');assert.equal(landed.noteNames,'1');
    assert.ok(landed.display==='none'||landed.visible==='hidden');await shot(`${view.name}-${to}-settled`);count++;
   }

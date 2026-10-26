@@ -1,5 +1,7 @@
 ---
 // Separate foreground artwork: the lanterns baked into the garden remain intact.
+// Three stacked SVGs share one viewBox (body, flame, cage) so the breathing flame is a
+// whole element the compositor can animate, without repainting the filtered lantern.
 ---
 <svg viewBox="0 0 100 300" aria-hidden="true" focusable="false">
   <path d="M50 0V147" stroke="#513b28" stroke-width="2" />
@@ -10,12 +12,14 @@
   <path d="M33 166L24 178H76L67 166Z" fill="url(#lm-brass)" stroke="#6a411d" />
   <path d="M27 179L33 241H67L73 179Z" fill="url(#lm-glass)" stroke="#67411f" stroke-width="2" />
   <path d="M30 182L35 235H46L44 182ZM55 182V235H64L69 182Z" fill="#fff4c5" opacity=".3" />
-  <g class="ns-lantern-flame">
-    <ellipse cx="50" cy="222" rx="14" ry="24" fill="url(#lm-halo)" />
-    <rect x="45" y="219" width="10" height="17" rx="2" fill="#ffedc1" />
-    <path d="M50 196C57 207 57 217 50 220C43 217 45 207 50 196Z" fill="url(#lm-flame)" />
-    <path d="M50 204Q54 215 50 217Q47 214 50 204" fill="#fffbe9" />
-  </g>
+</svg>
+<svg class="ns-lantern-flame" viewBox="0 0 100 300" aria-hidden="true" focusable="false">
+  <ellipse cx="50" cy="222" rx="14" ry="24" fill="url(#lm-halo)" />
+  <rect x="45" y="219" width="10" height="17" rx="2" fill="#ffedc1" />
+  <path d="M50 196C57 207 57 217 50 220C43 217 45 207 50 196Z" fill="url(#lm-flame)" />
+  <path d="M50 204Q54 215 50 217Q47 214 50 204" fill="#fffbe9" />
+</svg>
+<svg viewBox="0 0 100 300" aria-hidden="true" focusable="false">
   <path d="M27 179L33 241M41 179L43 241M59 179L57 241M73 179L67 241" stroke="url(#lm-brass-deep)" stroke-width="4" />
   <path d="M25 178H75M32 240H68" stroke="#efd294" stroke-width="3" />
   <path d="M30 243H70L63 252H37Z" fill="url(#lm-brass-deep)" stroke="#5a391b" />
