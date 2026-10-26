@@ -15,7 +15,7 @@ The venue is thematic, not a real venue likeness. The swing and peacock are
 illustrated environment details, not interactive 3D objects.
 
 Art.astro generates responsive AVIF/WebP; eager hero, lazy lower scenes,
-explicit image dimensions and CSS/SVG/no-JS fallbacks. Source PNGs are not
+explicit image dimensions, an inline blurred preview of each painting and no-JS fallbacks. Source PNGs are not
 production requests. All names, keepsakes, event details and scroll-letter
 content are HTML. Letter paper and rods are independent CSS elements.
 

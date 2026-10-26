@@ -67,6 +67,7 @@ The **EN | हिंदी** toggle switches routes and keeps your place (it car
 
 | # | Scene (`#id`) | What happens | Interaction |
 |---|---|---|---|
+| — | **Opening veil** | A short green veil with the lotus and monogram covers the page until the first painting and fonts are ready (at most a few seconds; skipped on revisits in the same session). | — |
 | 1 | **Welcome** (`#welcome`) | A sunset garden terrace under a flowering tree; the names arrive line by line. | Tap the hanging lantern to warm it; tap ✿ for a petal burst. Tilt the phone (or move the mouse) for depth. |
 | 2 | **Our journey** (`#journey`) | The camera glides from the terrace onto two paths that meet under a pergola. Three hanging keepsakes. | Tap a keepsake to open its little story. |
 | 3 | **The letter** (`#invitation`) | An envelope on the garden table. Scrolling breaks the wax seal, opens the flap and raises the card. | Tap the seal to open or close it; "View full invitation". |
@@ -169,6 +170,7 @@ living-miniature-site/
 ### Art system
 - Each scene is a **painted image** in `src/assets/nature-stories/`, with a portrait (mobile) and landscape (desktop) version. `Art.astro` turns each into responsive AVIF/WebP; only the first scene loads eagerly.
 - Names, dates, buttons and every word are real HTML on top of the paintings, never baked into them.
+- **Loading:** every painting first paints as an inline, ~1.5 KB blurred preview of itself (`src/lib/art-preview.ts`, built with sharp), so a slow connection shows a soft version of the real scene, never a placeholder design. If a painting fails to load, its preview stays.
 - Small living details are drawn in code: the lantern, petals, festoon bulbs, the wax seal, the bougainvillea fronds (`SceneDefs.astro` symbols).
 
 ### Animation system

@@ -374,7 +374,29 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   .ns-hero-copy > .ns-date { animation-delay: .95s; }
   .ns-hero[data-intro-complete] .ns-hero-copy > *,
   .ns-hero[data-intro-complete] .ns-hero-copy h1 > * { animation: none; }
+  /* The names wait behind the opening veil, then arrive as it lifts. */
+  html:not([data-nature-loaded]) :is(.ns-hero-copy > *, .ns-hero-copy h1 > *) { animation-play-state: paused; }
 }
+/* Opening veil (OpeningVeil.astro): the lotus draws itself while the first painting loads. */
+.ns-veil { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; pointer-events: none; color: #efd2a0;
+  background: radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e);
+  transition: opacity .9s cubic-bezier(.4,0,.2,1), visibility 0s linear .9s;
+  /* Last resort if the veil's script never runs: it still steps aside. */
+  animation: ns-veil-away .6s ease 6s forwards; }
+html[data-nature-loaded] .ns-veil { opacity: 0; visibility: hidden; }
+.ns-veil-mark { display: grid; justify-items: center; gap: .85rem; transition: transform 1.1s cubic-bezier(.2,.7,.2,1), opacity .6s ease; }
+html[data-nature-loaded] .ns-veil-mark { opacity: 0; transform: translate3d(0,-8px,0) scale(1.06); }
+.ns-veil-lotus { width: 4.4rem; overflow: visible; }
+.ns-veil-lotus path { stroke-dasharray: 90; stroke-dashoffset: 90; animation: ns-veil-draw 1.9s cubic-bezier(.45,0,.2,1) .1s forwards; }
+.ns-veil .monogram { font-size: 1.3rem; opacity: 0; animation: ns-veil-in 1s ease .75s forwards; }
+.ns-veil-line { width: 5.5rem; height: 1px; background: linear-gradient(90deg, transparent, currentColor, transparent); transform: scaleX(0); animation: ns-veil-grow 1.3s cubic-bezier(.3,0,.2,1) .55s forwards; }
+@media (prefers-reduced-motion: no-preference) { .ns-veil-mark { animation: ns-veil-breathe 2.6s ease-in-out 2s infinite alternate; } }
+@media (scripting: none) { .ns-veil { display: none; } }
+@keyframes ns-veil-draw { to { stroke-dashoffset: 0; } }
+@keyframes ns-veil-in { to { opacity: 1; } }
+@keyframes ns-veil-grow { to { transform: scaleX(1); } }
+@keyframes ns-veil-breathe { from { filter: drop-shadow(0 0 0 #efd2a000); } to { filter: drop-shadow(0 0 10px #efd2a055); } }
+@keyframes ns-veil-away { to { opacity: 0; visibility: hidden; } }
 .ns-home[data-ambient-paused] .ns-lantern-swing,
 .ns-home[data-ambient-paused] .ns-lantern-flame,
 .ns-home[data-ambient-paused] .ns-drift { animation-play-state: paused; }

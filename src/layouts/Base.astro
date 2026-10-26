@@ -8,6 +8,13 @@ import '@fontsource/mukta/500.css';
 import '@fontsource/tiro-devanagari-hindi/400.css';
 import '../styles/global.css';
 import SceneDefs from '../components/scene/SceneDefs.astro';
+// The faces the welcome names use, fetched with the HTML rather than after layout discovers them.
+// (Same files the fontsource CSS points at, so the browser downloads each only once.)
+import cormorant from '../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
+import cormorantItalic from '../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff2?url';
+import mukta from '../../node_modules/@fontsource/mukta/files/mukta-latin-400-normal.woff2?url';
+import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-normal.woff2?url';
+import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
 import { type Lang, content, loc, t, href } from '../lib/content';
 
 interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string }
@@ -16,6 +23,7 @@ const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displa
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
 const path = Astro.props.routePath ?? (page === 'invitation' ? '/invitation' : '/');
 const canonical = new URL(href(lang, path), Astro.site);
+const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [cormorant, cormorantItalic, mukta];
 ---
 <!doctype html>
 <html lang={lang} data-theme="nature">
@@ -25,6 +33,7 @@ const canonical = new URL(href(lang, path), Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#213B32" />
+    {preloads.map(font => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={new URL(href('en', path), Astro.site)} />

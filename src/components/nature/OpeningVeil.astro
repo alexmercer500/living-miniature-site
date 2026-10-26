@@ -1,0 +1,45 @@
+---
+/**
+ * A short opening veil over the home page's first paint. It lifts once the welcome
+ * painting is decoded and the hero's fonts are in (or, on a #section link, once the
+ * page has scrolled there), and after 3.5s regardless, so guests never watch the page
+ * assemble itself. Skipped on revisits in the same tab session, and without JavaScript.
+ */
+import LotusMark from '../LotusMark.astro';
+import Monogram from '../Monogram.astro';
+---
+<div class="ns-veil" aria-hidden="true">
+  <div class="ns-veil-mark"><LotusMark class="ns-veil-lotus" /><Monogram /><span class="ns-veil-line"></span></div>
+</div>
+<script is:inline>
+  (() => {
+    const html = document.documentElement;
+    const lift = () => {
+      if ('natureLoaded' in html.dataset) return;
+      html.dataset.natureLoaded = '';
+      try { sessionStorage.setItem('ns-veil', '1'); } catch { /* private mode: show it again next time */ }
+    };
+    let seen = false;
+    try { seen = sessionStorage.getItem('ns-veil') === '1'; } catch { /* storage blocked */ }
+    if (seen) return lift();
+    setTimeout(lift, 3500);
+    document.addEventListener('DOMContentLoaded', () => {
+      const hero = document.getElementById('welcome');
+      let target = null;
+      try { target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { /* malformed hash */ }
+      const deepLink = target && target !== hero;
+      // A #section link waits for the home script to settle the scroll position there.
+      const settled = deepLink ? new Promise(resolve => {
+        if ('natureReady' in html.dataset) return resolve();
+        const watch = new MutationObserver(() => { if ('natureReady' in html.dataset) { watch.disconnect(); resolve(); } });
+        watch.observe(html, { attributes: true, attributeFilter: ['data-nature-ready'] });
+      }) : hero?.querySelector('img')?.decode().catch(() => {});
+      // Load exactly the faces the hero's words use, so the names never swap typeface on screen.
+      const fonts = [...(hero?.querySelectorAll('.ns-hero-copy :is(p, h1 > *)') ?? [])].map(el => {
+        const style = getComputedStyle(el);
+        return document.fonts?.load(`${style.fontStyle} ${style.fontWeight} 16px ${style.fontFamily}`, el.textContent || undefined).catch(() => {});
+      });
+      Promise.all([settled, ...fonts]).then(lift);
+    }, { once: true });
+  })();
+</script>

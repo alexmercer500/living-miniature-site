@@ -7,8 +7,8 @@ const scenes={journey:landscapes.journey,invitation:landscapes.letter,celebratio
 const pairs=[['journey','invitation'],['invitation','celebrations'],['celebrations','venue'],['venue','wishes'],['wishes','closing']] as const;
 ---
 {pairs.map(([from,to])=><div class="ns-scene-bridge" data-scene-bridge data-from={from} data-to={to} aria-hidden="true" inert>
-  <div class="ns-camera-outgoing"><div class:list={['ns-camera-landscape',`ns-camera-${from}`]}><Art {...scenes[from]} /></div></div>
-  <div class="ns-camera-incoming"><div class="ns-camera-arrival"><div class:list={['ns-camera-landscape',`ns-camera-${to}`]}><Art {...scenes[to]} /></div></div></div>
+  <div class="ns-camera-outgoing"><div class:list={['ns-camera-landscape',`ns-camera-${from}`]}><Art preview={false} {...scenes[from]} /></div></div>
+  <div class="ns-camera-incoming"><div class="ns-camera-arrival"><div class:list={['ns-camera-landscape',`ns-camera-${to}`]}><Art preview={false} {...scenes[to]} /></div></div></div>
   <CameraFlourish />
   <div class="ns-camera-glow"></div>
   <div class="ns-camera-bough left"><Foliage side="left" variant="b" /></div>

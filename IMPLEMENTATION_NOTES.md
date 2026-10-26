@@ -7,6 +7,21 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+First paint (2026-10-26, `development`). The flat SVG "mountains" that every
+painting slot drew until its image arrived are gone; each slot instead carries its
+own painting as an inline blurred preview (32px WebP inside an SVG blur, about
+1.5 KB, `art-preview.ts`), so the first paint is the real scene, softly. The camera
+bridges opt out (`preview={false}`): they only appear after `decode()`. The home
+page opens under a short veil (`OpeningVeil.astro`): the lotus draws itself on
+the theme green until the hero image is decoded and the faces the hero names use
+are loaded (on a `#section` link, until the scroll has settled there); 3.5s at
+most, skipped on revisits in the same tab, hidden without JS, with a CSS 6s
+failsafe. The hero names' entrance waits for the veil, so it is never played
+unseen. The fonts the names use are preloaded with the HTML. Throttled check
+(1.6 Mbps, 4× CPU, 390×844): veil, then the sharp hero, no intermediate states;
+at 0.3 Mbps the veil times out onto the blurred preview with readable names.
+Cost: about +10 KB gzipped HTML for the previews.
+
 Fancier handoffs (2026-10-26, `development`), all scroll-driven, reversible and
 invisible at both camera endpoints (`camera-flourish-state.ts`, `CameraFlourish.astro`):
 candle-gold rim tracing the reveal edge (static SVG contour XOR-masks, flicker via

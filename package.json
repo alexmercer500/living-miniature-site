@@ -13,7 +13,8 @@
     "@fontsource/mukta": "5.3.0",
     "@fontsource/tiro-devanagari-hindi": "5.3.0",
     "astro": "7.4.2",
-    "gsap": "3.15.0"
+    "gsap": "3.15.0",
+    "sharp": "0.35.5"
   },
   "description": "Living Miniature — a private, bilingual (EN/हिंदी) Indian wedding invitation website.",
   "engines": {

@@ -21,6 +21,20 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
   for (const m of html.matchAll(/(?:src|href)="(\/_astro\/[^"?#]+)"/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing ${m[1]}`);
   for (const m of html.matchAll(/(\/_astro\/[^\s,"()]+\.(?:avif|webp))/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing image ${m[1]}`);
 });
+test('first paint shows each painting as its own blurred preview, under the opening veil', () => {
+  for (const route of ['/', '/hi/']) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    assert.ok(!html.includes('ns-fallback'), 'The old flat SVG placeholder is gone');
+    const art = [...html.matchAll(/<div class="ns-art[^"]*"[^>]*>/g)].map(m => m[0]);
+    const scenes = art.filter(tag => tag.includes('--preview: url(&quot;data:image/svg+xml,') || tag.includes("--preview: url(\"data:image/svg+xml,"));
+    assert.ok(scenes.length >= 10, `Visible scenes carry an inline preview (${scenes.length}/${art.length})`);
+    assert.equal([...html.matchAll(/class="ns-veil"/g)].length, 1);
+    assert.ok(html.indexOf('class="ns-veil"') < html.indexOf('id="welcome"'), 'Veil paints before the hero');
+    for (const font of route === '/' ? ['cormorant-garamond-latin-500-normal', 'mukta-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
+      assert.match(html, new RegExp(`rel="preload" href="/_astro/${font}\.[^"]+\.woff2" as="font"`));
+  }
+  assert.ok(!fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-veil'), 'Only the home page has a veil');
+});
 test('retired theme URLs forward to the Nature pages, keeping the hash', () => {
   for (const [from, to] of [['/royal/', '/'], ['/nature/', '/'], ['/royal/invitation/', '/invitation'], ['/hi/royal/', '/hi/'], ['/hi/nature/invitation/', '/hi/invitation']]) {
     const html = fs.readFileSync(`dist${from}index.html`, 'utf8');

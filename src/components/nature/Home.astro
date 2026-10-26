@@ -4,6 +4,7 @@ import Header from './Header.astro';
 import Art from './Art.astro';
 import HeroLantern from './HeroLantern.astro';
 import HeroAtmosphere from './HeroAtmosphere.astro';
+import OpeningVeil from './OpeningVeil.astro';
 import HeroJourneyBridge from './HeroJourneyBridge.astro';
 import SceneBridges from './SceneBridges.astro';
 import Keepsakes from './Keepsakes.astro';
@@ -23,6 +24,7 @@ const { lang } = Astro.props;
 const c = natureCopy[lang];
 ---
 <Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${c.theme}`}>
+  <OpeningVeil />
   <Header lang={lang} />
   <main id="main" class="ns-home" data-nature-root>
     <HeroJourneyBridge />
