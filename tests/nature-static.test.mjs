@@ -30,7 +30,7 @@ test('first paint shows each painting as its own blurred preview, under the open
     assert.ok(scenes.length >= 10, `Visible scenes carry an inline preview (${scenes.length}/${art.length})`);
     assert.equal([...html.matchAll(/class="ns-veil"/g)].length, 1);
     assert.ok(html.indexOf('class="ns-veil"') < html.indexOf('id="welcome"'), 'Veil paints before the hero');
-    for (const font of route === '/' ? ['cormorant-garamond-latin-500-normal', 'mukta-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
+    for (const font of route === '/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
       assert.match(html, new RegExp(`rel="preload" href="/_astro/${font}\.[^"]+\.woff2" as="font"`));
   }
   assert.ok(!fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-veil'), 'Only the home page has a veil');

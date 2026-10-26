@@ -23,8 +23,11 @@
   --color-scrim: rgb(33 20 15 / 0.55);
 
   /* Typography */
-  --font-display: 'Cormorant Garamond', 'Tiro Devanagari Hindi', Georgia, serif;
-  --font-ui: 'Mukta', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Fraunces (soft) for headings, Jost for text and spaced capitals, Great Vibes for the
+     romantic accents. None covers Devanagari, so Hindi falls through to Tiro / Mukta. */
+  --font-display: 'Fraunces Variable', 'Tiro Devanagari Hindi', Georgia, serif;
+  --font-ui: 'Jost Variable', 'Mukta', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: 'Great Vibes', 'Tiro Devanagari Hindi', cursive;
   --fs-names: clamp(2.75rem, 7vw + 1rem, 5.75rem);
   --fs-h2: clamp(2rem, 3.5vw + 1rem, 3.5rem);
   --fs-h3: clamp(1.5rem, 1.2vw + 1.1rem, 2rem);
@@ -63,7 +66,7 @@
 }
 
 :lang(hi) {
-  --font-display: 'Tiro Devanagari Hindi', 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Tiro Devanagari Hindi', 'Fraunces Variable', Georgia, serif;
   --fs-names: clamp(2.25rem, 5.5vw + 1rem, 4.75rem);
   --tracking-eyebrow: 0.04em;
 }

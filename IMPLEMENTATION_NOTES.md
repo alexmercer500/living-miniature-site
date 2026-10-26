@@ -7,6 +7,13 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Typography (2026-10-26, `development`). Fraunces (soft axis) headings, Jost text and
+spaced capitals, Great Vibes script for the large romantic accents only; Hindi keeps
+Tiro Devanagari / Mukta through the font fallbacks. Legibility: dark hero copy over a
+feathered warm haze, light headings (Journey, Letter, Venue, Wishes, Final Note) over
+a feathered dusk shade; both static pseudo-elements that move with their copy. The
+three Latin faces are preloaded on English pages; Cormorant was removed.
+
 First paint (2026-10-26, `development`). The flat SVG "mountains" that every
 painting slot drew until its image arrived are gone; each slot instead carries its
 own painting as an inline blurred preview (32px WebP inside an SVG blur, about

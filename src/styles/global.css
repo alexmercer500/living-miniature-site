@@ -6,6 +6,8 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: var(--header-h);
+  /* Fraunces' soft, rounded terminals; fonts without the axis ignore it. */
+  font-variation-settings: 'SOFT' 100;
   background: var(--color-midnight);
   color-scheme: dark;
 }
@@ -32,7 +34,7 @@ img, svg { display: block; max-width: 100%; }
 
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 450;
   line-height: 1.1;
   margin: 0;
   text-wrap: balance;

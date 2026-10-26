@@ -123,9 +123,12 @@ Every visible string has an `en` and `hi` version.
 |---|---|---|
 | astro | 7.4.2 | Static site generator. Pages render to plain HTML at build time. |
 | gsap | 3.15.0 | Scroll choreography (ScrollTrigger). Loaded on demand, skipped under reduced motion. |
-| @fontsource/cormorant-garamond | 5.3.0 | English display serif (names, headings) |
-| @fontsource/mukta | 5.3.0 | Interface font, Latin + Devanagari |
-| @fontsource/tiro-devanagari-hindi | 5.3.0 | Hindi display serif |
+| @fontsource-variable/fraunces | 5.3.0 | English headings (soft, warm serif; "soft" axis file) |
+| @fontsource-variable/jost | 5.3.0 | English text, buttons and spaced capital labels |
+| @fontsource/great-vibes | 5.3.0 | Script accents: "One journey." and the couple's names |
+| @fontsource/mukta | 5.3.0 | Hindi text (Devanagari) |
+| @fontsource/tiro-devanagari-hindi | 5.3.0 | Hindi headings |
+| sharp | 0.35.5 | Build-time blurred previews of the paintings |
 
 No UI framework, CSS framework, icon library, React or 3D engine.
 
@@ -166,6 +169,11 @@ living-miniature-site/
    │  └─ calendar.ts, haptics.ts, tilt-parallax.ts, invitation-morph.ts
    └─ styles/tokens.css, global.css, nature.css   design tokens, shared base, the Nature theme
 ```
+
+### Typography
+- Fonts are set once in `src/styles/tokens.css` (`--font-display`, `--font-ui`, `--font-script`). Hindi pages put the Devanagari fonts first.
+- Script is only for large romantic accents (hero "One journey.", the names on the envelope card, Final Note and invitation page); never for small labels.
+- Text never sits bare on a busy part of a painting: dark text gets a soft warm haze behind it, light text a soft dusk shade (end of `nature.css`).
 
 ### Art system
 - Each scene is a **painted image** in `src/assets/nature-stories/`, with a portrait (mobile) and landscape (desktop) version. `Art.astro` turns each into responsive AVIF/WebP; only the first scene loads eagerly.
