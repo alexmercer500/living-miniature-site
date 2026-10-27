@@ -68,10 +68,10 @@ try {
     }
     assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), !fallback, 'Enhancement must respect static fallback');
     for (const [name, progress] of fallback ? [['static', 0]] : [['rest', 0], ['float', .25], ['paper', .62], ['settled', .9], ['open', 1], ['reverse', 0]]) {
-      await evaluate(`(() => { const s=document.querySelector('[data-envelope]'); window.scrollTo({top:scrollY+s.getBoundingClientRect().top+${progress}*(s.offsetHeight-s.firstElementChild.offsetHeight),behavior:'instant'}); return true; })()`);
+      await evaluate(`(() => { const s=document.querySelector('[data-envelope]'); window.scrollTo({top:scrollY+s.getBoundingClientRect().top+${progress}*(s.offsetHeight-s.querySelector('.envelope-viewport').offsetHeight),behavior:'instant'}); return true; })()`);
       await settle();
       if (!fallback) {
-        const stage=await evaluate("(()=>{const s=document.querySelector('[data-envelope]'),v=s.firstElementChild,r=v.getBoundingClientRect();return {top:r.top,height:r.height,travel:s.offsetHeight-v.offsetHeight,snap:getComputedStyle(document.documentElement).scrollSnapType}})()");
+        const stage=await evaluate("(()=>{const s=document.querySelector('[data-envelope]'),v=s.querySelector('.envelope-viewport'),r=v.getBoundingClientRect();return {top:r.top,height:r.height,travel:s.offsetHeight-v.offsetHeight,snap:getComputedStyle(document.documentElement).scrollSnapType}})()");
         assert.ok(Math.abs(stage.top)<2 && Math.abs(stage.height-view.height)<2,'Stage stays pinned at exactly one viewport');
         assert.ok(stage.travel>=2800,'Slow reveal has sufficient scroll distance');
         if(progress>0&&progress<1) assert.equal(stage.snap,'none','Page snapping cannot skip animation poses');

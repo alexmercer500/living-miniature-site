@@ -13,133 +13,167 @@ html[data-theme='nature'] {
   --ns-shade-venue: linear-gradient(100deg,#1029237a,transparent 60%),linear-gradient(#10292380,transparent 38%,#10292355 62%,#102923e0);
   --ns-shade-wishes: linear-gradient(#0b211a70,transparent 35%,#0b211a22 68%,#0b211ab3);
   --ns-shade-closing: linear-gradient(#172e284f,transparent 36% 67%,#172e288c);
-  /* Static botanical edge for the camera wipe. It moves with its layer (transform only),
-     so it is rasterised once instead of being regenerated and repainted every frame. */
-  --ns-wipe-mask: linear-gradient(transparent 6.4%,#000 16.8%),radial-gradient(ellipse 45% 8.8% at 23% 10.4%,#000 8%,transparent 88%),radial-gradient(ellipse 48% 10.4% at 76% 12%,#000 8%,transparent 90%);
   /* The wipe's half-opacity contour as a solid shape (same box, same lobes). XOR-ing it with
      itself nudged down leaves a crescent that traces the reveal edge: the gold rim. */
   --ns-rim-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.25'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
   --ns-rim-halo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='.9'/%3E%3C/filter%3E%3Cg filter='url(%23b)'%3E%3Cpath d='M-5 11.6H105V105H-5Z'/%3E%3Cellipse cx='23' cy='10.4' rx='21.6' ry='4.2'/%3E%3Cellipse cx='76' cy='12' rx='23' ry='5'/%3E%3C/g%3E%3C/svg%3E");
   scroll-padding-top: 0;
 }
-/* No proximity snapping on the enhanced home. With full-screen chapters it grabbed every
-   small gesture and yanked the page to the nearest boundary, which read as "stuck"; the
-   glide already settles each camera on its end pose at a chapter. Only the dialog scroll
-   locks below still need to force it off. */
+/* Only the dialog scroll locks still force snapping off; the enhanced home never snaps. */
 html[data-theme='nature'][data-envelope-active]:has(.ns-home) { scroll-snap-type: none; }
-html[data-theme='nature'][data-journey-scroll]:has(.ns-home) { scroll-snap-type: none; }
-html[data-theme='nature'][data-scenes-scroll]:has(.ns-home) { scroll-snap-type: none; }
-/* The shared glide already smooths the visual position. Native smooth-scroll would animate
-   the real position on top of it (two lags stacked), so the paintings fall far behind during
-   any header/dock/anchor jump and the gesture reads as slow. Only the enhanced home opts out;
-   printable pages keep smooth scrolling. */
+/* Every chapter handoff follows the real scroll position, so native smooth-scroll for
+   header/dock/anchor jumps would only make those jumps slow. Printable pages keep it. */
 html[data-theme='nature']:has(.ns-home) { scroll-behavior: auto; }
 [data-theme='nature'] body { background: #172e28; }
 .ns-home { overflow: clip; }
-/* One decorative fixed camera bridges only the first two normal-flow chapters.
-   It is never an interaction layer, a pin, or a replacement for semantic copy. */
-.ns-journey-bridge { display: none; position: fixed; inset: 0 0 auto; height: var(--ns-canvas); z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; contain: strict; }
-.ns-home[data-journey-ready] { isolation: isolate; }
-.ns-home[data-journey-ready] > .ns-journey-bridge { display: block; visibility: hidden; }
-.ns-home[data-journey-transition] > .ns-journey-bridge { visibility: visible; }
-.ns-bridge-outgoing,.ns-bridge-incoming,.ns-bridge-incoming-camera,.ns-bridge-shade { position: absolute; inset: 0; }
-/* Rest poses (progress 0); scripts write each layer's transform/opacity directly. */
-.ns-bridge-outgoing { transform-origin: 62% 52%; }
-.ns-bridge-incoming { bottom: auto; height: 125%; overflow: hidden; transform: translate3d(0,80%,0); -webkit-mask-image: var(--ns-wipe-mask); mask-image: var(--ns-wipe-mask); }
-.ns-bridge-incoming-camera { bottom: auto; height: 80%; transform: translate3d(3%,-100%,0) scale(1.1); transform-origin: 55% 52%; }
-/* Layers are promoted only while a camera is visible, so idle bridges cost no GPU memory.
-   The glowing path repaints as it draws; its own layer keeps that repaint small. */
-.ns-home[data-journey-transition] .ns-path { will-change: transform; }
-.ns-home[data-journey-transition] > .ns-journey-bridge :is(.ns-bridge-outgoing,.ns-bridge-incoming,.ns-bridge-incoming-camera,.ns-bridge-bough) { will-change: transform; }
-.ns-home[data-journey-transition] > .ns-journey-bridge .ns-bridge-shade,
-.ns-home[data-journey-transition] :is(.ns-hero-copy,.ns-hero-foot,.ns-story-copy,[data-memory-hanger]) { will-change: transform, opacity; }
-.ns-bridge-outgoing::after,.ns-bridge-incoming-camera::after { content: ''; position: absolute; inset: 0; }
-.ns-bridge-outgoing::after { background: linear-gradient(#172e2833,transparent 25% 65%,#172e28aa 100%); }
-.ns-bridge-incoming-camera::after { background: var(--ns-shade-journey); }
-.ns-bridge-shade { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: 0; }
-.ns-bridge-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: 0; filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
-.ns-bridge-bough.left { left: -3%; transform: translate3d(-45%,24%,0) rotate(-12deg); }
-.ns-bridge-bough.right { right: -3%; transform: translate3d(45%,24%,0) rotate(12deg); }
-.ns-bridge-bough > svg { width: 100%; height: 100%; }
-.ns-home[data-journey-transition] > .ns-hero > .ns-art,
-.ns-home[data-journey-transition] > .ns-hero > .ns-hero-shade,
-.ns-home[data-journey-transition] > .ns-story > .ns-story-landscape > .ns-art,
-.ns-home[data-journey-transition] > .ns-story > .ns-story-landscape > .ns-story-shade { opacity: 0; }
-.ns-home[data-journey-transition] > .ns-story { background: transparent; }
-.ns-home[data-journey-ready] .ns-hero-copy { transform: translate3d(0,var(--bridge-hero-y,0px),0); opacity: var(--bridge-hero-opacity,1); }
-.ns-home[data-journey-ready] .ns-hero-foot { opacity: var(--bridge-foot-opacity,1); }
-.ns-home[data-journey-ready] .ns-hero-foot:focus-within { opacity: 1; }
-.ns-home[data-journey-ready] .ns-story-copy { transform: translate3d(0,var(--bridge-story-y,0px),0); opacity: var(--bridge-story-opacity,1); }
 @media (max-width: 767px) {
-  .ns-bridge-bough { width: 110px; bottom: -7%; }
-  .ns-home[data-journey-ready] .ns-keepsakes { overflow-y: hidden; scrollbar-width: none; }
-  .ns-home[data-journey-ready] .ns-keepsakes::-webkit-scrollbar { display: none; }
+  .ns-home .ns-keepsakes { overflow-y: hidden; scrollbar-width: none; }
+  .ns-home .ns-keepsakes::-webkit-scrollbar { display: none; }
 }
-@media (prefers-reduced-motion: reduce), (scripting: none) { .ns-journey-bridge { display: none !important; } }
 
-/* Later chapters share the first handoff's feathered, normal-scroll camera.
-   Only decorative backgrounds move; copy and controls remain in document flow. */
-.ns-scene-bridge { display: none; position: fixed; inset: 0 0 auto; height: var(--ns-canvas); z-index: -1; overflow: hidden; pointer-events: none; background: #172e28; contain: strict; }
-.ns-home[data-scenes-ready] { isolation: isolate; }
-.ns-home[data-scenes-ready] > .ns-scene-bridge[data-prepared] { display: block; visibility: hidden; }
-.ns-home[data-scenes-ready] > .ns-scene-bridge[data-active] { visibility: visible; }
-.ns-camera-outgoing,.ns-camera-incoming,.ns-camera-arrival,.ns-camera-landscape,.ns-camera-glow { position: absolute; inset: 0; }
-.ns-camera-outgoing { transform-origin: 62% 52%; }
-.ns-camera-incoming { bottom: auto; height: 125%; overflow: hidden; transform: translate3d(0,80%,0); -webkit-mask-image: var(--ns-wipe-mask); mask-image: var(--ns-wipe-mask); }
-.ns-camera-arrival { bottom: auto; height: 80%; transform: translate3d(3%,-100%,0) scale(1.1); transform-origin: 55% 52%; }
-.ns-scene-bridge[data-active] :is(.ns-camera-outgoing,.ns-camera-incoming,.ns-camera-arrival,.ns-camera-bough) { will-change: transform; }
-.ns-scene-bridge[data-active] .ns-camera-glow,
-.ns-home .ns-transition-target :is(.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],[data-note-arrival],.ns-celebrations-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost) { will-change: transform, opacity; }
-.ns-camera-landscape::after { content: ''; position: absolute; inset: 0; }
-.ns-camera-journey::after { background: var(--ns-shade-journey); }
-.ns-camera-invitation::after { background: var(--ns-shade-invitation); }
-.ns-camera-celebrations > .ns-art { filter: var(--ns-grade-celebrations); }
-.ns-camera-celebrations::after { background: var(--ns-shade-celebrations); }
-.ns-camera-venue::after { background: var(--ns-shade-venue); }
-.ns-camera-wishes::after { background: var(--ns-shade-wishes); }
-.ns-camera-closing::after { background: var(--ns-shade-closing); }
-.ns-camera-glow { background: radial-gradient(ellipse at 48% 78%,#f5bf6924,transparent 62%); opacity: 0; }
-.ns-camera-bough { position: absolute; bottom: -12%; width: clamp(110px,14vw,210px); aspect-ratio: 1.1; opacity: 0; filter: blur(2px) drop-shadow(0 8px 12px #0a201566); }
-.ns-camera-bough.left { left: -3%; transform: translate3d(-45%,24%,0) rotate(-12deg); }
-.ns-camera-bough.right { right: -3%; transform: translate3d(45%,24%,0) rotate(12deg); }
-.ns-camera-bough > svg { width: 100%; height: 100%; }
-.ns-home[data-scenes-ready] > :is(.ns-transition-source,.ns-transition-target) { background: transparent; }
-.ns-home :is(.ns-transition-source,.ns-transition-target) :is(.ns-story-landscape > .ns-art,.ns-story-shade,.envelope-backdrop,.ns-celebrations-shade,.ns-venue-landscape,.ns-venue-shade,.ns-wishes-landscape,.ns-wishes-shade,.ns-closing-shade),
-.ns-home > :is(.ns-transition-source,.ns-transition-target) > .ns-art { opacity: 0; }
-@media (max-width: 700px) { .ns-camera-bough { width: 110px; bottom: -7%; } }
-@media (prefers-reduced-motion: reduce), (scripting: none) { .ns-scene-bridge { display: none !important; } }
+/* Scene plates (ScenePlate.astro): each chapter's painting and shade.
+   Static: the painting fills the chapter, as plain art would.
+   Motion: the camera is sticky inside a track that reaches one screen past the chapter on
+   both sides, so the painting holds still whenever its chapter is on screen and the
+   chapter's own top edge reveals it over the previous one. That is native scrolling, done
+   by the browser's scrolling thread, so the incoming scene can never lag, show early or
+   snap in. Scroll-driven animations (where supported) add the feathered botanical band,
+   its rim, petals, a light sweep, the settle and the push-in, all on the chapter's own view
+   timeline. They change transform/opacity only, and the band's offset is always cancelled
+   by the camera's counter-offset, so the painting itself never moves. */
+.ns-plate { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ns-plate-wipe { position: absolute; inset: 0; overflow: clip; }
+.ns-plate-track { position: absolute; inset: 0; }
+.ns-plate-camera { position: relative; height: var(--ns-canvas,100vh); overflow: hidden; }
+.ns-plate-scene,.ns-plate-zoom,.ns-plate-zoom > * { position: absolute; inset: 0; }
+.ns-plate-zoom > * { z-index: auto; }
+.ns-plate-scene { transform-origin: 55% 52%; }
+.ns-plate-zoom { transform-origin: 62% 52%; }
+.ns-plate-sweep,.ns-plate-edge,.ns-plate-fx-track { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .ns-plate-track { inset: calc(-1 * var(--ns-canvas,100vh)) 0; }
+  .ns-plate-camera { position: sticky; top: 0; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ns-home > section { view-timeline: --scene block; }
+    /* The band rises above the chapter's own edge, and each painting reaches one band past
+       its chapter's bottom so the next band always fades into it (never into a hard cut).
+       Chapters therefore clip only their sides (everything outside them is decorative), and
+       their flat colour is dropped: under a band's soft top it would read as a pale strip. */
+    .ns-home > section[id] { overflow: visible; clip-path: inset(calc(-1 * var(--ns-canvas)) 0 calc(-1 * var(--ns-band)) 0); background: transparent; }
+    .ns-plate-wipe { bottom: calc(-1 * var(--ns-band)); }
+    .ns-plate[data-entry] .ns-plate-wipe {
+      top: calc(-1 * var(--ns-band));
+      -webkit-mask-image: var(--ns-plate-mask); mask-image: var(--ns-plate-mask);
+    }
+    /* The band travels its own height on top of the native scroll: it starts just below the
+       screen and ends just above it, so nothing of the next scene shows at either rest. */
+    .ns-plate[data-entry] :is(.ns-plate-wipe,.ns-plate-edge) { animation-name: ns-plate-wipe; animation-fill-mode: both; animation-timing-function: cubic-bezier(.45,0,.55,1); animation-timeline: --scene; animation-range: entry 0% entry 100%; }
+    .ns-plate[data-entry] .ns-plate-camera { animation-name: ns-plate-counter; animation-fill-mode: both; animation-timing-function: cubic-bezier(.45,0,.55,1); animation-timeline: --scene; animation-range: entry 0% entry 100%; }
+    .ns-plate[data-entry] .ns-plate-scene { animation-name: ns-plate-settle; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 12% entry 84%; }
+    .ns-plate-zoom { animation-name: ns-plate-push; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: exit 0% exit 84%; }
+    .ns-wishes .ns-plate-zoom { --plate-push: 1.0715; }
+    .ns-closing .ns-plate-zoom { animation: none; }
 
-/* Camera flourishes (CameraFlourish.astro), shared by every handoff. Explicit layer order:
-   outgoing art, incoming art, then decorations above. */
-:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-outgoing,.ns-camera-outgoing) { z-index: 0; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-incoming,.ns-camera-incoming) { z-index: 2; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-sweep { z-index: 3; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-rim { z-index: 4; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-shade,.ns-camera-glow) { z-index: 4; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-petal { z-index: 5; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > :is(.ns-bridge-bough,.ns-camera-bough) { z-index: 6; }
-:is(.ns-journey-bridge,.ns-scene-bridge) > .ns-flourish-frond { z-index: 7; }
-/* Candle-gold rim riding the reveal edge: a bright line plus a soft flickering halo. Both
-   are static masked layers; the wrapper only moves with the wipe and fades in and out. */
-.ns-flourish-rim { position: absolute; inset: 0 0 auto; height: 125%; opacity: 0; transform: translate3d(0,80%,0); pointer-events: none; }
-.ns-flourish-rim > i { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: xor; mask-composite: exclude; }
-.ns-flourish-rim > .line { -webkit-mask-image: var(--ns-rim-line),var(--ns-rim-line); mask-image: var(--ns-rim-line),var(--ns-rim-line); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .012); mask-position: 0 0,0 calc(var(--ns-canvas) * .012); background: linear-gradient(90deg,#f0a540,#ffd27a 22%,#fff0c4 50%,#ffd27a 78%,#f0a540); }
-.ns-flourish-rim > .halo { top: calc(var(--ns-canvas) * -.022); bottom: auto; height: 100%; opacity: .5; -webkit-mask-image: var(--ns-rim-halo),var(--ns-rim-halo); mask-image: var(--ns-rim-halo),var(--ns-rim-halo); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .05); mask-position: 0 0,0 calc(var(--ns-canvas) * .05); background: linear-gradient(90deg,#e58a2a,#ffbe5c 30%,#ffd98e 50%,#ffbe5c 70%,#e58a2a); }
-:is(.ns-home[data-journey-transition] > .ns-journey-bridge,.ns-scene-bridge[data-active]) :is(.ns-flourish-rim,.ns-flourish-petal,.ns-flourish-sweep,.ns-flourish-frond) { will-change: transform, opacity; }
-/* Near-foreground bougainvillea: softly out of focus, scaled from their own corner. */
-.ns-flourish-frond { position: absolute; top: -7%; width: clamp(230px,58vw,640px); aspect-ratio: 1.1; opacity: 0; pointer-events: none; filter: blur(1.6px); }
-.ns-flourish-frond.left { left: -10%; transform-origin: 0 0; }
-.ns-flourish-frond.right { right: -10%; transform-origin: 100% 0; }
-.ns-flourish-frond > svg { width: 100%; height: 100%; }
-@media (max-width: 767px) { .ns-flourish-frond { width: 72vw; top: -4%; } }
-/* Late-sun sweep: one diagonal band of warm light, slid across while the new scene settles. */
-.ns-flourish-sweep { position: absolute; inset: 0 -10%; opacity: 0; pointer-events: none; background: linear-gradient(108deg,transparent 30%,#ffd9952e 40%,#ffe7b866 48%,#fff4d985 50%,#ffe7b866 52%,#ffd9952e 60%,transparent 70%),linear-gradient(108deg,transparent 56%,#ffe2a833 61%,transparent 66%); }
-/* Petals and candle sparks carried across the edge (positions from camera-flourish-state). */
-.ns-flourish-petal { position: absolute; top: 0; left: 0; width: var(--size); height: calc(var(--size) * 1.5); margin: calc(var(--size) * -.75) 0 0 calc(var(--size) * -.5); opacity: 0; pointer-events: none; }
-/* Gradients only (no box-shadows): cheaper to rasterise, same glow. */
-.ns-flourish-petal.petal { border-radius: 85% 12% 80% 15%; background: linear-gradient(135deg,#f9dcc4,#e08a8f 55%,#b8566a 92%,#8a3447); }
-.ns-flourish-petal.spark { height: calc(var(--size) * 1.6); width: calc(var(--size) * 1.6); margin: calc(var(--size) * -.8) 0 0 calc(var(--size) * -.8); border-radius: 50%; background: radial-gradient(circle,#fff6d8 0 14%,#ffd88acc 22%,#ffb04a40 42%,transparent 66%); }
-@media (max-width: 767px) { .ns-flourish-petal:nth-of-type(3n) { display: none; } }
+    .ns-plate-edge { display: block; position: absolute; inset: calc(-1 * var(--ns-band)) 0 auto; height: calc(var(--ns-canvas) * 1.25); }
+    /* Candle-gold rim tracing the band's half-opacity contour: static masks, fading only. */
+    .ns-plate-rim { position: absolute; inset: 0; opacity: 0; animation-name: ns-plate-rim; animation-fill-mode: both; animation-timing-function: linear; animation-timeline: --scene; animation-range: entry 0% entry 100%; }
+    .ns-plate-rim > i { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: xor; mask-composite: exclude; }
+    .ns-plate-rim > .line { -webkit-mask-image: var(--ns-rim-line),var(--ns-rim-line); mask-image: var(--ns-rim-line),var(--ns-rim-line); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .012); mask-position: 0 0,0 calc(var(--ns-canvas) * .012); background: linear-gradient(90deg,#f0a540,#ffd27a 22%,#fff0c4 50%,#ffd27a 78%,#f0a540); }
+    .ns-plate-rim > .halo { top: calc(var(--ns-canvas) * -.022); bottom: auto; height: 100%; opacity: .5; -webkit-mask-image: var(--ns-rim-halo),var(--ns-rim-halo); mask-image: var(--ns-rim-halo),var(--ns-rim-halo); -webkit-mask-position: 0 0,0 calc(var(--ns-canvas) * .05); mask-position: 0 0,0 calc(var(--ns-canvas) * .05); background: linear-gradient(90deg,#e58a2a,#ffbe5c 30%,#ffd98e 50%,#ffbe5c 70%,#e58a2a); }
+    /* Petals and candle sparks lift across the rising edge (lanes in ScenePlate.astro). */
+    .ns-plate-petal { position: absolute; top: 0; left: 0; width: var(--size); height: calc(var(--size) * 1.5); margin: calc(var(--size) * -.75) 0 0 calc(var(--size) * -.5); opacity: 0; animation-name: ns-plate-petal; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 0% entry 100%; }
+    .ns-plate-petal.petal { border-radius: 85% 12% 80% 15%; background: linear-gradient(135deg,#f9dcc4,#e08a8f 55%,#b8566a 92%,#8a3447); }
+    .ns-plate-petal.spark { width: calc(var(--size) * 1.6); height: calc(var(--size) * 1.6); margin: calc(var(--size) * -.8) 0 0 calc(var(--size) * -.8); border-radius: 50%; background: radial-gradient(circle,#fff6d8 0 14%,#ffd88acc 22%,#ffb04a40 42%,transparent 66%); }
+    /* Late-sun sweep: one band of warm light across the new scene while it settles. */
+    .ns-plate-sweep { display: block; position: absolute; inset: 0 -10%; opacity: 0; background: linear-gradient(108deg,transparent 30%,#ffd9952e 40%,#ffe7b866 48%,#fff4d985 50%,#ffe7b866 52%,#ffd9952e 60%,transparent 70%),linear-gradient(108deg,transparent 56%,#ffe2a833 61%,transparent 66%); animation-name: ns-plate-sweep; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 50% entry 97%; }
+    /* Near-foreground bougainvillea hang into the top corners and pass the camera. They have
+       their own sticky layer, outside the band's mask. */
+    .ns-plate-fx-track { display: block; position: absolute; inset: calc(-1 * var(--ns-canvas)) 0; }
+    .ns-plate-fx { position: sticky; top: 0; height: var(--ns-canvas); overflow: hidden; }
+    .ns-plate-frond { --dir: 1; position: absolute; top: -7%; left: -10%; width: clamp(230px,58vw,640px); aspect-ratio: 1.1; opacity: 0; filter: blur(1.6px); transform-origin: 0 0; animation-name: ns-plate-frond; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 0% entry 100%; }
+    .ns-plate-frond.right { --dir: -1; left: auto; right: -10%; transform-origin: 100% 0; }
+    .ns-plate-frond > svg { width: 100%; height: 100%; }
+    @media (max-width: 767px) {
+      .ns-plate-frond { width: 72vw; top: -4%; }
+      .ns-plate-petal:nth-of-type(3n) { display: none; }
+    }
+  }
+}
+@keyframes ns-plate-wipe { from { transform: translate3d(0,var(--ns-band),0); } to { transform: translate3d(0,0,0); } }
+@keyframes ns-plate-counter { from { transform: translate3d(0,calc(-1 * var(--ns-band)),0); } to { transform: translate3d(0,0,0); } }
+@keyframes ns-plate-settle { from { transform: translate3d(3%,0,0) scale(1.1); } to { transform: translate3d(0,0,0) scale(1); } }
+@keyframes ns-plate-push { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-1.8%,0,0) scale(var(--plate-push,1.11)); } }
+@keyframes ns-plate-rim { 0% { opacity: 0; } 10% { opacity: .82; } 30% { opacity: .9; } 45% { opacity: .95; } 60% { opacity: .88; } 75% { opacity: .93; } 90% { opacity: .8; } 100% { opacity: 0; } }
+@keyframes ns-plate-sweep { 0% { opacity: 0; transform: translate3d(-75%,0,0); } 50% { opacity: .9; } 100% { opacity: 0; transform: translate3d(75%,0,0); } }
+@keyframes ns-plate-petal {
+  0% { opacity: 0; transform: translate3d(calc(var(--lane) * 1vw),calc(var(--y0) * var(--ns-canvas)),0) rotate(var(--angle)); }
+  15%,85% { opacity: 1; }
+  33% { transform: translate3d(calc((var(--lane) + var(--sway)) * 1vw),calc((var(--y0) - var(--lift) * .33) * var(--ns-canvas)),0) rotate(calc(var(--angle) + var(--spin) * .33)); }
+  66% { transform: translate3d(calc((var(--lane) - var(--sway)) * 1vw),calc((var(--y0) - var(--lift) * .66) * var(--ns-canvas)),0) rotate(calc(var(--angle) + var(--spin) * .66)); }
+  100% { opacity: 0; transform: translate3d(calc(var(--lane) * 1vw),calc((var(--y0) - var(--lift)) * var(--ns-canvas)),0) rotate(calc(var(--angle) + var(--spin))); }
+}
+@keyframes ns-plate-frond {
+  0%,4% { opacity: 0; transform: translate3d(calc(var(--dir) * -4%),-2%,0) scale(1); }
+  12%,45% { opacity: .95; }
+  72%,100% { opacity: 0; transform: translate3d(calc(var(--dir) * -34%),-28%,0) scale(1.85); }
+}
+
+/* Chapter arrivals and departures, on the same view timelines: the arriving chapter's copy
+   and cards settle while its scene settles. Transform/opacity only (plus two thin SVG
+   strokes); native focus always shows the finished pose. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ns-home :is(.ns-story-copy,[data-memory-hanger],.ns-event,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card) {
+      --arrive-y: 16px; --arrive-rot: 0deg; --arrive-scale: 1; --arrive-opacity: .75; --from: 22%; --to: 80%;
+      animation-name: ns-arrive; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene;
+    }
+    .ns-home :is(.ns-story-copy,[data-memory-hanger],.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card) {
+      animation-range: entry calc(var(--from) + var(--i,0) * var(--step,8%)) entry calc(var(--to) + var(--i,0) * var(--step,8%));
+    }
+    .ns-home .ns-venue-card { --arrive-y: 18px; --arrive-opacity: .65; }
+    .ns-home .ns-story-copy { --arrive-y: 30px; --arrive-opacity: .65; --from: 32%; --to: 82%; }
+    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],[data-wish-arrival]) { --arrive-opacity: .12; --from: 10%; --to: 62%; }
+    .ns-home [data-memory-hanger] { --arrive-y: 56px; --arrive-rot: -6deg; }
+    .ns-home [data-memory-hanger]:nth-child(even) { --arrive-rot: 6deg; }
+    .ns-home .ns-event { --arrive-y: 44px; --arrive-rot: 1.4deg; --arrive-scale: .96; }
+    .ns-home .ns-event:nth-child(even) { --arrive-rot: -1.4deg; }
+    .ns-home [data-venue-sign] { --arrive-y: 32px; --arrive-rot: 4deg; }
+    .ns-home [data-venue-sign]:nth-child(even) { --arrive-rot: -4deg; }
+    .ns-home [data-wish-arrival] { --arrive-y: 22px; --arrive-rot: 8deg; --from: 8%; --to: 48%; --step: 6%; }
+    .ns-home .ns-wish-hanger:nth-child(even) [data-wish-arrival] { --arrive-rot: -8deg; }
+    /* Stagger: each card, sign, keepsake or tag arrives a little after the one before. */
+    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(2) { --i: 1; }
+    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(3) { --i: 2; }
+    .ns-home :is(.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(4) { --i: 3; }
+    .ns-home .ns-wish-hanger:nth-child(5) { --i: 4; }
+    .ns-home .ns-wish-hanger:nth-child(6) { --i: 5; }
+    .ns-home .ns-event-art .ns-art { animation-name: ns-arrive-image; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; }
+    .ns-home [data-note-arrival] { animation-name: ns-note-breathe, ns-arrive-note; animation-duration: 9s, auto; animation-timing-function: ease-in-out; animation-iteration-count: infinite, 1; animation-direction: alternate, normal; animation-fill-mode: none, both; animation-timeline: auto, --scene; animation-range: normal, entry 10% entry 62%; }
+    @media (scripting: none) { .ns-home [data-note-arrival] { animation-name: none, ns-arrive-note; } }
+    .ns-home .ns-signpost { animation-name: ns-arrive-post; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 10% entry 65%; }
+    .ns-home .ns-note-glint { animation-name: ns-arrive-glint; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 20% entry 90%; }
+    .ns-home .ns-path path { animation-name: ns-arrive-path; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 28% entry 96%; }
+    /* The welcome copy lifts and fades as the guest leaves it. */
+    .ns-home .ns-hero-copy { animation-name: ns-leave-lift, ns-leave-fade; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene, --scene; animation-range: exit 2% exit 50%, exit 10% exit 50%; }
+    .ns-home .ns-hero-foot { animation-name: ns-leave-out; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: exit 1.5% exit 20%; }
+    .ns-home section:focus-within :is(.ns-story-copy,[data-memory-hanger],.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost),
+    .ns-home .ns-hero-foot:focus-within { animation: none; }
+    .ns-home section:focus-within [data-note-arrival] { animation: ns-note-breathe 9s ease-in-out infinite alternate; }
+    .ns-progress span { animation-name: ns-progress; animation-fill-mode: both; animation-timing-function: linear; animation-timeline: scroll(root block); }
+  }
+}
+@keyframes ns-arrive { from { transform: translate3d(0,var(--arrive-y),0) rotate(var(--arrive-rot)) scale(var(--arrive-scale)); opacity: var(--arrive-opacity); } to { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; } }
+@keyframes ns-arrive-image { from { transform: scale(1.065); } to { transform: scale(1); } }
+@keyframes ns-arrive-note { from { transform: perspective(1200px) translate3d(0,36px,0) rotateX(5deg) rotate(-.7deg) scale(.955); opacity: .12; } to { transform: perspective(1200px) translate3d(0,0,0) rotateX(0deg) rotate(0deg) scale(1); opacity: 1; } }
+@keyframes ns-arrive-post { from { transform: scaleY(.7); } to { transform: scaleY(1); } }
+@keyframes ns-arrive-glint { from { stroke-dashoffset: 1; opacity: 0; } 50% { opacity: .8; } to { stroke-dashoffset: -1; opacity: 0; } }
+@keyframes ns-arrive-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ns-leave-lift { to { transform: translate3d(0,-32px,0); } }
+@keyframes ns-leave-fade { to { opacity: .25; } }
+@keyframes ns-leave-out { to { opacity: 0; } }
+@keyframes ns-progress { to { transform: scaleX(1); } }
 
 .ns-home section { scroll-margin-top: 60px; }
 .ns-header { position: fixed; inset: 0 0 auto; height: 70px; z-index: 60; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(1rem,4vw,3.5rem); color: #fff3e4; background: linear-gradient(#172e28c4, #172e2800); transition: background .4s; }
@@ -232,6 +266,7 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
    transparent and is lifted by its own measured height, so the scene's own artwork shows
    behind the names. --ns-footer-lift is set once the footer has been measured. */
 html[data-theme='nature']:has(.ns-home) .ns-footer {
+  position: relative; z-index: 1;
   background: transparent;
   margin-top: calc(-1 * var(--ns-footer-lift, 0px));
   /* Match the chapters' own bottom clearance so the end-card text clears the dock. */
@@ -283,7 +318,9 @@ html[data-theme='nature']:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #
 @media (prefers-reduced-motion: no-preference) {
   .ns-scroll > span { animation: ns-nudge 3s ease-in-out infinite; }
 }
-.ns-scene[data-offscreen] *, .ns-scene[data-offscreen] *::before { animation-play-state: paused !important; }
+/* Ambient loops pause off screen. Scroll-driven animations are exempt: they cost nothing
+   at rest, and pausing them would freeze a scene until the observer caught up. */
+.ns-scene[data-offscreen] :not(.ns-plate,.ns-plate *,.ns-story-copy,[data-memory-hanger],.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],[data-note-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost,.ns-note-glint,.ns-path path,.ns-hero-copy,.ns-hero-foot), .ns-scene[data-offscreen] *::before { animation-play-state: paused !important; }
 @keyframes ns-nudge { 0%,100% { translate: 0 0; } 50% { translate: 0 5px; } }
 @media (prefers-reduced-motion: reduce) { .ns-keepsake, .ns-button { transition: none; } }
 @media (scripting: none) { .ns-dock, .ns-petal-touch { display: none; } .ns-header { background: #172e28ee; } }
@@ -296,9 +333,14 @@ html[data-theme='nature']:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #
    Card collections pan horizontally rather than growing the page vertically. */
 .ns-home { --ns-screen: 100vh; --ns-canvas: 100vh; --ns-top: 86px; --ns-bottom: max(84px, calc(env(safe-area-inset-bottom) + 76px)); }
 @supports (height: 100svh) { .ns-home { --ns-screen: 100svh; --ns-canvas: 100lvh; } }
-.ns-home :is(.ns-hero > .ns-art,.ns-hero-shade,.ns-story-landscape > .ns-art,.ns-story-shade,.envelope-backdrop,.ns-celebrations > .ns-art,.ns-celebrations-shade,.ns-venue-landscape,.ns-venue-shade,.ns-wishes-landscape,.ns-wishes-shade,.ns-closing > .ns-art,.ns-closing-shade) { bottom: auto; height: var(--ns-canvas); }
-/* The sticky envelope stage lets its backdrop reach under collapsed browser bars; the
-   chapter itself still clips. */
+/* The reveal band (a quarter screen) and its static botanical edge: a soft fade with two
+   leafy lobes, in screen units so it is the same on every chapter however tall. */
+.ns-home {
+  --ns-band: calc(var(--ns-canvas) * .25);
+  --ns-plate-mask: linear-gradient(transparent calc(var(--ns-band) * .32),#000 calc(var(--ns-band) * .84)),radial-gradient(ellipse 45% calc(var(--ns-band) * .44) at 23% calc(var(--ns-band) * .52),#000 8%,transparent 88%),radial-gradient(ellipse 48% calc(var(--ns-band) * .52) at 76% calc(var(--ns-band) * .6),#000 8%,transparent 90%);
+}
+/* The envelope's painting is its own scene plate; the sticky stage may overflow it and
+   the chapter itself still clips. */
 .ns-home .envelope-scene .envelope-viewport { overflow: visible; }
 .ns-home > section { height: var(--ns-screen); min-height: 0; max-height: none; scroll-margin-top: 0; scroll-snap-align: start; overflow: clip; }
 .ns-home > .envelope-scene[data-enhanced] {
@@ -404,6 +446,7 @@ html[data-theme='nature']:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #
   /* Last resort if the veil's script never runs: it still steps aside. */
   animation: ns-veil-away .6s ease 6s forwards; }
 html[data-nature-loaded] .ns-veil { opacity: 0; visibility: hidden; }
+.ns-veil[hidden] { display: none; }
 .ns-veil-scene { position: absolute; inset: -6%; background: var(--veil-scene, none) center / cover no-repeat, radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e);
   filter: blur(14px) saturate(1.2) brightness(1.08); transform: scale(1.08); transition: transform 1.6s cubic-bezier(.2,.7,.2,1); will-change: transform; }
 @media (min-width: 768px) and (min-aspect-ratio: 1/1) { .ns-veil-scene { background-image: var(--veil-scene-wide, var(--veil-scene, none)), radial-gradient(85% 55% at 50% 44%, #2a4739, #172e28 68%, #10241e); } }
@@ -515,7 +558,7 @@ html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; sc
 /* Celebrations: framed ceremony portraits in a lantern-lit garden, matching
    the Nature board's restrained gold rim and curved parchment caption. */
 .ns-celebrations { position: relative; isolation: isolate; background: #102124; color: #fff1db; gap: .8rem; }
-.ns-celebrations > .ns-celebrations-garden { filter: var(--ns-grade-celebrations); }
+.ns-celebrations-garden { filter: var(--ns-grade-celebrations); }
 .ns-celebrations-shade { position: absolute; z-index: -1; inset: 0; background: var(--ns-shade-celebrations); pointer-events: none; }
 .ns-celebrations-head { display: flex; align-items: center; justify-content: flex-start; gap: 1.2rem; width: 100%; max-width: 1140px; text-align: left; margin: 0 auto; }
 .ns-celebrations-index { font: 500 clamp(3rem,5vw,4.5rem)/.9 var(--font-display); color: #e6d2ad; border-right: 1px solid #c39a5a66; padding-right: 1.1rem; }
@@ -566,6 +609,13 @@ html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; sc
   .ns-event-copy > .ns-event-description { font-size: .7rem; }
   .ns-event-mark { width: 18px; height: 18px; top: -12px; }
   .ns-event-rule { margin: .1rem 0; }
+}
+/* Phone card rows scroll sideways, which clips them vertically: leave room inside the
+   scroller for the cards' drop shadows and their rise as the chapter arrives (an outset
+   bottom padding, so the cards keep their size), or both are cut off in a hard line. */
+@media (max-width: 767px) {
+  .ns-home .ns-celebrations .ns-events { padding-bottom: 3.4rem; margin-bottom: -2.6rem; }
+  .ns-home .ns-keepsakes { padding-bottom: 4.4rem; margin-bottom: -3.6rem; }
 }
 @media (prefers-reduced-motion: no-preference) { .ns-festoon-bulb { animation: ns-celebration-glimmer 4s ease-in-out var(--bulb-delay) infinite alternate; } }
 @keyframes ns-celebration-glimmer { from { opacity: .55; } to { opacity: 1; } }

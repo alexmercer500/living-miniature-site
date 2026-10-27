@@ -127,27 +127,29 @@ test('Nature final note retains its landscape, real names, message and locale li
   }
 });
 
-test('Hero/Journey bridge is decorative and preserves original sections and routes',()=>{
+test('every chapter carries one decorative scene plate; the sections stay semantic',()=>{
+  const ids=['welcome','journey','invitation','celebrations','venue','wishes','closing'];
   for(const route of ['/','/hi/']){
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
-    assert.equal([...html.matchAll(/data-journey-bridge(?=[\s=>])/g)].length,1);
-    assert.ok(html.includes('data-journey-bridge aria-hidden="true" inert'));
+    const plates=[...html.matchAll(/<div class="ns-plate"[^>]*>/g)].map(m=>m[0]);
+    assert.equal(plates.length,ids.length);
+    assert.ok(plates.every(tag=>tag.includes('aria-hidden="true"')),'Plates are decorative');
+    // Only the opening chapter has nothing to reveal it from.
+    assert.equal(plates.filter(tag=>tag.includes('data-entry')).length,ids.length-1);
     assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length,1);
-    assert.ok(html.indexOf('id="welcome"')<html.indexOf('id="journey"'));
-    assert.ok(html.indexOf('id="journey"')<html.indexOf('id="invitation"'));
-    assert.ok(!html.includes('data-journey-ready')&&!html.includes('data-journey-transition'),'Enhancement flags must not be server-rendered');
-    for(const id of ['lm-foliage-a','lm-foliage-b'])assert.ok(html.includes(`id="${id}"`),'Bridge uses existing, valid SVG symbols');
+    for(const id of ids)assert.equal([...html.matchAll(new RegExp(`<section id="${id}"`,'g'))].length,1);
+    for(let i=1;i<ids.length;i++)assert.ok(html.indexOf(`id="${ids[i-1]}"`)<html.indexOf(`id="${ids[i]}"`));
+    for(const id of ['lm-foliage-a','lm-foliage-b'])assert.ok(html.includes(`id="${id}"`),'Fronds use existing, valid SVG symbols');
+    assert.ok(!/data-(?:journey|scene)-bridge/.test(html),'The script-driven cameras are gone');
   }
+  for(const route of ['/invitation/','/hi/invitation/'])assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('ns-plate'));
 });
 
-test('five later bridges reuse Nature art without replacing semantic sections',()=>{
-  const targets=['invitation','celebrations','venue','wishes','closing'];
-  for(const route of ['/','/hi/']){
-    const html=fs.readFileSync(`dist${route}index.html`,'utf8');
-    assert.equal([...html.matchAll(/data-scene-bridge(?=[\s=>])/g)].length,5);
-    assert.deepEqual([...html.matchAll(/data-scene-bridge data-from="[^"]+" data-to="([^"]+)" aria-hidden="true" inert/g)].map(m=>m[1]),targets);
-    for(const id of ['welcome','journey',...targets])assert.equal([...html.matchAll(new RegExp(`<section id="${id}"`,'g'))].length,1);
-    assert.ok(!html.includes('data-scenes-ready')&&!html.includes('data-scenes-scroll'),'Static rendering never depends on animation');
-  }
-  for(const route of ['/invitation/','/hi/invitation/'])assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('data-scene-bridge'));
+test('scroll-driven animations survive minification',()=>{
+  // A timeline folded into the `animation` shorthand is rejected by browsers, which then drop
+  // the whole declaration: the handoffs would silently stop animating.
+  const css=fs.readdirSync('dist/_astro').filter(f=>f.endsWith('.css')).map(f=>fs.readFileSync(`dist/_astro/${f}`,'utf8')).join('');
+  assert.ok(css.includes('view-timeline:--scene'),'Chapters name their view timeline');
+  for(const decl of css.match(/(?<![\w-])animation:[^;}]*/g)??[])assert.ok(!/--scene|scroll\(/.test(decl),`Timeline inside the animation shorthand: ${decl}`);
+  assert.ok(/animation-timeline:--scene/.test(css));
 });

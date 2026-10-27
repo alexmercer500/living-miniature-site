@@ -11,17 +11,14 @@ export async function setupEnvelope() {
   const hint = scene?.querySelector<HTMLElement>('[data-envelope-hint]');
   if (!scene || !button || !card || !label || !status || !hint) return;
 
-  // Keep the fully visible static card when motion is reduced or imports fail.
+  // Keep the fully visible static card when motion is reduced (and drop the motion if the
+  // guest turns reduced motion on mid-visit).
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
-  if (preference.matches) return;
-  const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
-  gsap.registerPlugin(ScrollTrigger);
-  const media = gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)', () => {
+  const enhance = () => {
     let lastState = '';
     let openingByTap = false;
     const driver = { progress: 0 };
-    const viewport = scene.firstElementChild as HTMLElement;
+    const viewport = scene.querySelector<HTMLElement>('.envelope-viewport')!;
     const rig = scene.querySelector<HTMLElement>('.envelope-rig')!;
     // Unchanged values are skipped, so a held pose costs no style work at all.
     const writer = styleWriter();
@@ -97,45 +94,62 @@ export async function setupEnvelope() {
       if (usable) openingByTap = false;
     };
 
+    // The track: from the stage pinning to the end of its readable hold.
+    let start = 0, end = 1;
+    const range = () => {
+      start = scene.getBoundingClientRect().top + window.scrollY;
+      end = start + Math.max(180, scene.offsetHeight - viewport.offsetHeight);
+    };
+    const target = () => Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+    // A light follow gives the paper some weight without trailing the guest's finger; it runs
+    // only while the pose is catching up, so a resting page costs nothing.
+    let frame = 0, last = 0;
+    const tick = (time: number) => {
+      frame = 0;
+      const dt = last ? Math.min(.1, (time - last) / 1000) : 1 / 60;
+      last = time;
+      const goal = target();
+      driver.progress += (goal - driver.progress) * (1 - Math.exp(-dt / envelopeTimings.follow));
+      if (Math.abs(goal - driver.progress) < 5e-4) driver.progress = goal;
+      render();
+      if (driver.progress !== goal) frame = requestAnimationFrame(tick); else last = 0;
+    };
+    const follow = () => {
+      document.documentElement.toggleAttribute('data-envelope-active', window.scrollY >= start && window.scrollY <= end);
+      // Off screen (a dock or header jump) the pose lands at once instead of animating unseen.
+      const top = start - window.scrollY;
+      if (top > innerHeight || top + scene.offsetHeight < 0) { driver.progress = target(); render(); return; }
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+
     measure();
-    render();
     scene.dataset.enhanced = '';
+    range();
+    driver.progress = target();
+    render();
     button.hidden = false;
     hint.hidden = false;
-    // Keep the visual stage one viewport tall while scroll drives every pose.
-    // A long track and a readable end hold replace any entry autoplay.
-    const animation = gsap.to(driver, {
-      progress: 1, ease: 'none', onUpdate: render,
-      scrollTrigger: {
-        trigger: scene, start: 'top top',
-        end: () => `+=${Math.max(180, scene.offsetHeight - (scene.firstElementChild as HTMLElement).offsetHeight)}`,
-        scrub: 1.8, invalidateOnRefresh: true,
-        onRefresh: trigger => {
-          measure(); render();
-          document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
-        },
-        onToggle: trigger => {
-          document.documentElement.toggleAttribute('data-envelope-active', trigger.isActive);
-        },
-      },
-    });
-    let scrollTween: ReturnType<typeof gsap.to> | undefined;
-    const cancelScroll = () => scrollTween?.kill();
+    window.addEventListener('scroll', follow, { passive: true });
+    // Tapping the seal scrolls the same track, so tap and scroll always agree.
+    let tween = 0;
+    const cancelScroll = () => { cancelAnimationFrame(tween); tween = 0; };
     const interruptKey = (event: KeyboardEvent) => {
       if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Escape'].includes(event.key)) cancelScroll();
     };
     const toggle = () => {
-      const trigger = animation.scrollTrigger;
-      if (!trigger) return;
       const close = button.getAttribute('aria-expanded') === 'true' || openingByTap;
       openingByTap = !close;
       cancelScroll();
-      const scroll = { y: window.scrollY };
-      scrollTween = gsap.to(scroll, {
-        y: close ? trigger.start : trigger.end + 1,
-        duration: close ? envelopeTimings.tapClose : envelopeTimings.tapOpen,
-        ease: 'power2.inOut', onUpdate: () => window.scrollTo({ top: scroll.y, behavior: 'instant' }),
-      });
+      const from = window.scrollY, to = close ? start : end + 1;
+      const duration = (close ? envelopeTimings.tapClose : envelopeTimings.tapOpen) * 1000;
+      const began = performance.now();
+      const step = (now: number) => {
+        const k = Math.min(1, (now - began) / duration);
+        const eased = k < .5 ? 2 * k * k : 1 - (2 - 2 * k) ** 2 / 2;
+        window.scrollTo({ top: from + (to - from) * eased, behavior: 'instant' });
+        tween = k < 1 ? requestAnimationFrame(step) : 0;
+      };
+      tween = requestAnimationFrame(step);
     };
     button.addEventListener('click', toggle);
     window.addEventListener('wheel', cancelScroll, { passive: true });
@@ -143,24 +157,29 @@ export async function setupEnvelope() {
     window.addEventListener('keydown', interruptKey);
     const releaseFocus = () => queueMicrotask(render);
     card.addEventListener('focusout', releaseFocus);
-    const resize = new ResizeObserver(() => { measure(); render(); });
+    const relayout = () => { measure(); range(); driver.progress = target(); render(); follow(); };
+    const resize = new ResizeObserver(relayout);
+    resize.observe(scene);
     resize.observe(viewport);
     resize.observe(rig);
     resize.observe(card);
+    // Earlier chapters can change height (fonts, images); re-measure the track then too.
+    window.addEventListener('resize', relayout);
+    document.fonts?.ready.then(() => { if (scene.dataset.enhanced !== undefined) relayout(); });
     // A keyboard user can follow the card link after opening, or use the
     // always-visible full invitation link without operating the animation.
-    ScrollTrigger.refresh();
     return () => {
+      cancelAnimationFrame(frame);
+      cancelScroll();
+      window.removeEventListener('scroll', follow);
+      window.removeEventListener('resize', relayout);
       button.removeEventListener('click', toggle);
       window.removeEventListener('wheel', cancelScroll);
       window.removeEventListener('touchstart', cancelScroll);
       window.removeEventListener('keydown', interruptKey);
-      scrollTween?.kill();
       card.removeEventListener('focusout', releaseFocus);
       resize.disconnect();
       document.documentElement.removeAttribute('data-envelope-active');
-      animation.scrollTrigger?.kill();
-      animation.kill();
       delete scene.dataset.enhanced;
       writer.restore();
       button.hidden = true;
@@ -169,6 +188,10 @@ export async function setupEnvelope() {
       card.removeAttribute('aria-hidden');
       status.textContent = '';
     };
-  });
-  window.addEventListener('pagehide', () => media.revert(), { once: true });
+  };
+  let teardown: (() => void) | undefined;
+  const apply = () => { teardown?.(); teardown = preference.matches ? undefined : enhance(); };
+  apply();
+  preference.addEventListener('change', apply);
+  window.addEventListener('pagehide', () => { preference.removeEventListener('change', apply); teardown?.(); }, { once: true });
 }

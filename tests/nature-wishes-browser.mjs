@@ -39,7 +39,7 @@ try {
       demo:s.querySelector('#ns-wishes-hint').textContent,demoBottom:s.querySelector('#ns-wishes-hint').getBoundingClientRect().bottom,
       wind:[...s.querySelectorAll('.ns-wish-wind')].map(e=>({name:getComputedStyle(e).animationName,duration:getComputedStyle(e).animationDuration,state:getComputedStyle(e).animationPlayState,rotate:getComputedStyle(e).rotate})),
       forms:[...s.querySelectorAll('form')].filter(f=>f.hasAttribute('action')).length,rsvp:!!s.querySelector('#rsvp'),rsvpBottom:s.querySelector('#rsvp')?.getBoundingClientRect().bottom??0,ready:s.querySelector('img').naturalWidth>0,
-      cols:getComputedStyle(s.querySelector('.ns-wish-garland')).gridTemplateColumns.split(' ').length,overflow:getComputedStyle(s).overflowY
+      cols:getComputedStyle(s.querySelector('.ns-wish-garland')).gridTemplateColumns.split(' ').length,overflow:(getComputedStyle(s).clipPath.startsWith('inset(')?'clip':getComputedStyle(s).overflowY)
     };})()`);
     await shot(`${view.name}-settled`);
     assert.equal(layout.height,view.height);assert.ok(Math.abs(layout.top)<2);assert.ok(layout.width<=view.width);assert.ok(layout.headingTop>=64);assert.equal(layout.overflow,'clip');assert.equal(layout.tags.length,6);

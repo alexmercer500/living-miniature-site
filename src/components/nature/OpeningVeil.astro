@@ -29,6 +29,9 @@ const motes = [[18, 72, 16, 7.5, 0, 14], [33, 86, 10, 6.2, .7, -10], [47, 64, 22
       if ('natureLoaded' in html.dataset) return;
       html.dataset.natureLoaded = '';
       try { sessionStorage.setItem('ns-veil', '1'); } catch { /* private mode: show it again next time */ }
+      // Once it has faded, take it out of rendering: its drifting motes would otherwise
+      // keep animating unseen for the whole visit.
+      setTimeout(() => { const veil = document.querySelector('.ns-veil'); if (veil) veil.hidden = true; }, 1600);
     };
     let seen = false;
     try { seen = sessionStorage.getItem('ns-veil') === '1'; } catch { /* storage blocked */ }

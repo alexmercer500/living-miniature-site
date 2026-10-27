@@ -165,12 +165,12 @@ living-miniature-site/
    ├─ pages/                     routes: index, invitation, hi/*, and [...retired] forwards for old links
    ├─ components/
    │  ├─ nature/                 Home, Invitation, Header and every chapter (Envelope, Keepsakes, Celebrations,
-   │  │                          Venue, Wishes, FinalNote), Art (responsive paintings), the camera bridges
+   │  │                          Venue, Wishes, FinalNote), Art (responsive paintings), ScenePlate (each
+   │  │                          chapter's painting and its handoff)
    │  ├─ scene/                  SceneDefs (shared gradients + foliage symbols), Foliage
    │  └─ CalendarButton, Icon, Monogram, LotusMark
    ├─ scripts/
-   │  ├─ nature.ts               wires the home page: chapters, sound, countdown, scroll scenes
-   │  ├─ hero-journey.ts, scene-transitions.ts, camera-flourish.ts, scroll-glide.ts   the camera moves
+   │  ├─ nature.ts               wires the home page: chapters, sound, countdown
    │  ├─ envelope.ts             the letter; keepsakes.ts, venue.ts, wishes.ts   chapter interactions
    │  ├─ music.ts                opt-in music: file player or Web Audio synth, with a mood per chapter
    │  └─ calendar.ts, haptics.ts, tilt-parallax.ts, invitation-morph.ts
@@ -190,7 +190,9 @@ living-miniature-site/
 
 ### Animation system
 - CSS handles small ambient loops (lantern sway, candle flicker, drifting petals), all gated by `prefers-reduced-motion`.
-- GSAP's ScrollTrigger loads only when motion is allowed. One shared scroll glide drives every camera move; scripts write only `transform` and `opacity`, so the browser composites frames without repainting.
+- **Chapter handoffs need no script.** Each chapter's painting sits in a `ScenePlate`: a sticky camera that holds the painting still while its chapter is on screen, so the chapter's own top edge reveals it over the one before. The browser does this on its scrolling thread, so a handoff can never lag behind the finger, show the next chapter early or snap in late (the previous script-driven cameras did all three on phones).
+- On top of that, CSS scroll-driven animations (`animation-timeline: --scene`) add the feathered leafy band, gold rim, petals, light sweep, the settle/push-in of the paintings and the arrival of each chapter's cards and copy. Browsers without scroll timelines get a clean hard-edged reveal and still content. Write those rules with longhands (`animation-name`, `animation-timeline`, …): the CSS minifier folds a longhand timeline into the `animation` shorthand, which browsers reject; `nature-static.test.mjs` guards this.
+- The envelope is the one scroll scene still driven by script (`envelope.ts`, a light follow of the scroll position, idle when not scrolling). GSAP is only fetched as a fallback for the reading-progress line in browsers without scroll timelines.
 - Markup always ships in its **final**, readable state; scripts add motion on top. Chapters scrolled off-screen pause their loops (`data-offscreen`).
 
 ### Music

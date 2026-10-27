@@ -34,7 +34,7 @@ try {
     await evaluate("document.getElementById('celebrations').scrollIntoView({behavior:'instant',block:'start'});true");
     await wait(1200);await evaluate('document.fonts.ready.then(()=>true)');
     const scene=await evaluate("(()=>{const s=document.getElementById('celebrations');return {height:s.getBoundingClientRect().height,width:document.documentElement.scrollWidth,bg:getComputedStyle(s).backgroundColor,count:s.querySelectorAll('.ns-event').length}})()");
-    assert.equal(scene.height,view.height);assert.ok(scene.width<=view.width);assert.equal(scene.count,3);assert.equal(scene.bg,'rgb(16, 33, 36)');
+    assert.equal(scene.height,view.height);assert.ok(scene.width<=view.width);assert.equal(scene.count,3);assert.equal(scene.bg,await evaluate("CSS.supports('animation-timeline: view()')&&matchMedia('(prefers-reduced-motion: no-preference)').matches")?'rgba(0, 0, 0, 0)':'rgb(16, 33, 36)');
     for(let i=0;i<3;i++) {
       await evaluate(`(()=>{const row=document.querySelector('.ns-events');row.scrollLeft=row.children[${i}].offsetLeft-row.offsetLeft;return true})()`);await wait(1750);
       const state=await evaluate(`(()=>{const c=document.querySelectorAll('.ns-event')[${i}],r=c.getBoundingClientRect(),copy=c.querySelector('.ns-event-copy').getBoundingClientRect();return {top:r.top,bottom:r.bottom,opacity:getComputedStyle(c).opacity,radius:getComputedStyle(c).borderTopLeftRadius,title:c.querySelector('h3').textContent,date:c.querySelector('.ns-event-date').textContent,copyBottom:copy.bottom,mark:!!c.querySelector('.ns-event-mark'),scallop:!!c.querySelector('.ns-event-scallop'),animations:c.getAnimations().length};})()`);

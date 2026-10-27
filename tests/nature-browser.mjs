@@ -55,9 +55,11 @@ try {
       await scroll(`#${section}`);
       if(view.name==='width-390'||view.name==='width-1440'||view.name==='short-hindi') {
         await evaluate(`location.hash='${section}'; true`); await wait(1000);
-        const aligned=await evaluate(`(()=>{const s=document.getElementById('${section}'),r=(s.matches('[data-envelope][data-enhanced]')?s.firstElementChild:s).getBoundingClientRect();return {top:r.top,bottom:r.bottom}})()`);
+        const aligned=await evaluate(`(()=>{const s=document.getElementById('${section}'),r=(s.matches('[data-envelope][data-enhanced]')?s.querySelector('.envelope-viewport'):s).getBoundingClientRect();return {top:r.top,bottom:r.bottom}})()`);
         assert.ok(Math.abs(aligned.top)<2 && Math.abs(aligned.bottom-view.height)<2, `${view.name}/${section}: native anchor fills viewport ${JSON.stringify(aligned)}`);
-        assert.equal(await evaluate("document.elementFromPoint(5,innerHeight-2)?.closest('section')?.id"), section, 'Bottom edge belongs to this chapter, not overflowing artwork from the next');
+        // The page's footer rides over the end of the closing painting.
+        const edge=await evaluate("(e=>e?.closest('.ns-footer')?'footer':e?.closest('section')?.id)(document.elementFromPoint(5,innerHeight-2))");
+        assert.ok(edge===section||(section==='closing'&&edge==='footer'), `Bottom edge belongs to this chapter, not overflowing artwork from the next (${edge})`);
       }
       if(section==='journey'||section==='celebrations') {
         const row=section==='journey'?'.ns-keepsakes':'.ns-events';
@@ -71,14 +73,14 @@ try {
       }
       const state = await evaluate(`(() => {
         const s=document.getElementById('${section}'), b=s.getBoundingClientRect();
-        return {height:s.matches('[data-envelope][data-enhanced]')?s.firstElementChild.getBoundingClientRect().height:b.height,width:document.documentElement.scrollWidth,left:b.left,right:b.right,
+        return {height:s.matches('[data-envelope][data-enhanced]')?s.querySelector('.envelope-viewport').getBoundingClientRect().height:b.height,width:document.documentElement.scrollWidth,left:b.left,right:b.right,
           headings:[...s.querySelectorAll('h1,h2,h3')].filter(h=>!h.closest('dialog:not([open])')).map(h=>{const r=h.getBoundingClientRect(), slide=h.closest('.ns-event,.ns-keepsake')?.getBoundingClientRect();return {text:h.textContent,opacity:getComputedStyle(h).opacity,left:r.left,right:r.right,top:r.top,bottom:r.bottom,slide:slide?{left:slide.left,right:slide.right}:null}}),
           images:[...s.querySelectorAll('img')].filter(i=>!i.closest('dialog:not([open])')).map(i=>({ready:i.complete&&i.naturalWidth>0,src:i.currentSrc})),
           refs:[...s.querySelectorAll('*')].flatMap(e=>[...e.attributes].flatMap(a=>[...a.value.matchAll(/url\\(#([^)]*)\\)/g)].map(m=>m[1]).concat(a.name==='href'&&a.value.startsWith('#')?[a.value.slice(1)]:[]))).filter(id=>!document.getElementById(id))};
       })()`);
       assert.ok(state.width <= view.width + 1, `${view.name}/${section}: page overflow ${state.width}`);
       assert.ok(Math.abs(state.height-view.height)<2, `${view.name}/${section}: exactly one viewport (${state.height})`);
-      if(section!=='wishes') assert.equal(await evaluate(`getComputedStyle(document.getElementById('${section}')).overflowY`), 'clip', 'Parallax artwork cannot bleed into neighboring chapters');
+      if(section!=='wishes') assert.equal(await evaluate(`(s=>s.clipPath.startsWith('inset(')?'clip':s.overflowY)(getComputedStyle(document.getElementById('${section}')))`), 'clip', 'Artwork only reaches past a chapter through its clipped reveal band');
       assert.ok(state.left >= -1 && state.right <= view.width + 1);
       for (const h of state.headings) {
         assert.equal(h.opacity, '1', 'Copy never waits for animation');
@@ -104,8 +106,8 @@ try {
       await scroll('#welcome');
       await command('Input.dispatchMouseEvent', {type:'mouseWheel',x:Math.round(view.width/2),y:Math.round(view.height/2),deltaX:0,deltaY:60});
       await wait(1200);
-      const snapState=await evaluate("({top:document.getElementById('welcome').getBoundingClientRect().top,snap:getComputedStyle(document.documentElement).scrollSnapType,journey:document.documentElement.hasAttribute('data-journey-scroll')})");
-      assert.ok(snapState.journey&&snapState.snap==='none'&&Math.abs(snapState.top+60)<2, `Hero/Journey allows continuous scroll instead of fighting native snap: ${JSON.stringify(snapState)}`);
+      const snapState=await evaluate("({top:document.getElementById('welcome').getBoundingClientRect().top,snap:getComputedStyle(document.documentElement).scrollSnapType})");
+      assert.ok(snapState.snap==='none'&&Math.abs(snapState.top+60)<2, `A small scroll stays where the guest left it (no snap back): ${JSON.stringify(snapState)}`);
       await scroll('#welcome');
       await evaluate("document.querySelector('[data-nature-lantern]').focus(); true"); await enter();
       assert.equal(await evaluate("document.querySelector('[data-nature-lantern]').getAttribute('aria-pressed')"), 'true');

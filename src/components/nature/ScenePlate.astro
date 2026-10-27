@@ -1,0 +1,34 @@
+---
+// A chapter's painting, held still by native scroll while the chapter before it slides away.
+// The camera is `position: sticky` inside a track one screen taller than the chapter on each
+// side, so the painting stays put whenever any part of its chapter is on screen, and the
+// chapter's own box (plus a feathered botanical band) is the reveal edge. The browser moves
+// everything on its scrolling thread: no script, no smoothed coordinate, nothing to catch up.
+// Where scroll-driven animations exist, the band, its gold rim, petals, a light sweep, the
+// settle and the push-in ride the chapter's own view timeline (nature.css, "Scene plates").
+import Foliage from '../scene/Foliage.astro';
+interface Props { entry?: boolean }
+const { entry = true } = Astro.props;
+// [lane (vw), start below the edge (screens), lift (screens), sway (vw), spin (deg), start angle]
+const petals = [[7,.05,.16,4,430,0],[18,-.03,.24,-5,-320,97],[29,.01,.2,3,500,177],[41,-.06,.3,6,-400,251],
+  [52,.04,.18,-4,290,51],[63,-.04,.27,5,-470,148],[74,0,.22,-3,400,296],[86,-.07,.33,6,-250,23],[94,.04,.17,-3,360,217]];
+---
+<div class="ns-plate" aria-hidden="true" data-entry={entry ? '' : undefined}>
+  <div class="ns-plate-wipe">
+    <div class="ns-plate-track">
+      <div class="ns-plate-camera">
+        <div class="ns-plate-scene"><div class="ns-plate-zoom"><slot /></div></div>
+        {entry && <div class="ns-plate-sweep"></div>}
+      </div>
+    </div>
+  </div>
+  {entry && <div class="ns-plate-edge">
+    <div class="ns-plate-rim"><i class="halo"></i><i class="line"></i></div>
+    {petals.map(([lane,start,lift,sway,spin,angle],i)=><i class:list={['ns-plate-petal',i%3===2?'spark':'petal']}
+      style={`--lane:${lane};--y0:${.13-start};--lift:${lift};--sway:${sway};--spin:${spin}deg;--angle:${angle}deg;--size:${[14,11,16,12,15,13,10,17,12][i]}px`} />)}
+  </div>}
+  {entry && <div class="ns-plate-fx-track"><div class="ns-plate-fx">
+    <div class="ns-plate-frond left"><Foliage side="left" variant="a" /></div>
+    <div class="ns-plate-frond right"><Foliage side="right" variant="b" /></div>
+  </div></div>}
+</div>

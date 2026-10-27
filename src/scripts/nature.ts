@@ -1,9 +1,6 @@
 import { setupKeepsakes } from './keepsakes';
 import { setupVenue } from './venue';
 import { setupWishes } from './wishes';
-import { setupHeroJourney } from './hero-journey';
-import { setupSceneTransitions } from './scene-transitions';
-import { scrollGlide } from './scroll-glide';
 import { setupInvitationMorph } from './invitation-morph';
 import { setupTiltParallax } from './tilt-parallax';
 import { setupRsvp } from './rsvp';
@@ -119,25 +116,26 @@ export async function setupNature() {
     cleanups.push(() => { stop(); io.disconnect(); document.removeEventListener('visibilitychange', update); });
   }
 
-  const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
-  gsap.registerPlugin(ScrollTrigger);
-  const media = gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)', () => {
-    let clearHeroJourney=()=>{};
-    let clearScenes=()=>{};
-    const glide=scrollGlide(gsap);
-    const hero=q('#welcome');
-    const clearTilt=hero?setupTiltParallax(hero):()=>{};
-    const context = gsap.context(() => {
-      clearHeroJourney=setupHeroJourney(root,ScrollTrigger,glide);
-      clearScenes=setupSceneTransitions(root,ScrollTrigger,glide);
+  // Chapter handoffs are native scrolling plus CSS scroll-driven animations (ScenePlate.astro),
+  // so nothing here runs per scroll frame. Only browsers without scroll timelines still need
+  // a script for the reading-progress line.
+  const hero = q('#welcome');
+  const tilt = matchMedia('(prefers-reduced-motion: no-preference)');
+  let clearTilt = () => {};
+  const applyTilt = () => { clearTilt(); clearTilt = tilt.matches && hero ? setupTiltParallax(hero) : () => {}; };
+  applyTilt();
+  tilt.addEventListener('change', applyTilt);
+  cleanups.push(() => { tilt.removeEventListener('change', applyTilt); clearTilt(); });
+  if (!CSS.supports('animation-timeline: scroll()')) {
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
+    gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    media.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.to(document.querySelector('[data-nature-progress]'), { scaleX: 1, ease: 'none', scrollTrigger: { trigger: root, start: 'top top', end: 'bottom bottom', scrub: .25 } });
-    }, root);
-
-    document.fonts.ready.then(() => ScrollTrigger.refresh());
-    return () => { context.revert(); clearHeroJourney(); clearScenes(); glide.dispose(); clearTilt(); };
-  });
-  cleanups.push(() => media.revert());
+      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    });
+    cleanups.push(() => media.revert());
+  }
   window.addEventListener('pagehide', () => cleanups.forEach(clean => clean()), { once: true });
   if (import.meta.hot) import.meta.hot.dispose(() => cleanups.forEach(clean => clean()));
 }

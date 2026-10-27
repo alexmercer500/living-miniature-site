@@ -1,5 +1,6 @@
 ---
 import Art from './Art.astro';
+import ScenePlate from './ScenePlate.astro';
 import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, photosConfigured } from '../../lib/content';
@@ -12,7 +13,7 @@ const c = natureCopy[lang];
 const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality:80});
 ---
 <section id="closing" class="ns-closing ns-scene" aria-labelledby="ns-closing-title">
-  <Art {...landscapes.closing} /><div class="ns-closing-shade" aria-hidden="true"></div>
+  <ScenePlate><Art {...landscapes.closing} /><div class="ns-closing-shade"></div></ScenePlate>
   <header class="ns-note-head">
     <span class="ns-note-index" aria-hidden="true">06</span>
     <div><p class="ns-kicker">{c.noteKicker}</p><h2 id="ns-closing-title">{c.finalNote}</h2><p>{c.finalNoteIntro}</p></div>

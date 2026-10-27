@@ -1,5 +1,6 @@
 ---
 import Art from './Art.astro';
+import ScenePlate from './ScenePlate.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t, mapConfigured, directionsUrl } from '../../lib/content';
@@ -15,8 +16,7 @@ const actions = [
 ];
 ---
 <section id="venue" class="ns-venue ns-scene" aria-labelledby="ns-venue-title">
-  <div class="ns-venue-landscape ns-scene"><Art {...landscapes.venue} /></div>
-  <div class="ns-venue-shade" aria-hidden="true"></div>
+  <ScenePlate><Art {...landscapes.venue} /><div class="ns-venue-shade"></div></ScenePlate>
   <header class="ns-venue-head" data-venue-reveal>
     <span class="ns-venue-index" aria-hidden="true">04</span>
     <div><p class="ns-kicker">{c.venueKicker}</p><h2 id="ns-venue-title">{c.venueExperience}</h2><p class="ns-venue-intro">{c.venueLine}</p></div>

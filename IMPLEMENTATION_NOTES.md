@@ -7,6 +7,36 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Chapter handoffs rebuilt on native scroll (2026-10-27, `development`). Reported: on a
+handoff the next chapter's edge showed first and the effect then took over with a jump, worst
+on phones. Cause: each handoff was a fixed, script-driven camera that replaced the chapters'
+own paintings, following a deliberately smoothed scroll coordinate, while the chapters scrolled
+natively (on phones, on the compositor). Measured on the old build (390×844, 4× CPU, 6 s
+scroll): the camera trailed the real scroll by 0.135 screens on average (0.17 max), and on 25
+frames a chapter's bare edge was on screen with no camera over it. Replaced by
+`ScenePlate.astro`: each chapter's painting and shade sit in a sticky camera inside a track
+reaching one screen past the chapter on both sides, so the painting holds still while any of
+its chapter is on screen and the chapter's own edge is the reveal. No script runs per frame;
+the lag is zero by construction. CSS scroll-driven animations on each chapter's view timeline
+(`--scene`) add the feathered leafy band (it travels its own height on top of the scroll and
+is cancelled by the camera's counter-offset, so it is off screen at both rests), the gold rim,
+petals, sweep, fronds, the settle/push-in and the card/copy arrivals; transform/opacity only.
+Without scroll timelines: a hard-edged native reveal and still content. Reduced motion: plain
+chapters. Chapters drop their flat colours and clip only their sides while plates are active.
+Removed: `scroll-glide.ts`, `hero-journey.ts`, `scene-transitions.ts`, `camera-flourish.ts`,
+their state modules/tests, `HeroJourneyBridge`, `SceneBridges`, `CameraFlourish` (and the
+duplicate bridge images: each painting is now in the DOM once). The envelope now follows the
+scroll with a native listener (0.12 s follow instead of GSAP's 1.8 s scrub) and is idle at
+rest; GSAP is only a fallback for the progress line. Also: the opening veil is removed from
+rendering once faded (its motes animated forever), phone card scrollers leave room for card
+shadows and arrivals (they were cut in a hard line), and the footer sits above the closing
+painting. Gotcha: the CSS minifier folds `animation-timeline` into the `animation` shorthand,
+which browsers reject; write these rules with longhands (guarded by a static test). Measured
+after (same setup, 9 s full-page scroll): 418 frames, worst 50–67 ms (old: 398, worst 117 ms,
+16 frames over 50 ms); idle main-thread animation frames 4 per 3 s (was 184, GSAP's ticker).
+Checked: 390×844, 1440×900, 320×568 Hindi, reduced motion, deep links, no console errors,
+`tests/scene-plates-browser.mjs`. Real-device iOS Safari/Android still to confirm.
+
 Guest features without a backend (2026-10-26, `development`). The site stays fully
 static and stores no guest data. RSVP: a parchment form (attending, name, guests,
 events, note) composes a WhatsApp message to `rsvp.whatsapp` (`rsvp.ts`); the draft
