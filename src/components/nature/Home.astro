@@ -15,20 +15,20 @@ import Envelope from './Envelope.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t, formatDate } from '../../lib/content';
-import { natureHref, natureCopy } from '../../lib/nature-content';
-import { landscapes } from '../../lib/nature-assets';
 import { artPreview } from '../../lib/art-preview';
 import { artSources } from '../../lib/art-sources';
+import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
 import '../../styles/nature.css';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang];
-const [veilScene, veilSceneWide] = await Promise.all([artPreview(landscapes.hero.mobile), artPreview(landscapes.hero.desktop)]);
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
+const themeAssets = themeConfig[theme].assets;
+const [veilScene, veilSceneWide] = await Promise.all([artPreview(themeAssets.hero.mobile), artPreview(themeAssets.hero.desktop)]);
 // Ask for every chapter painting with the HTML, before anything has to be laid out: the scene you
 // scroll into then never shows its soft inline placeholder, and each camera handoff has its art
 // decoded by the time it is needed. AVIF only — a browser without AVIF skips the hint and loads
 // the WebP the <picture> asks for, and the URL matches the srcset exactly, so nothing loads twice.
-const paintingPreloads = (await Promise.all(Object.values(landscapes).map(async painting => {
+const paintingPreloads = (await Promise.all(Object.values(themeAssets).map(async painting => {
   const { sources } = await artSources(painting.mobile, painting.desktop);
   return sources.find(source => source.type === 'image/avif')!;
 }))).filter(p => p.desktop);
@@ -56,10 +56,10 @@ const paintingPreloads = (await Promise.all(Object.values(landscapes).map(async 
     })();
   </script>
   <OpeningVeil scene={veilScene} sceneWide={veilSceneWide} greeting={t(lang, 'guestGreeting')} />
-  <Header lang={lang} />
+  <Header lang={lang} theme={theme} />
   <main id="main" class="ns-home" data-nature-root>
     <section id="welcome" class="ns-hero ns-scene" aria-labelledby="nature-title">
-      <ScenePlate entry={false}><Art {...landscapes.hero} eager /><div class="ns-hero-shade"></div></ScenePlate>
+      <ScenePlate entry={false}><Art {...themeAssets.hero} eager /><div class="ns-hero-shade"></div></ScenePlate>
       <div class="ns-hero-copy">
         <LotusMark class="ns-lotus" />
         <p class="ns-greeting" data-template={t(lang, 'guestGreeting')} hidden></p><script is:inline>nsGreet(document.currentScript.previousElementSibling)</script>
@@ -79,29 +79,29 @@ const paintingPreloads = (await Promise.all(Object.values(landscapes).map(async 
     </section>
 
     <section id="journey" class="ns-story ns-scene" aria-labelledby="ns-story-title">
-      <ScenePlate><Art {...landscapes.journey} /><div class="ns-story-shade"></div></ScenePlate>
+      <ScenePlate><Art {...themeAssets.journey} /><div class="ns-story-shade"></div></ScenePlate>
       <div class="ns-story-landscape ns-scene">
         <header class="ns-story-copy"><p class="ns-kicker">01 / {c.story}</p><h2 id="ns-story-title">{c.storyTitle}</h2><p>{c.storyIntro}</p></header>
         <svg class="ns-path" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true"><path d="M80 680C100 500 620 640 500 430S600 240 730 190" pathLength="1" /></svg>
       </div>
-      <Keepsakes lang={lang} />
+      <Keepsakes lang={lang} theme={theme} />
       <p class="ns-keepsake-hint">{c.keepsakeHint}</p>
     </section>
 
-    <Envelope lang={lang} invitationHref={natureHref(lang, '/invitation')}>
-      <Art slot="backdrop" {...landscapes.letter} />
+    <Envelope lang={lang} theme={theme} invitationHref={themeHref(lang, theme, '/invitation')}>
+      <Art slot="backdrop" {...themeAssets.letter} />
     </Envelope>
 
-    <Celebrations lang={lang} />
+    <Celebrations lang={lang} theme={theme} />
 
-    <Venue lang={lang} />
+    <Venue lang={lang} theme={theme} />
 
-    <Wishes lang={lang} />
+    <Wishes lang={lang} theme={theme} />
 
-    <FinalNote lang={lang} />
+    <FinalNote lang={lang} theme={theme} />
   </main>
   <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang)}</p></footer>
-  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={natureHref(lang, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
+  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>
 <script>

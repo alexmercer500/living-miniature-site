@@ -5,10 +5,12 @@ import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
 import ScenePlate from './ScenePlate.astro';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
+import { themeConfig, type ThemeId } from '../../lib/theme';
 
 /** The letter chapter: an envelope on the garden table that opens as the guest scrolls. The backdrop slot holds the scene art. */
-interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string }
-const { lang, id = 'invitation', invitationHref = href(lang, '/invitation'), continueHref = '#celebrations' } = Astro.props;
+interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; theme?: ThemeId }
+const { lang, id = 'invitation', invitationHref = href(lang, '/invitation'), continueHref = '#celebrations', theme = 'nature' } = Astro.props;
+const invitationObject = themeConfig[theme].invitationObject;
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
@@ -25,6 +27,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
 
     <div class="table-contact-shadow" aria-hidden="true"></div>
     <div class="envelope-aura" aria-hidden="true"></div>
+    {invitationObject && <img class="envelope-theme-object" src={invitationObject.src} width={invitationObject.width} height={invitationObject.height} alt="" aria-hidden="true" />}
     <div class="envelope-rig">
       <div class="envelope-back" aria-hidden="true"></div>
       <div class="envelope-lining" aria-hidden="true"></div>
@@ -109,6 +112,11 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     transform: perspective(1600px) rotateX(var(--rig-angle)) rotateZ(var(--rig-roll)) scale(var(--rig-scale));
     filter: drop-shadow(0 var(--rig-shadow) var(--rig-shadow) rgb(15 6 3 / .5));
   }
+  .envelope-theme-object {
+    position: absolute; z-index: 1; top: 24%; right: clamp(1rem, 7vw, 7rem); width: min(22vw, 18rem); height: auto;
+    rotate: -8deg; opacity: .72; filter: drop-shadow(0 18px 18px rgb(15 6 3 / .36)); pointer-events: none;
+  }
+  html[data-theme='lake-city'] .envelope-theme-object { right: auto; left: clamp(1rem, 7vw, 7rem); top: 27%; rotate: 8deg; }
   .table-contact-shadow {
     position: absolute; left: 50%; top: 69%; width: min(76vw, 31rem); height: clamp(2rem, 8vw, 5rem);
     translate: -50% -50%; transform: scale(var(--table-shadow-scale));
@@ -187,6 +195,10 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
   .envelope-footer a { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; color: #fff1d8; font-size: .9rem; text-underline-offset: 5px; text-shadow: 0 2px 8px #21140f; }
   .envelope-footer :global(svg) { width: 1rem; }
   @media (max-width: 370px) { .invitation-card { min-height: 17.5rem; } .envelope-heading h2 { font-size: 1.6rem; } }
+  @media (max-width: 767px) {
+    .envelope-theme-object { top: 23%; right: .7rem; width: min(29vw, 8rem); opacity: .56; }
+    html[data-theme='lake-city'] .envelope-theme-object { left: .7rem; right: auto; top: 26%; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .envelope-flap { display: none; }
   }

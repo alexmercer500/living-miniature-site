@@ -6,14 +6,14 @@ import CalendarButton from '../CalendarButton.astro';
 import Contacts from './Contacts.astro';
 import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, formatDate, formatTime, mapConfigured } from '../../lib/content';
-import { natureCopy, natureHref } from '../../lib/nature-content';
+import { themeCopy, themeHref, type ThemeId } from '../../lib/theme';
 import '../../styles/nature.css';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang], p = content.invitation.placeholders;
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang), p = content.invitation.placeholders;
 ---
 <Base lang={lang} routePath="/invitation" page="invitation" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
-  <Header lang={lang} invitation />
+  <Header lang={lang} theme={theme} invitation />
   <main id="main" class="ns-invite-page">
     <article class="ns-invite-card" aria-labelledby="ns-invite-title">
       <div class="ns-invite-border">
@@ -27,7 +27,7 @@ const c = natureCopy[lang], p = content.invitation.placeholders;
         <p class="ns-placeholder">{loc(p.hosts, lang)}</p><Contacts lang={lang} class="ns-invite-contacts" /><LotusMark class="ns-lotus" />
       </div>
     </article>
-    <div class="ns-invite-actions"><button type="button" class="ns-button" data-nature-print hidden><Icon name="printer" />{t(lang, 'printInvitation')}</button>{content.invitation.downloadUrl && <a class="ns-button ns-button-light" href={content.invitation.downloadUrl} download>{t(lang, 'downloadInvitation')}</a>}<a class="ns-button ns-button-light" href={natureHref(lang)}>{t(lang, 'backToSite')}</a></div>
+    <div class="ns-invite-actions"><button type="button" class="ns-button" data-nature-print hidden><Icon name="printer" />{t(lang, 'printInvitation')}</button>{content.invitation.downloadUrl && <a class="ns-button ns-button-light" href={content.invitation.downloadUrl} download>{t(lang, 'downloadInvitation')}</a>}<a class="ns-button ns-button-light" href={themeHref(lang, theme)}>{t(lang, 'backToSite')}</a></div>
   </main>
 </Base>
 <script>

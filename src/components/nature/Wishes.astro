@@ -5,11 +5,11 @@ import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, parseDate, rsvpConfigured, rsvpFormUrl, whatsappHref } from '../../lib/content';
 import RsvpDialog from './RsvpDialog.astro';
 import BlessingDialog from './BlessingDialog.astro';
-import { natureCopy } from '../../lib/nature-content';
-import { landscapes } from '../../lib/nature-assets';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang];
+import { themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
+const landscapes = themeConfig[theme].assets;
 const date = parseDate(content.site.weddingDate);
 const hasRsvp = rsvpConfigured();
 const formUrl = rsvpFormUrl();

@@ -1,0 +1,131 @@
+import { href, type Lang } from './content';
+import { natureCopy } from './nature-content';
+import { landscapes, natureEvents, eventFallback } from './nature-assets';
+import amberHeroMobile from '../assets/rajasthan/amber-fort/hero-mobile.png';
+import amberHeroDesktop from '../assets/rajasthan/amber-fort/hero-desktop.png';
+import amberJourneyMobile from '../assets/rajasthan/amber-fort/journey-mobile.png';
+import amberJourneyDesktop from '../assets/rajasthan/amber-fort/journey-desktop.png';
+import amberVenueMobile from '../assets/rajasthan/amber-fort/venue-mobile.png';
+import amberVenueDesktop from '../assets/rajasthan/amber-fort/venue-desktop.png';
+import amberClosingMobile from '../assets/rajasthan/amber-fort/closing-mobile.png';
+import amberClosingDesktop from '../assets/rajasthan/amber-fort/closing-desktop.png';
+import amberWishesMobile from '../assets/rajasthan/amber-fort/wishes-mobile.png';
+import amberWishesDesktop from '../assets/rajasthan/amber-fort/wishes-desktop.png';
+import amberInvitationObject from '../assets/rajasthan/amber-fort/invitation-object.png';
+import amberHaldi from '../assets/rajasthan/amber-fort/events/haldi.png';
+import amberMehndi from '../assets/rajasthan/amber-fort/events/mehndi.png';
+import amberSangeet from '../assets/rajasthan/amber-fort/events/sangeet.png';
+import amberWedding from '../assets/rajasthan/amber-fort/events/wedding.png';
+import amberReception from '../assets/rajasthan/amber-fort/events/reception.png';
+import lakeHeroMobile from '../assets/rajasthan/lake-city/hero-mobile.png';
+import lakeHeroDesktop from '../assets/rajasthan/lake-city/hero-desktop.png';
+import lakeJourneyMobile from '../assets/rajasthan/lake-city/journey-mobile.png';
+import lakeJourneyDesktop from '../assets/rajasthan/lake-city/journey-desktop.png';
+import lakeVenueMobile from '../assets/rajasthan/lake-city/venue-mobile.png';
+import lakeVenueDesktop from '../assets/rajasthan/lake-city/venue-desktop.png';
+import lakeClosingMobile from '../assets/rajasthan/lake-city/closing-mobile.png';
+import lakeClosingDesktop from '../assets/rajasthan/lake-city/closing-desktop.png';
+import lakeWishesMobile from '../assets/rajasthan/lake-city/wishes-mobile.png';
+import lakeWishesDesktop from '../assets/rajasthan/lake-city/wishes-desktop.png';
+import lakeInvitationObject from '../assets/rajasthan/lake-city/invitation-object.png';
+import lakeHaldi from '../assets/rajasthan/lake-city/events/haldi.png';
+import lakeMehndi from '../assets/rajasthan/lake-city/events/mehndi.png';
+import lakeSangeet from '../assets/rajasthan/lake-city/events/sangeet.png';
+import lakeWedding from '../assets/rajasthan/lake-city/events/wedding.png';
+import lakeReception from '../assets/rajasthan/lake-city/events/reception.png';
+
+export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
+export type ThemeCopy = typeof natureCopy.en;
+
+const amberAssets = {
+  ...landscapes,
+  hero: { mobile: amberHeroMobile, desktop: amberHeroDesktop },
+  journey: { mobile: amberJourneyMobile, desktop: amberJourneyDesktop },
+  venue: { mobile: amberVenueMobile, desktop: amberVenueDesktop },
+  closing: { mobile: amberClosingMobile, desktop: amberClosingDesktop },
+  wishes: { mobile: amberWishesMobile, desktop: amberWishesDesktop },
+};
+const lakeAssets = {
+  ...landscapes,
+  hero: { mobile: lakeHeroMobile, desktop: lakeHeroDesktop },
+  journey: { mobile: lakeJourneyMobile, desktop: lakeJourneyDesktop },
+  venue: { mobile: lakeVenueMobile, desktop: lakeVenueDesktop },
+  closing: { mobile: lakeClosingMobile, desktop: lakeClosingDesktop },
+  wishes: { mobile: lakeWishesMobile, desktop: lakeWishesDesktop },
+};
+const amberEventAssets = {
+  ...natureEvents,
+  haldi: amberHaldi,
+  mehndi: amberMehndi,
+  sangeet: amberSangeet,
+  reception: amberReception,
+  wedding: amberWedding,
+  'floral-courtyard': amberHaldi,
+  'lantern-garden': amberSangeet,
+  'mandap-courtyard': amberWedding,
+};
+const lakeEventAssets = {
+  ...natureEvents,
+  haldi: lakeHaldi,
+  mehndi: lakeMehndi,
+  sangeet: lakeSangeet,
+  reception: lakeReception,
+  wedding: lakeWedding,
+  'floral-courtyard': lakeHaldi,
+  'lantern-garden': lakeSangeet,
+  'mandap-courtyard': lakeWedding,
+};
+
+/** Theme registry for the original nature story and the two Rajasthan variants. */
+export const themeConfig = {
+  nature: {
+    route: '/',
+    label: 'Nature & Stories',
+    description: 'A living miniature wedding invitation.',
+    themeColor: '#213B32',
+    assets: landscapes,
+    invitationObject: null,
+    eventAssets: natureEvents,
+  },
+  'amber-fort': {
+    route: '/amber-fort',
+    label: 'Amber Fort Romance',
+    description: 'Love stories against timeless forts.',
+    themeColor: '#6C2632',
+    assets: amberAssets,
+    invitationObject: amberInvitationObject,
+    eventAssets: amberEventAssets,
+  },
+  'lake-city': {
+    route: '/lake-city',
+    label: 'Lake City Elegance',
+    description: 'Serene waters, palaces and a timeless journey.',
+    themeColor: '#17364A',
+    assets: lakeAssets,
+    invitationObject: lakeInvitationObject,
+    eventAssets: lakeEventAssets,
+  },
+} as const;
+
+const overrides: Record<Exclude<ThemeId, 'nature'>, Record<Lang, Partial<ThemeCopy>>> = {
+  'amber-fort': {
+    en: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
+    hi: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
+  },
+  'lake-city': {
+    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
+    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
+  },
+};
+
+export function themeCopy(theme: ThemeId, lang: Lang): ThemeCopy {
+  return theme === 'nature' ? natureCopy[lang] : { ...natureCopy[lang], ...overrides[theme][lang] };
+}
+
+export function themeHref(lang: Lang, theme: ThemeId, path = '/') {
+  const route = themeConfig[theme].route === '/' ? '' : themeConfig[theme].route;
+  const suffix = !path || path === '/' ? '' : `/${path.replace(/^\/+/, '')}`;
+  return href(lang, `${route}${suffix}` || '/');
+}
+
+export const themeEventFallback = eventFallback;

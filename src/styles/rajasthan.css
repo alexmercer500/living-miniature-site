@@ -1,0 +1,24 @@
+/* Milestone 1 theme tokens. Scene-specific art and composition land in later milestones. */
+html[data-theme='amber-fort'] {
+  --theme-accent: #d6a253;
+  --theme-deep: #3b1520;
+  --theme-surface: #6c2632;
+  --theme-ivory: #fff0d5;
+}
+
+html[data-theme='lake-city'] {
+  --theme-accent: #e4bf78;
+  --theme-deep: #102b3b;
+  --theme-surface: #17364a;
+  --theme-ivory: #fff4dd;
+}
+
+html[data-theme='amber-fort'] body,
+html[data-theme='lake-city'] body {
+  background: var(--theme-deep);
+}
+
+html[data-theme='amber-fort'] .ns-header,
+html[data-theme='lake-city'] .ns-header {
+  border-color: color-mix(in srgb, var(--theme-accent) 45%, transparent);
+}

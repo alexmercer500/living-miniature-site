@@ -2,29 +2,29 @@
 import Monogram from '../Monogram.astro';
 import Icon from '../Icon.astro';
 import { type Lang, t, loc, content } from '../../lib/content';
-import { natureHref, natureCopy } from '../../lib/nature-content';
-interface Props { lang: Lang; invitation?: boolean }
-const { lang, invitation = false } = Astro.props;
-const c = natureCopy[lang];
+import { themeCopy, themeHref, type ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; invitation?: boolean; theme?: ThemeId }
+const { lang, invitation = false, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
 const path = invitation ? '/invitation' : '';
 ---
 <header class="ns-header" data-nature-header>
-  <a class="ns-brand" href={natureHref(lang)} aria-label={loc(content.couple.displayName, lang)}><Monogram /><span>{c.chapter}</span></a>
+  <a class="ns-brand" href={themeHref(lang, theme)} aria-label={loc(content.couple.displayName, lang)}><Monogram /><span>{c.chapter}</span></a>
   <div class="ns-header-actions">
     <nav class="ns-locales" aria-label={t(lang, 'language')}>
-      <a href={natureHref('en', path)} lang="en" aria-current={lang === 'en' ? 'page' : undefined} data-nature-locale>EN</a>
-      <a href={natureHref('hi', path)} lang="hi" aria-current={lang === 'hi' ? 'page' : undefined} data-nature-locale>हिंदी</a>
+      <a href={themeHref('en', theme, path || '/')} lang="en" aria-current={lang === 'en' ? 'page' : undefined} data-nature-locale>EN</a>
+      <a href={themeHref('hi', theme, path || '/')} lang="hi" aria-current={lang === 'hi' ? 'page' : undefined} data-nature-locale>हिंदी</a>
     </nav>
     {!invitation && content.music.enabled && <button class="ns-icon-button" type="button" data-nature-sound data-src={content.music.src} aria-label={t(lang, 'musicOn')} data-on={t(lang, 'musicOff')} data-off={t(lang, 'musicOn')} aria-pressed="false" hidden><Icon name="sound" /></button>}
     <details class="ns-menu">
       <summary aria-label={t(lang, 'menu')}><Icon name="menu" /></summary>
       <nav aria-label={t(lang, 'menu')}>
-        <a href={`${natureHref(lang)}#welcome`}>{c.welcome}</a>
-        <a href={`${natureHref(lang)}#journey`}>{c.story}</a>
-        <a href={`${natureHref(lang)}#invitation`}>{t(lang, 'invitation')}</a>
-        <a href={`${natureHref(lang)}#celebrations`}>{t(lang, 'celebrations')}</a>
-        <a href={`${natureHref(lang)}#venue`}>{t(lang, 'venue')}</a>
-        <a href={natureHref(lang, '/invitation')}>{t(lang, 'printInvitation')}</a>
+        <a href={`${themeHref(lang, theme)}#welcome`}>{c.welcome}</a>
+        <a href={`${themeHref(lang, theme)}#journey`}>{c.story}</a>
+        <a href={`${themeHref(lang, theme)}#invitation`}>{t(lang, 'invitation')}</a>
+        <a href={`${themeHref(lang, theme)}#celebrations`}>{t(lang, 'celebrations')}</a>
+        <a href={`${themeHref(lang, theme)}#venue`}>{t(lang, 'venue')}</a>
+        <a href={themeHref(lang, theme, '/invitation')}>{t(lang, 'printInvitation')}</a>
       </nav>
     </details>
   </div>

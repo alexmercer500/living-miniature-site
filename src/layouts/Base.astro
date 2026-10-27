@@ -9,6 +9,7 @@ import '@fontsource/mukta/400.css';
 import '@fontsource/mukta/500.css';
 import '@fontsource/tiro-devanagari-hindi/400.css';
 import '../styles/global.css';
+import '../styles/rajasthan.css';
 import SceneDefs from '../components/scene/SceneDefs.astro';
 // The faces the welcome names use, fetched with the HTML rather than after layout discovers them.
 // (Same files the fontsource CSS points at, so the browser downloads each only once.)
@@ -19,26 +20,32 @@ import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tir
 import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
 import { getImage } from 'astro:assets';
 import { type Lang, content, loc, t, href } from '../lib/content';
-import { landscapes } from '../lib/nature-assets';
+import { themeConfig, type ThemeId } from '../lib/theme';
 
-interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string }
+interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: ThemeId }
+const requestedTheme = Astro.props.theme as ThemeId | undefined;
+const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : Astro.url.pathname.includes('/lake-city') ? 'lake-city' : 'nature');
 const { lang, page = 'home' } = Astro.props;
+const themeMeta = themeConfig[theme];
 const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displayName, 'hi')} — विवाह उत्सव` : content.site.title);
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
-const path = Astro.props.routePath ?? (page === 'invitation' ? '/invitation' : '/');
+const suppliedPath = Astro.props.routePath as string | undefined;
+const path = suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' && theme !== 'nature' && suppliedPath === '/invitation'))
+  ? suppliedPath
+  : (page === 'invitation' ? `${themeMeta.route}/invitation` : themeMeta.route);
 const canonical = new URL(href(lang, path), Astro.site);
 // Link preview (WhatsApp, Messages, social): the welcome painting at the 1.91:1 size they expect.
-const preview = await getImage({ src: landscapes.hero.desktop, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
+const preview = await getImage({ src: themeMeta.assets.hero.desktop, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
 const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, greatVibes];
 ---
 <!doctype html>
-<html lang={lang} data-theme="nature">
+<html lang={lang} data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#213B32" />
+    <meta name="theme-color" content={themeMeta.themeColor} />
     {preloads.map(font => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />

@@ -122,12 +122,12 @@
       "date": "YYYY-MM-DD",
       "time": "",
       "title": {
-        "en": "Celebration One",
-        "hi": "समारोह एक"
+        "en": "The Turmeric Affair",
+        "hi": "हल्दी की सुनहरी महफ़िल"
       },
       "shortDescription": {
-        "en": "A joyful gathering before the wedding.",
-        "hi": "विवाह से पहले एक आनंदमय मिलन।"
+        "en": "A golden beginning of marigolds, laughter, and blessings.",
+        "hi": "गेंदे, हँसी और आशीषों से सजी सुनहरी शुरुआत।"
       },
       "visualKey": "floral-courtyard",
       "venueName": "Venue Name Placeholder"
@@ -137,12 +137,12 @@
       "date": "YYYY-MM-DD",
       "time": "",
       "title": {
-        "en": "Celebration Two",
-        "hi": "समारोह दो"
+        "en": "The Henna & Harmony Soirée",
+        "hi": "मेहंदी और सुरों की शाम"
       },
       "shortDescription": {
-        "en": "An evening of color and celebration.",
-        "hi": "रंगों और उत्सव से भरी एक शाम।"
+        "en": "An evening of melody, mischief, and moonlit dancing.",
+        "hi": "सुरों, शरारतों और चाँदनी नृत्य से भरी शाम।"
       },
       "visualKey": "lantern-garden",
       "venueName": "Venue Name Placeholder"
@@ -152,12 +152,12 @@
       "date": "YYYY-MM-DD",
       "time": "",
       "title": {
-        "en": "Wedding Celebration",
-        "hi": "विवाह समारोह"
+        "en": "The Vow & Wonder Chapter",
+        "hi": "सात फेरों का नया अध्याय"
       },
       "shortDescription": {
-        "en": "The beginning of a new chapter.",
-        "hi": "एक नए अध्याय की शुरुआत।"
+        "en": "The moment two paths become one, before everyone we love.",
+        "hi": "वह पल जब दो राहें एक हो जाती हैं, अपनों की दुआओं के बीच।"
       },
       "visualKey": "mandap-courtyard",
       "venueName": "Venue Name Placeholder"

@@ -56,6 +56,45 @@ test('Nature assets and entrypoints exist', () => {
   assert.ok(fs.existsSync('src/assets/nature-stories/README.md'));
 });
 
+test('Rajasthan theme routes keep bilingual routing and theme-specific scene assets', () => {
+  const data = JSON.parse(fs.readFileSync('src/data/site-content.json', 'utf8'));
+  const events = [
+    ['The Turmeric Affair', 'हल्दी की सुनहरी महफ़िल'],
+    ['The Henna &amp; Harmony Soirée', 'मेहंदी और सुरों की शाम'],
+    ['The Vow &amp; Wonder Chapter', 'सात फेरों का नया अध्याय'],
+  ];
+  for (const { route, theme, lang } of [
+    { route: '/amber-fort/', theme: 'amber-fort', lang: 'en' },
+    { route: '/hi/amber-fort/', theme: 'amber-fort', lang: 'hi' },
+    { route: '/lake-city/', theme: 'lake-city', lang: 'en' },
+    { route: '/hi/lake-city/', theme: 'lake-city', lang: 'hi' },
+  ]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    assert.ok(html.includes(`data-theme="${theme}"`), `${route} carries its theme`);
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/);
+    assert.ok(canonical);
+    assert.equal(new URL(canonical[1]).pathname.replace(/\/$/, ''), route.replace(/\/$/, ''));
+    assert.ok(html.includes('hero-desktop.') && html.includes('journey-desktop.'));
+    assert.ok(html.includes('venue-desktop.') && html.includes('closing-desktop.'));
+    assert.ok(html.includes('wishes-desktop.') && html.includes('wishes-mobile.'));
+    assert.ok(html.includes('envelope-theme-object'), `${route} includes its invitation object`);
+    assert.equal([...html.matchAll(/class="ns-event"/g)].length, 3);
+    for (const title of events.map(pair => pair[lang === 'hi' ? 1 : 0])) assert.ok(html.includes(title), `${title} appears on ${route}`);
+    for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
+      const path = match[1];
+      assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/, '')}/index.html`), `Broken internal route ${path} from ${route}`);
+    }
+  }
+  for (const theme of ['amber-fort', 'lake-city']) {
+    for (const asset of ['hero-desktop.png', 'hero-mobile.png', 'journey-desktop.png', 'journey-mobile.png', 'venue-desktop.png', 'venue-mobile.png', 'wishes-desktop.png', 'wishes-mobile.png', 'closing-desktop.png', 'closing-mobile.png', 'invitation-object.png']) {
+      assert.ok(fs.existsSync(`src/assets/rajasthan/${theme}/${asset}`), `${theme}/${asset} exists`);
+    }
+  }
+  assert.equal(data.events[0].title.en, 'The Turmeric Affair');
+  assert.equal(data.events[1].title.en, 'The Henna & Harmony Soirée');
+  assert.equal(data.events[2].title.en, 'The Vow & Wonder Chapter');
+});
+
 test('Nature venue has three semantic signs, gated maps and a printable fallback', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const hasMap=/^https?:\/\//.test(data.venue.mapUrl);
