@@ -1,5 +1,6 @@
 ---
 import Art from './Art.astro';
+import ScenePlate from './ScenePlate.astro';
 import CalendarButton from '../CalendarButton.astro';
 import { type Lang, content, loc, t, formatDate, formatTime } from '../../lib/content';
 import { natureCopy } from '../../lib/nature-content';
@@ -10,8 +11,7 @@ const c = natureCopy[lang];
 const lights=[[25,30],[95,51],[165,60],[235,56],[305,38],[375,9],[445,37],[515,55],[585,60],[655,51],[725,28],[795,11],[865,39],[935,55]];
 ---
 <section id="celebrations" class="ns-celebrations ns-scene" aria-labelledby="ns-events-title">
-  <Art {...landscapes.closing} class="ns-celebrations-garden" />
-  <div class="ns-celebrations-shade" aria-hidden="true"></div>
+  <ScenePlate><Art {...landscapes.closing} class="ns-celebrations-garden" /><div class="ns-celebrations-shade"></div></ScenePlate>
   <div class="ns-event-festoon" aria-hidden="true">
     <svg viewBox="0 0 1000 110" preserveAspectRatio="xMidYMin meet" focusable="false">
       <path d="M-35 0Q165 120 375 9Q575 120 795 11Q1000 125 1200 0" fill="none" stroke="#bb985b" stroke-width="1.2" />

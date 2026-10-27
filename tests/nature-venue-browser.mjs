@@ -38,7 +38,7 @@ try {
       disabled:s.querySelectorAll('button:disabled').length,external:s.querySelectorAll('a[target="_blank"]').length,
       preview:s.querySelector('[data-venue-explore]').getAttribute('href'),note:s.querySelector('#ns-venue-map-note').textContent,
       opacities:[...s.querySelectorAll('[data-venue-sign]')].map(e=>getComputedStyle(e).opacity),
-      loaded:s.querySelector('.ns-venue-landscape img').naturalWidth>0,
+      loaded:s.querySelector('.ns-plate img').naturalWidth>0,
       address:s.querySelector('address').textContent
     };})()`);
     assert.equal(layout.height,view.height);assert.ok(Math.abs(layout.top)<1);assert.ok(layout.width<=view.width);assert.ok(layout.headTop>=64);

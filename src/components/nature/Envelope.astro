@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets';
 import { type Lang, content, loc, href, t, formatDate } from '../../lib/content';
 import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
+import ScenePlate from './ScenePlate.astro';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
 
 /** The letter chapter: an envelope on the garden table that opens as the guest scrolls. The backdrop slot holds the scene art. */
@@ -14,10 +15,8 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
 ---
 <section id={id} class="envelope-scene" data-envelope aria-labelledby="envelope-title"
   style={`--paper-material: url('${paperMaterial.src}')`}>
+  <ScenePlate><div class="envelope-backdrop"><slot name="backdrop" /></div></ScenePlate>
   <div class="envelope-viewport ns-scene">
-    <div class="envelope-backdrop" aria-hidden="true">
-      <slot name="backdrop" />
-    </div>
     <header class="envelope-heading">
       <p class="eyebrow">{t(lang, 'invitation')}</p>
       <h2 id="envelope-title">{t(lang, 'envelopeHeading')}</h2>

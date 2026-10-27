@@ -8,7 +8,9 @@ const phase = (progress: number, start: number, end: number) => {
 /** Small damped overshoot, sampled from scroll so reversing stays deterministic. */
 const spring = (x: number) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(10 * x);
 
-export const envelopeTimings = { tapOpen: 8, tapClose: 4.5 };
+/** Seconds. `follow` is how closely the paper trails the scroll (time constant): enough
+ *  weight to feel like paper, short enough that it never reads as lagging behind the finger. */
+export const envelopeTimings = { tapOpen: 8, tapClose: 4.5, follow: .12 };
 
 /** A short closed beat and a generous readable hold before unpinning. */
 export const envelopeScrollProgress = (progress: number) => clamp((progress - .04) / .8);

@@ -1,5 +1,6 @@
 ---
 import Art from './Art.astro';
+import ScenePlate from './ScenePlate.astro';
 import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, parseDate, rsvpConfigured, rsvpFormUrl, whatsappHref } from '../../lib/content';
 import RsvpDialog from './RsvpDialog.astro';
@@ -19,8 +20,7 @@ const cords = [66,88,40,18,58,46];
 const tilts = [-5,3,-3,5,-4,4];
 ---
 <section id="wishes" class:list={['ns-wishes','ns-scene',{'ns-wishes-with-details':date||hasRsvp}]} aria-labelledby="ns-wishes-title">
-  <div class="ns-wishes-landscape"><Art {...landscapes.wishes} /></div>
-  <div class="ns-wishes-shade" aria-hidden="true"></div>
+  <ScenePlate><Art {...landscapes.wishes} /><div class="ns-wishes-shade"></div></ScenePlate>
   <header class="ns-wishes-head">
     <span class="ns-wishes-index" aria-hidden="true">05</span>
     <div><p class="ns-kicker">{c.wishesKicker}</p><h2 id="ns-wishes-title">{c.wishesHeading}</h2><p class="ns-wishes-intro">{c.wishesBody}</p></div>
