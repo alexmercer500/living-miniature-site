@@ -2,3 +2,5 @@ node_modules/
 dist/
 .astro/
 /wedding-cinematic-two-theme-spec
+# Design checker cache (its config.json is shared)
+.impeccable/hook.cache.json

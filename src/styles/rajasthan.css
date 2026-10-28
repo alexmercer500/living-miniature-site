@@ -45,7 +45,8 @@
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']):has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px var(--theme-deep),0 1px 2px var(--theme-deep); }
 @media (scripting: none) { :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-header { background: color-mix(in srgb,var(--theme-deep) 93%,transparent); } }
 
-/* Welcome: the fort / palace is the subject, so the names sit in the sky above it, in light
+/* Welcome: the fort / palace is the subject, so the names sit above it (in the sky on wide
+   screens; mid-screen on a phone, where the art is tall), in light
    type on a soft dusk shade (like every later chapter's heading), not on Nature's ivory haze,
    which would wash out the architecture. */
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: 12%; left: 8%; width: 84%; gap: .45rem; }
@@ -58,6 +59,10 @@
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: calc(var(--ns-top) + 1rem); left: 24%; width: 52%; }
 }
 @media (max-width: 767px) {
-  /* Clear of the hanging lantern on the right. */
-  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: var(--ns-top); left: 4%; width: 76%; }
+  /* Centred on the screen (see nature.css), below the hanging lantern, so it can use the width. */
+  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: calc(50% - 3.25rem); left: 6%; width: 88%; }
+  /* Mid-screen the copy crosses the lit architecture: a deeper shade, and the script names in
+     pale gold with a firm dusk shadow so their fine strokes hold. */
+  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy::before { background: radial-gradient(closest-side,color-mix(in srgb,var(--theme-deep) 72%,transparent),color-mix(in srgb,var(--theme-deep) 42%,transparent) 58%,transparent); }
+  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-couple { color: color-mix(in srgb,var(--theme-accent) 45%,#fff6e6); text-shadow: 0 0 2px var(--theme-deep),0 2px 14px var(--theme-deep),0 0 30px color-mix(in srgb,var(--theme-deep) 80%,transparent); }
 }

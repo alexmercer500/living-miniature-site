@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/components/nature/Envelope.astro"
+        ],
+        "createdAt": "2026-10-28T08:03:07.262Z",
+        "reason": "Claude: the keepsake <img> tags get src/srcset through a spread of getImage() results ({...layer(...)}), which the scanner cannot see"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(.2,.7,.2,1.4)",
+        "files": [
+          "src/styles/nature.css"
+        ],
+        "createdAt": "2026-10-28T10:07:15.731Z",
+        "reason": "Claude: the hero lantern flame's flare when lit (.ns-lantern-flame scale 1.18), a literal flame catching, not UI bounce"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/styles/nature.css"
+        ],
+        "createdAt": "2026-10-28T10:07:15.980Z",
+        "reason": "Claude: .ns-keepsake-hanger::before draws the keepsakes' sagging cord (3px bottom border + rounded bottom corners), not a card accent"
+      }
+    ]
+  }
+}
