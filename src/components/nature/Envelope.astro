@@ -48,6 +48,13 @@ if (model?.kind === 'envelope') {
     ...(() => { const level = -Math.atan2(y1 - y0, x1 - x0), d = g.thickness * .84; return [`--rest-x: ${pct(mx + d * Math.sin(level), g.width)}`, `--rest-y: ${pct(my + d * Math.cos(level), g.height)}`]; })(),
   ].join('; ');
 }
+// A keepsake with a 3D model (scripts/envelope-model.ts, scroll-model.ts) loads it lazily; the
+// photo layers above are its poster until then and its fallback without WebGL.
+const model3d = model?.model3d ? JSON.stringify({
+  kind: model.kind,
+  geometry: model.model3d.geometry,
+  textures: Object.fromEntries(Object.entries(model.model3d.textures).map(([name, image]) => [name, image.src])),
+}) : undefined;
 const layer = (name: string, cls: string) => ({ class: `obj-layer ${cls}`, src: layers[name].src, srcset: layers[name].srcset, sizes: 'min(87vw, 35rem)', width: layers[name].width, height: layers[name].height, alt: '', decoding: 'async' as const, fetchpriority: 'low' as const });
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
@@ -65,7 +72,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
 
     <div class="table-contact-shadow" aria-hidden="true"></div>
     <div class="envelope-aura" aria-hidden="true"></div>
-    <div class:list={['envelope-rig', model && `object-rig object-${model.kind}`]} style={rigStyle}>
+    <div class:list={['envelope-rig', model && `object-rig object-${model.kind}`]} style={rigStyle} data-model={model3d}>
       {!model && <>
         <div class="envelope-back" aria-hidden="true"></div>
         <div class="envelope-lining" aria-hidden="true"></div>
@@ -298,6 +305,20 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     left: calc(var(--seal-x) * (1 - var(--obj-present)) + 50% * var(--obj-present));
     translate: -50% calc(-50% * (1 - var(--obj-present)));
   }
+
+  /* The 3D model, once drawn, replaces the photo layers. It tilts and shadows itself, so the rig
+     keeps only its position; its canvases reach past the rig for the opened flap. The back canvas
+     sits under the card, the front one over it until the card is presented. */
+  .object-3d { transform: none; filter: none; }
+  .object-3d :is(.obj-layer, .obj-lining, .obj-flap) { display: none; }
+  .object-3d.object-envelope .invitation-card { clip-path: inset(0 0 var(--card-mask) 0); }
+  .envelope-rig :global(.obj-canvas) { position: absolute; left: -15%; top: -75%; width: 130%; height: 250%; pointer-events: none; }
+  .envelope-rig :global(.obj-canvas-back) { z-index: 1; }
+  .envelope-rig :global(.obj-canvas-front) { z-index: 4; }
+  /* The scroll's one canvas lies over the sheet (the roll is always in front of its paper); the
+     model sets its top and height to cover the roll's whole run down the page. */
+  .envelope-rig :global(.obj-canvas-scroll) { left: -12%; width: 124%; z-index: 3; }
+  .envelope-rig:not(.object-3d) :global(.obj-canvas) { visibility: hidden; }
 
   /* Lake City: the ribbon unties and falls, the scroll swings level, then unrolls downward: the
      roll rides the lower edge of the paper it reveals. The sheet stays centred as it grows. */
