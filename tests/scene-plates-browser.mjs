@@ -53,6 +53,12 @@ try {
     { name: 'desktop', width: 1440, height: 900, mobile: false, path: '/' },
     { name: 'small-hindi', width: 320, height: 568, mobile: true, path: '/hi/' },
     { name: 'reduced', width: 390, height: 844, mobile: true, path: '/', reduced: true },
+    // The Rajasthan themes reuse every handoff with their own paintings.
+    { name: 'amber-mobile', width: 390, height: 844, mobile: true, path: '/amber-fort/' },
+    { name: 'amber-desktop', width: 1440, height: 900, mobile: false, path: '/amber-fort/' },
+    { name: 'lake-mobile', width: 390, height: 844, mobile: true, path: '/lake-city/' },
+    { name: 'lake-small-hindi', width: 320, height: 568, mobile: true, path: '/hi/lake-city/' },
+    { name: 'lake-reduced', width: 390, height: 844, mobile: true, path: '/lake-city/', reduced: true },
   ]) {
     if (process.argv[2] && view.name !== process.argv[2]) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: view.mobile });
@@ -74,6 +80,12 @@ try {
       continue;
     }
 
+    // Every theme gets the shared story styling: a masked rim (unmasked, it paints a gold sheet over
+    // the whole incoming chapter), chapter shades, and no native smooth-scroll fighting the jumps.
+    const look = await evaluate(`({ rim: getComputedStyle(document.querySelector('#journey .ns-plate-rim .line')).maskImage, shade: getComputedStyle(document.querySelector('.ns-story-shade')).backgroundImage, scroll: getComputedStyle(document.documentElement).scrollBehavior })`);
+    assert.ok(look.rim.startsWith('url('), `${view.name}: rim is masked (${look.rim.slice(0, 20)})`);
+    assert.ok(look.shade.startsWith('linear-gradient'), `${view.name}: chapter shade present`);
+    assert.equal(look.scroll, 'auto', `${view.name}: no native smooth scroll`);
     const band = await evaluate("parseFloat(getComputedStyle(document.querySelector('.ns-home')).getPropertyValue('--ns-band')) || innerHeight * .25");
     for (let i = 1; i < sections.length; i++) {
       const next = sections[i], id = next.id;

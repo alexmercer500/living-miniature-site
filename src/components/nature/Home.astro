@@ -28,7 +28,8 @@ const [veilScene, veilSceneWide] = await Promise.all([artPreview(themeAssets.her
 // scroll into then never shows its soft inline placeholder, and each camera handoff has its art
 // decoded by the time it is needed. AVIF only — a browser without AVIF skips the hint and loads
 // the WebP the <picture> asks for, and the URL matches the srcset exactly, so nothing loads twice.
-const paintingPreloads = (await Promise.all(Object.values(themeAssets).map(async painting => {
+// A theme may reuse one painting for two chapters; preload it once.
+const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAssets).map(painting => [painting.mobile, painting])).values()].map(async painting => {
   const { sources } = await artSources(painting.mobile, painting.desktop);
   return sources.find(source => source.type === 'image/avif')!;
 }))).filter(p => p.desktop);

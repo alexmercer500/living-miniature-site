@@ -1,24 +1,63 @@
-/* Milestone 1 theme tokens. Scene-specific art and composition land in later milestones. */
-html[data-theme='amber-fort'] {
+/* Rajasthan themes (Amber Fort, Lake City). They share every chapter, handoff and interaction
+   with the Nature story (nature.css, scoped to `html[data-theme]`); this file only retints.
+   `:root[data-theme=…]` outranks those shared rules, so a theme value always wins. */
+:root[data-theme='amber-fort'] {
   --theme-accent: #d6a253;
   --theme-deep: #3b1520;
   --theme-surface: #6c2632;
   --theme-ivory: #fff0d5;
+  --color-midnight: #3b1520; --color-indigo: #4a1c26; --color-plum: #6c2632;
+  /* Chapter shades: same strengths as Nature's, in fort maroon instead of garden green. */
+  --ns-shade-journey: linear-gradient(#3b152066,transparent 25%,#3b152055 55%,#3b1520c9);
+  --ns-shade-invitation: linear-gradient(#3b152077,#3b152044 15%,transparent 40% 70%,#3b1520);
+  --ns-shade-celebrations: linear-gradient(110deg,#1e0a10b8,#2e1218a0 55%,#1e0a10bb),linear-gradient(0deg,#1e0a10cc,transparent 55%);
+  --ns-shade-venue: linear-gradient(100deg,#2c0f167a,transparent 60%),linear-gradient(#2c0f1680,transparent 38%,#2c0f1655 62%,#2c0f16e0);
+  --ns-shade-wishes: linear-gradient(#26101570,transparent 35%,#26101522 68%,#261015b3);
+  --ns-shade-closing: linear-gradient(#3b15204f,transparent 36% 67%,#3b15208c);
 }
 
-html[data-theme='lake-city'] {
+:root[data-theme='lake-city'] {
   --theme-accent: #e4bf78;
   --theme-deep: #102b3b;
   --theme-surface: #17364a;
   --theme-ivory: #fff4dd;
+  --color-midnight: #102b3b; --color-indigo: #17364a; --color-plum: #24485e;
+  /* Chapter shades in blue-hour navy. */
+  --ns-shade-journey: linear-gradient(#102b3b66,transparent 25%,#102b3b55 55%,#102b3bc9);
+  --ns-shade-invitation: linear-gradient(#102b3b77,#102b3b44 15%,transparent 40% 70%,#102b3b);
+  --ns-shade-celebrations: linear-gradient(110deg,#07141fb8,#0f2232a0 55%,#07141fbb),linear-gradient(0deg,#07141fcc,transparent 55%);
+  --ns-shade-venue: linear-gradient(100deg,#0b22337a,transparent 60%),linear-gradient(#0b223380,transparent 38%,#0b223355 62%,#0b2233e0);
+  --ns-shade-wishes: linear-gradient(#0a1c2a70,transparent 35%,#0a1c2a22 68%,#0a1c2ab3);
+  --ns-shade-closing: linear-gradient(#102b3b4f,transparent 36% 67%,#102b3b8c);
+}
+@media (max-width: 767px) {
+  :root[data-theme='amber-fort'] { --ns-shade-venue: linear-gradient(#2c0f16aa,transparent 40%,#2c0f1688 62%,#2c0f16ed); }
+  :root[data-theme='lake-city'] { --ns-shade-venue: linear-gradient(#0b2233aa,transparent 40%,#0b223388 62%,#0b2233ed); }
 }
 
-html[data-theme='amber-fort'] body,
-html[data-theme='lake-city'] body {
-  background: var(--theme-deep);
-}
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) body { background: var(--theme-deep); }
+/* Chrome that Nature paints in garden green. */
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-header { background: linear-gradient(color-mix(in srgb,var(--theme-deep) 77%,transparent),transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) :is(.ns-header[data-solid],.ns-header:has(.ns-menu[open])) { background: color-mix(in srgb,var(--theme-deep) 95%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-menu nav { background: color-mix(in srgb,var(--theme-deep) 96%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-dock { background: color-mix(in srgb,var(--theme-deep) 94%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-veil { background: var(--theme-deep); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']):has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px var(--theme-deep),0 1px 2px var(--theme-deep); }
+@media (scripting: none) { :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-header { background: color-mix(in srgb,var(--theme-deep) 93%,transparent); } }
 
-html[data-theme='amber-fort'] .ns-header,
-html[data-theme='lake-city'] .ns-header {
-  border-color: color-mix(in srgb, var(--theme-accent) 45%, transparent);
+/* Welcome: the fort / palace is the subject, so the names sit in the sky above it, in light
+   type on a soft dusk shade (like every later chapter's heading), not on Nature's ivory haze,
+   which would wash out the architecture. */
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: 12%; left: 8%; width: 84%; gap: .45rem; }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy::before { inset: -12% -16% -8%; background: radial-gradient(closest-side,color-mix(in srgb,var(--theme-deep) 58%,transparent),color-mix(in srgb,var(--theme-deep) 30%,transparent) 55%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy h1 { color: var(--theme-ivory); text-shadow: 0 2px 18px var(--theme-deep),0 1px 2px color-mix(in srgb,var(--theme-deep) 70%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) :is(.ns-hero-copy .ns-kicker,.ns-couple,.ns-hero-copy .ornament,.ns-hero-copy .ns-lotus) { color: var(--theme-accent); text-shadow: 0 1px 8px var(--theme-deep); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-date { color: var(--theme-ivory); background: color-mix(in srgb,var(--theme-deep) 55%,transparent); }
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-greeting { color: var(--theme-ivory); text-shadow: 0 0 14px var(--theme-deep); }
+@media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: calc(var(--ns-top) + 1rem); left: 24%; width: 52%; }
+}
+@media (max-width: 767px) {
+  /* Clear of the hanging lantern on the right. */
+  :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { top: var(--ns-top); left: 4%; width: 76%; }
 }

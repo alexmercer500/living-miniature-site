@@ -11,6 +11,8 @@ import { themeConfig, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; theme?: ThemeId }
 const { lang, id = 'invitation', invitationHref = href(lang, '/invitation'), continueHref = '#celebrations', theme = 'nature' } = Astro.props;
 const invitationObject = themeConfig[theme].invitationObject;
+// The theme's keepsake object (1536px PNG, ~2.5 MB) is shown at most 18rem wide: serve small WebPs.
+const objectArt = invitationObject && await Promise.all([320, 640].map(width => getImage({ src: invitationObject, width, format: 'webp', quality: 78 })));
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
 const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
@@ -27,7 +29,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
 
     <div class="table-contact-shadow" aria-hidden="true"></div>
     <div class="envelope-aura" aria-hidden="true"></div>
-    {invitationObject && <img class="envelope-theme-object" src={invitationObject.src} width={invitationObject.width} height={invitationObject.height} alt="" aria-hidden="true" />}
+    {invitationObject && objectArt && <img class="envelope-theme-object" src={objectArt[1].src} srcset={objectArt.map((art, i) => `${art.src} ${[320, 640][i]}w`).join(', ')} sizes="(max-width: 767px) 29vw, min(22vw, 18rem)" width={invitationObject.width} height={invitationObject.height} alt="" aria-hidden="true" loading="lazy" decoding="async" />}
     <div class="envelope-rig">
       <div class="envelope-back" aria-hidden="true"></div>
       <div class="envelope-lining" aria-hidden="true"></div>

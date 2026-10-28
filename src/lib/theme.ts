@@ -42,6 +42,8 @@ const amberAssets = {
   hero: { mobile: amberHeroMobile, desktop: amberHeroDesktop },
   journey: { mobile: amberJourneyMobile, desktop: amberJourneyDesktop },
   venue: { mobile: amberVenueMobile, desktop: amberVenueDesktop },
+  // No letter painting of its own: the envelope rests on the venue terrace (open floor, fort view).
+  letter: { mobile: amberVenueMobile, desktop: amberVenueDesktop },
   closing: { mobile: amberClosingMobile, desktop: amberClosingDesktop },
   wishes: { mobile: amberWishesMobile, desktop: amberWishesDesktop },
 };
@@ -50,6 +52,8 @@ const lakeAssets = {
   hero: { mobile: lakeHeroMobile, desktop: lakeHeroDesktop },
   journey: { mobile: lakeJourneyMobile, desktop: lakeJourneyDesktop },
   venue: { mobile: lakeVenueMobile, desktop: lakeVenueDesktop },
+  // No letter painting of its own: the scroll rests on the lakeside terrace.
+  letter: { mobile: lakeVenueMobile, desktop: lakeVenueDesktop },
   closing: { mobile: lakeClosingMobile, desktop: lakeClosingDesktop },
   wishes: { mobile: lakeWishesMobile, desktop: lakeWishesDesktop },
 };

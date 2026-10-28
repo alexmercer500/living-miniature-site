@@ -7,6 +7,24 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Rajasthan themes brought to parity (2026-10-28, `development`). `/amber-fort/` and
+`/lake-city/` set `data-theme` to their own name, but every theme-wide rule in `nature.css`
+was scoped to `data-theme='nature'`, so the new routes lost: the rim's mask shapes (the
+"rim" painted a solid gold sheet over the whole incoming chapter, with a hard top edge),
+the chapter shades, `scroll-behavior: auto` (anchor jumps animated slowly again), the footer
+overlay, the scrollbar gutter, and the keepsake/venue dialog scroll locks. Those rules now
+target `html[data-theme]`; `rajasthan.css` retints from `:root[data-theme=…]` (higher
+specificity): theme palettes, chapter shades in fort maroon / blue-hour navy, header, menu,
+dock and veil. The envelope chapter now rests on each theme's venue terrace instead of the
+Nature garden painting; the theme invitation object is served as 320/640 px WebP instead of
+the raw 2–2.7 MB PNG (build 41 → 36 MB); duplicate painting preloads are dropped. The theme
+heroes place the names in the sky in light type on a dusk shade, so the fort / palace stays
+the focal point (the Nature placement and ivory haze covered it). Measured (390×844 @3x):
+theme routes load ~800 KB of images vs ~1.4 MB on `/`; scroll frame timing at 4× CPU is
+within run-to-run noise of `/`, slow frames on every route sit in the envelope chapter.
+`tests/scene-plates-browser.mjs` now covers both themes (mobile, desktop, small Hindi,
+reduced motion) and asserts the shared look (masked rim, shades, no smooth scroll).
+
 Chapter handoffs rebuilt on native scroll (2026-10-27, `development`). Reported: on a
 handoff the next chapter's edge showed first and the effect then took over with a jump, worst
 on phones. Cause: each handoff was a fixed, script-driven camera that replaced the chapters'
