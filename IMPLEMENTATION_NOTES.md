@@ -7,6 +7,46 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Theme keepsakes replace the paper envelope (2026-10-28, `development`). The Amber Fort
+envelope and Lake City scroll photos (`src/assets/rajasthan/*/invitation-object.png`) are cut
+into layers by `npm run cut-objects` (`scripts/cut-invitation-objects.mjs` +
+`object-cut-lib.mjs`; outputs and `geometry.json` in each theme's `object/`). Envelope: the
+flap outline is hand-traced on its right lobes and snapped to the flap's cast shadow
+elsewhere; the wax seal and tassel are found by colour (crimson, plus the gilt bead and cap);
+the paper they hid is repainted by a harmonic fill (shading diffused in from the surrounding
+paper, grain from a clean patch), including the tassel's cast shadow, and the flap's double
+gold rule is redrawn to its tip. Scroll: the ribbon is found by colour (pink keeps blue near
+green, gilt does not) with its knot medallion added as a disc; the roll under it is repainted
+from its own cross-section profile (bright end of each slice, so print never leaks in) with a
+seamless correction diffused from the photo, and clipped to the roll's band. In
+`Envelope.astro` the themes reuse the envelope's scroll stages (`envelope.ts` now also writes
+`--obj-seal/swing/card/present`): the envelope's seal lifts away, the flap swings open on its
+own sloping hinge (inside face from `cos()` of the real angle, so springs cannot show the print
+from behind), the card rises out and is presented; the scroll's ribbon unties and falls, the
+roll swings level and unrolls downward, riding the lower edge of the paper it reveals. Layers
+are 700/1400 px WebP (~13–115 KB each); theme routes still load less than `/` (~1.0 / 0.9 MB
+vs 1.4 MB on a phone). Envelope-chapter frame timing at 4× CPU is within noise of `/` after
+compositing the flap and seal. Static / reduced-motion pose: opened, card readable.
+`tests/theme-keepsake-browser.mjs` covers both themes (phone, desktop, reduced motion).
+
+Rajasthan themes brought to parity (2026-10-28, `development`). `/amber-fort/` and
+`/lake-city/` set `data-theme` to their own name, but every theme-wide rule in `nature.css`
+was scoped to `data-theme='nature'`, so the new routes lost: the rim's mask shapes (the
+"rim" painted a solid gold sheet over the whole incoming chapter, with a hard top edge),
+the chapter shades, `scroll-behavior: auto` (anchor jumps animated slowly again), the footer
+overlay, the scrollbar gutter, and the keepsake/venue dialog scroll locks. Those rules now
+target `html[data-theme]`; `rajasthan.css` retints from `:root[data-theme=…]` (higher
+specificity): theme palettes, chapter shades in fort maroon / blue-hour navy, header, menu,
+dock and veil. The envelope chapter now rests on each theme's venue terrace instead of the
+Nature garden painting; the theme invitation object is served as 320/640 px WebP instead of
+the raw 2–2.7 MB PNG (build 41 → 36 MB); duplicate painting preloads are dropped. The theme
+heroes place the names in the sky in light type on a dusk shade, so the fort / palace stays
+the focal point (the Nature placement and ivory haze covered it). Measured (390×844 @3x):
+theme routes load ~800 KB of images vs ~1.4 MB on `/`; scroll frame timing at 4× CPU is
+within run-to-run noise of `/`, slow frames on every route sit in the envelope chapter.
+`tests/scene-plates-browser.mjs` now covers both themes (mobile, desktop, small Hindi,
+reduced motion) and asserts the shared look (masked rim, shades, no smooth scroll).
+
 Chapter handoffs rebuilt on native scroll (2026-10-27, `development`). Reported: on a
 handoff the next chapter's edge showed first and the effect then took over with a jump, worst
 on phones. Cause: each handoff was a fixed, script-driven camera that replaced the chapters'

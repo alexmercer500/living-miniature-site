@@ -76,6 +76,11 @@ export async function setupEnvelope() {
       const finalPaperBottom = layout.presentCenter - rigHeight * .45 + layout.frontOffset + cardHeight * (1 + (layout.frontScale - 1) / 2);
       const finalControlTop = Math.min(finalPaperBottom + 10, footerTop - sealHeight - 6) - (layout.presentCenter - rigHeight / 2);
       set('control-top', `${rigHeight * .4 + (finalControlTop - rigHeight * .4) * pose.present}px`);
+      // Stages for the theme objects (Amber Fort envelope, Lake City scroll); the paper envelope ignores them.
+      set('obj-seal', pose.seal);
+      set('obj-swing', Math.min(1.08, pose.flapSpring));
+      set('obj-card', pose.card);
+      set('obj-present', pose.present);
       // Never hide focused invitation content when a guest reverses scroll.
       const usable = state.present === 1 || focusedCard;
       // DOM/ARIA writes only on change: rewriting the label text every frame forced

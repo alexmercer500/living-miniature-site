@@ -1,5 +1,7 @@
-/* Nature & Stories palette (the site's only theme), layered over tokens.css. */
-html[data-theme='nature'] {
+/* Story palette, layered over tokens.css. Shared by every story theme (Nature on `/`, Amber Fort
+   and Lake City): the themes reuse every chapter, handoff and interaction, and rajasthan.css
+   retints only colours, from `:root[data-theme=…]` rules that outrank these. */
+html[data-theme] {
   --color-midnight: #172e28; --color-indigo: #213b32; --color-plum: #304b3c;
   --color-ivory: #fff3e4; --color-parchment: #f1ddc3; --color-antique-gold: #b08a52;
   --color-gold-highlight: #efd2a0; --color-vermilion: #984e4f;
@@ -20,11 +22,11 @@ html[data-theme='nature'] {
   scroll-padding-top: 0;
 }
 /* Only the dialog scroll locks still force snapping off; the enhanced home never snaps. */
-html[data-theme='nature'][data-envelope-active]:has(.ns-home) { scroll-snap-type: none; }
+html[data-theme][data-envelope-active]:has(.ns-home) { scroll-snap-type: none; }
 /* Every chapter handoff follows the real scroll position, so native smooth-scroll for
    header/dock/anchor jumps would only make those jumps slow. Printable pages keep it. */
-html[data-theme='nature']:has(.ns-home) { scroll-behavior: auto; }
-[data-theme='nature'] body { background: #172e28; }
+html[data-theme]:has(.ns-home) { scroll-behavior: auto; }
+html[data-theme] body { background: #172e28; }
 .ns-home { overflow: clip; }
 @media (max-width: 767px) {
   .ns-home .ns-keepsakes { overflow-y: hidden; scrollbar-width: none; }
@@ -265,14 +267,14 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 /* The home page ends on the closing painting, not a flat colour slab: the footer turns
    transparent and is lifted by its own measured height, so the scene's own artwork shows
    behind the names. --ns-footer-lift is set once the footer has been measured. */
-html[data-theme='nature']:has(.ns-home) .ns-footer {
+html[data-theme]:has(.ns-home) .ns-footer {
   position: relative; z-index: 1;
   background: transparent;
   margin-top: calc(-1 * var(--ns-footer-lift, 0px));
   /* Match the chapters' own bottom clearance so the end-card text clears the dock. */
   padding-bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 4.75rem));
 }
-html[data-theme='nature']:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0 1px 2px #08140f; }
+html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0 1px 2px #08140f; }
 .ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28f0; box-shadow: 0 8px 30px #0003; }
 .ns-dock a { display: flex; gap: .4rem; align-items: center; justify-content: center; min-height: 44px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; text-decoration: none; }
 .ns-dock a:hover { color: #efd2a0; }
@@ -498,8 +500,8 @@ html[data-nature-loaded] .ns-veil-mark { opacity: 0; transform: translate3d(0,-8
 }
 
 /* Journey: paper keepsakes, actual cord/peg anchors, independent wind pivots. */
-html[data-theme='nature'] { scrollbar-gutter: stable; }
-html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap-type: none; }
+html[data-theme] { scrollbar-gutter: stable; }
+html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap-type: none; }
 .ns-story-shade { background: var(--ns-shade-journey); }
 .ns-keepsakes { --memory-gap: clamp(2.5rem,7vw,9rem); width: calc(100% - clamp(3rem,8vw,10rem)); max-width: 1480px; padding: 1rem .4rem 1.3rem; gap: var(--memory-gap); }
 .ns-keepsake-hanger { position: relative; min-width: 0; padding-top: 20px; scroll-snap-align: center; }
@@ -649,7 +651,7 @@ html[data-theme='nature'][data-memory-open]:has(.ns-home) { overflow: hidden; sc
 .ns-wood-sign:focus-visible { outline: none; background-color: #fff1cb; filter: brightness(1.18); }
 .ns-sign-mount:has(:focus-visible) { outline: 2px solid #fff3e4; outline-offset: 5px; }
 .ns-venue-map-note { position: absolute; left: 0; right: 0; bottom: -3px; padding: 0 .8rem; font-size: .72rem; line-height: 1.35; text-align: center; color: #fff0d7; text-shadow: 0 2px 6px #081e18; }
-html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-type: none; }
+html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-type: none; }
 .ns-venue-dialog { width: min(94vw,1080px); max-width: none; max-height: calc(100dvh - 2rem); padding: 0; border: 0; overflow: visible; background: transparent; color: #334537; }
 .ns-venue-dialog::backdrop { background: #081d18cf; backdrop-filter: blur(9px); opacity: 0; transition: opacity .4s; }
 .ns-venue-dialog[data-visible]::backdrop { opacity: 1; }
@@ -668,7 +670,7 @@ html[data-theme='nature'][data-venue-open]:has(.ns-home) { overflow: hidden; scr
 }
 @media (max-width: 767px) {
   .ns-venue { padding: calc(var(--ns-top) + 12px) 1.3rem calc(var(--ns-bottom) + 7px); }
-  html[data-theme='nature'] { --ns-shade-venue: linear-gradient(#102923aa,transparent 40%,#10292388 62%,#102923ed); }
+  html[data-theme] { --ns-shade-venue: linear-gradient(#102923aa,transparent 40%,#10292388 62%,#102923ed); }
   .ns-venue-head { gap: .8rem; }
   .ns-venue-index { font-size: 3.3rem; padding-right: .7rem; }
   .ns-home .ns-venue-head h2 { font-size: clamp(1.9rem,7vw,2.6rem); }

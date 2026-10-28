@@ -4,11 +4,11 @@ import ScenePlate from './ScenePlate.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t, mapConfigured, directionsUrl } from '../../lib/content';
-import { natureCopy, natureHref } from '../../lib/nature-content';
-import { landscapes } from '../../lib/nature-assets';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang];
+import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
+const landscapes = themeConfig[theme].assets;
 const hasMap = mapConfigured();
 const actions = [
   { label:t(lang,'viewMap'), icon:'pin' as const, href:content.venue.mapUrl },
@@ -35,7 +35,7 @@ const actions = [
             : <button class="ns-wood-sign" type="button" disabled aria-describedby="ns-venue-map-note"><span class="ns-sign-icon"><Icon name={action.icon} /></span><span>{action.label}</span></button>}
         </div>)}
         <div class="ns-sign-mount" data-venue-sign style="--sign-tilt:-.8deg">
-          <a class="ns-wood-sign" data-venue-explore href={`${natureHref(lang,'/invitation')}#ns-invite-venue`}><span class="ns-sign-icon"><LotusMark /></span><span>{c.exploreVenue}</span><Icon name="arrow-right" /></a>
+          <a class="ns-wood-sign" data-venue-explore href={`${themeHref(lang, theme, '/invitation')}#ns-invite-venue`}><span class="ns-sign-icon"><LotusMark /></span><span>{c.exploreVenue}</span><Icon name="arrow-right" /></a>
         </div>
       </nav>
       <p class="ns-venue-map-note" id="ns-venue-map-note">{hasMap ? c.venuePreviewNote : c.mapSoon}</p>

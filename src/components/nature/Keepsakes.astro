@@ -3,11 +3,11 @@ import Art from './Art.astro';
 import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
 import { type Lang, t } from '../../lib/content';
-import { natureCopy } from '../../lib/nature-content';
-import { landscapes } from '../../lib/nature-assets';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang];
+import { themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
+const landscapes = themeConfig[theme].assets;
 // Optional real photos: src/assets/keepsakes/1.jpg, 2.jpg, 3.jpg (any image type) replace the paintings card by card.
 const photos = import.meta.glob<ImageMetadata>('../../assets/keepsakes/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP}', { eager: true, import: 'default' });
 const photo = (n: number) => Object.entries(photos).find(([path]) => new RegExp(`/${n}\\.\\w+$`).test(path))?.[1];

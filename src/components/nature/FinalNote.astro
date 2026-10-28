@@ -4,12 +4,12 @@ import ScenePlate from './ScenePlate.astro';
 import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, photosConfigured } from '../../lib/content';
-import { natureCopy, natureHref } from '../../lib/nature-content';
-import { landscapes } from '../../lib/nature-assets';
+import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const c = natureCopy[lang];
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
+const c = themeCopy(theme, lang);
+const landscapes = themeConfig[theme].assets;
 const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality:80});
 ---
 <section id="closing" class="ns-closing ns-scene" aria-labelledby="ns-closing-title">
@@ -50,7 +50,7 @@ const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality
       </div>
     </div>
     <nav class="ns-note-actions" aria-label={c.finalNote}>
-      <a class="ns-button" href={natureHref(lang,'/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
+      <a class="ns-button" href={themeHref(lang, theme, '/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
       {photosConfigured() && <a class="ns-button ns-button-light" href={content.photos.albumUrl} target="_blank" rel="noopener"><Icon name="camera" />{t(lang,'sharePhotos')}</a>}
       <a class="ns-note-back" href="#welcome"><Icon name="up" />{t(lang,'backToTop')}</a>
     </nav>
