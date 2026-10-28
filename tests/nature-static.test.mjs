@@ -82,6 +82,14 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     assert.ok(html.includes(keepsake.kind), `${route} opens its ${keepsake.kind}`);
     for (const layer of keepsake.layers) assert.ok(html.includes(`/_astro/${layer}`), `${route} serves its ${layer.slice(0, -1)} layer`);
     assert.ok(!html.includes('envelope-flap'), `${route} does not render the paper envelope`);
+    // Each keepsake also has a 3D model: its spec rides on the rig, every texture is built.
+    const spec = html.match(/data-model="([^"]+)"/);
+    assert.ok(spec, `${route} carries a 3D model`);
+    const model = JSON.parse(spec[1].replaceAll('&quot;', '"'));
+    assert.equal(model.kind, keepsake.kind.replace('object-', ''));
+    const parts = theme === 'amber-fort' ? ['body', 'flap', 'flap-inside', 'lining', 'seal'] : ['scroll'];
+    assert.deepEqual(Object.keys(model.textures).sort(), parts.flatMap(p => [`${p}-color`, `${p}-detail`]).sort());
+    for (const url of Object.values(model.textures)) assert.ok(fs.existsSync(`dist${url}`), `${route}: ${url} is built`);
     assert.equal([...html.matchAll(/class="ns-event"/g)].length, 3);
     for (const title of events.map(pair => pair[lang === 'hi' ? 1 : 0])) assert.ok(html.includes(title), `${title} appears on ${route}`);
     for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
@@ -93,6 +101,12 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     for (const asset of ['hero-desktop.png', 'hero-mobile.png', 'journey-desktop.png', 'journey-mobile.png', 'venue-desktop.png', 'venue-mobile.png', 'wishes-desktop.png', 'wishes-mobile.png', 'closing-desktop.png', 'closing-mobile.png', 'invitation-object.png', 'object/geometry.json', ...(theme === 'amber-fort' ? ['object/flap.png', 'object/body.png', 'object/seal.png'] : ['object/roll.png', 'object/ribbon.png'])]) {
       assert.ok(fs.existsSync(`src/assets/rajasthan/${theme}/${asset}`), `${theme}/${asset} exists`);
     }
+  }
+  // three.js stays in its own lazily loaded chunk: no page loads it up front.
+  for (const route of ['/', '/amber-fort/', '/lake-city/']) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    for (const [, src] of html.matchAll(/<script[^>]+src="([^"]+)"/g)) assert.ok(!fs.readFileSync(`dist${src}`, 'utf8').includes('WebGLRenderer'), `${route}: ${src} does not bundle three.js`);
+    assert.ok(!html.includes('envelope-model.'), `${route} does not preload the 3D model`);
   }
   assert.equal(data.events[0].title.en, 'The Turmeric Affair');
   assert.equal(data.events[1].title.en, 'The Henna & Harmony Soirée');

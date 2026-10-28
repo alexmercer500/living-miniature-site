@@ -1,6 +1,17 @@
 import { envelopeLayout, envelopeState, envelopeTimings, envelopeScrollProgress } from '../lib/envelope-state';
 import { styleWriter } from './style-writer';
 import { sealHaptic } from './haptics';
+import type { KeepsakeModel } from './keepsake-3d';
+
+/** Run `start` once: when `target` comes within two screens, or once the loaded page is idle. */
+function whenNear(target: Element, start: () => void) {
+  let started = false;
+  const go = () => { if (started) return; started = true; observer.disconnect(); start(); };
+  const observer = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) go(); }, { rootMargin: '200% 0px' });
+  observer.observe(target);
+  const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 4000 }) : setTimeout(go, 1500));
+  if (document.readyState === 'complete') idle(); else window.addEventListener('load', idle, { once: true });
+}
 
 export async function setupEnvelope() {
   const scene = document.querySelector<HTMLElement>('[data-envelope]');
@@ -10,6 +21,20 @@ export async function setupEnvelope() {
   const status = scene?.querySelector<HTMLElement>('[data-envelope-status]');
   const hint = scene?.querySelector<HTMLElement>('[data-envelope-hint]');
   if (!scene || !button || !card || !label || !status || !hint) return;
+
+  // A keepsake with a 3D model (the Amber Fort envelope, the Lake City scroll) loads it once the
+  // chapter is near or the page is idle, then draws every pose; until then (or without WebGL)
+  // its photo layers play the same stages.
+  let model: KeepsakeModel | undefined;
+  let shown = envelopeState(1);
+  const show = (pose: ReturnType<typeof envelopeState>) => { shown = pose; model?.update(pose); };
+  const modelRig = scene.querySelector<HTMLElement>('.envelope-rig[data-model]');
+  if (modelRig) whenNear(scene, () => Promise.resolve(JSON.parse(modelRig.dataset.model!))
+    .then(spec => spec.kind === 'scroll'
+      ? import('./scroll-model').then(m => m.mountScrollModel(modelRig, spec))
+      : import('./envelope-model').then(m => m.mountEnvelopeModel(modelRig, spec)))
+    .then(mounted => { if (mounted) { model = mounted; mounted.update(shown); } })
+    .catch(error => console.warn('3D keepsake unavailable; the photo keepsake remains.', error)));
 
   // Keep the fully visible static card when motion is reduced (and drop the motion if the
   // guest turns reduced motion on mid-visit).
@@ -81,6 +106,7 @@ export async function setupEnvelope() {
       set('obj-swing', Math.min(1.08, pose.flapSpring));
       set('obj-card', pose.card);
       set('obj-present', pose.present);
+      show(pose);
       // Never hide focused invitation content when a guest reverses scroll.
       const usable = state.present === 1 || focusedCard;
       // DOM/ARIA writes only on change: rewriting the label text every frame forced
@@ -195,7 +221,11 @@ export async function setupEnvelope() {
     };
   };
   let teardown: (() => void) | undefined;
-  const apply = () => { teardown?.(); teardown = preference.matches ? undefined : enhance(); };
+  const apply = () => {
+    teardown?.();
+    teardown = preference.matches ? undefined : enhance();
+    if (!teardown) show(envelopeState(1)); // the static pose: opened
+  };
   apply();
   preference.addEventListener('change', apply);
   window.addEventListener('pagehide', () => { preference.removeEventListener('change', apply); teardown?.(); }, { once: true });

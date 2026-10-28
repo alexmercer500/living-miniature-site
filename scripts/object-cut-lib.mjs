@@ -131,3 +131,37 @@ export async function writeLayer(img, alpha, path, crop) {
   if (crop) s = sharp(await s.png().toBuffer()).extract(crop);
   await s.png({ compressionLevel: 9 }).toFile(path);
 }
+
+/** Resample the quad `[TL, TR, BR, BL]` of `img` onto a flat W × H image (a homography). */
+export function unwarp(img, [[x0, y0], [x1, y1], [x2, y2], [x3, y3]], W, H) {
+  const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+  const det = dx1 * dy2 - dx2 * dy1, g = (sx * dy2 - dx2 * sy) / det, h = (dx1 * sy - sx * dy1) / det;
+  const m = [x1 - x0 + g * x1, x3 - x0 + h * x3, x0, y1 - y0 + g * y1, y3 - y0 + h * y3, y0, g, h];
+  const data = Buffer.alloc(W * H * 4);
+  const at = (x, y, c) => img.data[(Math.min(img.h - 1, Math.max(0, y)) * img.w + Math.min(img.w - 1, Math.max(0, x))) * 4 + c];
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+    const u = (i + .5) / W, v = (j + .5) / H, z = m[6] * u + m[7] * v + 1;
+    const x = (m[0] * u + m[1] * v + m[2]) / z - .5, y = (m[3] * u + m[4] * v + m[5]) / z - .5;
+    const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+    for (let c = 0; c < 4; c++) data[(j * W + i) * 4 + c] = (at(xi, yi, c) * (1 - fx) + at(xi + 1, yi, c) * fx) * (1 - fy) + (at(xi, yi + 1, c) * (1 - fx) + at(xi + 1, yi + 1, c) * fx) * fy;
+  }
+  return { data, w: W, h: H };
+}
+
+/** Three box-blur passes (≈ Gaussian) of a float field; `weight` (0–1) makes it a normalised
+ *  convolution, so only weighted samples count (e.g. paper but not ornament). */
+export function blurField(f, w, h, r, weight) {
+  const box = (src, horiz) => {
+    const out = new Float32Array(src.length);
+    for (let a = 0; a < (horiz ? h : w); a++) {
+      let s = 0; const n = horiz ? w : h, idx = k => horiz ? a * w + k : k * w + a;
+      for (let k = -r; k <= r; k++) s += src[idx(Math.min(n - 1, Math.max(0, k)))];
+      for (let k = 0; k < n; k++) { out[idx(k)] = s / (2 * r + 1); s += src[idx(Math.min(n - 1, k + r + 1))] - src[idx(Math.max(0, k - r))]; }
+    }
+    return out;
+  };
+  const run = src => { let g = src; for (let p = 0; p < 3; p++) g = box(box(g, true), false); return g; };
+  if (!weight) return run(f);
+  const num = run(f.map((v, i) => v * weight[i])), den = run(weight);
+  return num.map((v, i) => den[i] > 1e-4 ? v / den[i] : 0);
+}

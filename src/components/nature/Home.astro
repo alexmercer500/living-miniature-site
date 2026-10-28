@@ -23,6 +23,9 @@ interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const themeAssets = themeConfig[theme].assets;
+// The couple's names as two names and their joiner, so a phone can set them on their own lines.
+const joiner = lang === 'hi' ? 'एवं' : '&';
+const [nameOne, nameTwo] = loc(content.couple.displayName, lang).split(` ${joiner} `);
 const [veilScene, veilSceneWide] = await Promise.all([artPreview(themeAssets.hero.mobile), artPreview(themeAssets.hero.desktop)]);
 // Ask for every chapter painting with the HTML, before anything has to be laid out: the scene you
 // scroll into then never shows its soft inline placeholder, and each camera handoff has its art
@@ -66,7 +69,7 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
         <p class="ns-greeting" data-template={t(lang, 'guestGreeting')} hidden></p><script is:inline>nsGreet(document.currentScript.previousElementSibling)</script>
         <p class="ns-kicker">{c.chapter}</p>
         <h1 id="nature-title"><span>{c.heroOne}</span><em>{c.heroTwo}</em></h1>
-        <p class="ns-couple">{loc(content.couple.displayName, lang)}</p>
+        <p class="ns-couple">{nameTwo ? <><span>{nameOne}</span> <em>{joiner}</em> <span>{nameTwo}</span></> : nameOne}</p>
         <div class="ornament"><span></span></div>
         <p class="ns-date">{loc(content.site.weddingDateLabel, lang)}</p>
       </div>

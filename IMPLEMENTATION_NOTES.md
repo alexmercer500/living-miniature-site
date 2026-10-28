@@ -7,6 +7,44 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Lake City scroll rebuilt as a 3D model (2026-10-28, `development`). `npm run build-scroll-model`
+(`scripts/build-scroll-model.mjs`) unwraps the visible half of the roll off the cut layer
+(`object/roll.png`): each texture row is one angle around the roll, sampled across its
+silhouette between the gilt caps; the clean left half is mirrored for the right, and each row is
+white-balanced to the paper's tone (the satin's pink reflection goes). ~80 KB. `scroll-model.ts`
+draws the paper cylinder (print mirrored round its back), lathe-turned gold finials (collar,
+beaded ring, lotus dome, knob; beads and petals painted as bump), and a satin bow (band, two
+loops, two swallowtail tails as strips with painted gold piping, sheen) on a gold rosette
+medallion. On the same stages the bow loosens and falls away, the roll swings level, then rides
+the sheet's lower edge down the page, turning by the paper it releases and thinning by 30%. One
+canvas lies over the card (the roll is always in front of its paper) and its shadow falls on the
+sheet; the knot's control follows the projected medallion in the photo roll's turned box. Shared
+renderer, lighting and loaders moved to `keepsake-3d.ts` (the one three.js chunk, ~142 KB gz,
+for both themes). Phone scroll at 4× CPU (GPU Chrome): at parity with the photo fallback.
+
+Amber Fort envelope rebuilt as a 3D model (2026-10-28, `development`). The cut photo layers
+showed a guessed back to the flap, a torn hole where the flap had been and ragged edges, because
+the photo never had those parts. `npm run build-envelope-model`
+(`scripts/build-envelope-model.mjs`) now unwarps the photo's front face (a four-point
+homography), mirrors the better-lit left half about the flap's axis, cuts the flap (lobes
+snapped to its cast shadow, straight edge fitted to a tip under the seal) and a pocket (V from
+the top corners to the bottom flap's traced fold), and repaints what the flap, seal and tassel
+hid: a translated copy along the fold or border (one shift per line, so lines run on unbroken),
+lighting divided out first and the tone matched to the surrounding paper. Gold is separated by
+hue so it renders as metal; each part gets colour + detail WebP (R bump, G roughness, B
+metalness). The lining is maroon with a gold buti; the seal texture is the photo's seal, centred
+on its embossed ring. ~0.6 MB of textures. `scripts/envelope-model.ts` (three.js, a ~144 KB gz
+chunk, loaded when the chapter is two screens away or the page is idle) draws a pocket, a lining
+panel, a flap strip bent along its length as it opens, a wax seal in two halves that cracks and
+falls away with a modelled tassel, a VSM drop shadow and a warm key light. It draws only when the
+scroll pose changes, in two passes from one WebGL context: the back pass (lining, opened flap,
+shadow) is copied to a canvas under the DOM card, the front pass draws over it, so the real card
+still rises between them. The seal control follows the projected wax. Without WebGL, or until
+the model loads, the photo layers play as before; reduced motion draws the opened pose once.
+Phone scroll at 4× CPU (GPU Chrome): frame times match the photo fallback. Tests: keepsake
+browser suite asserts the model (and the no-WebGL fallback); static test checks the spec, every
+texture and that no page bundles three.js up front.
+
 Theme keepsakes replace the paper envelope (2026-10-28, `development`). The Amber Fort
 envelope and Lake City scroll photos (`src/assets/rajasthan/*/invitation-object.png`) are cut
 into layers by `npm run cut-objects` (`scripts/cut-invitation-objects.mjs` +
