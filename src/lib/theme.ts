@@ -16,6 +16,7 @@ import amberFlap from '../assets/rajasthan/amber-fort/object/flap.png';
 import amberBody from '../assets/rajasthan/amber-fort/object/body.png';
 import amberSeal from '../assets/rajasthan/amber-fort/object/seal.png';
 import amberGeometry from '../assets/rajasthan/amber-fort/object/geometry.json';
+import amberModelGeometry from '../assets/rajasthan/amber-fort/model/geometry.json';
 import amberHaldi from '../assets/rajasthan/amber-fort/events/haldi.png';
 import amberMehndi from '../assets/rajasthan/amber-fort/events/mehndi.png';
 import amberSangeet from '../assets/rajasthan/amber-fort/events/sangeet.png';
@@ -34,6 +35,7 @@ import lakeWishesDesktop from '../assets/rajasthan/lake-city/wishes-desktop.png'
 import lakeRoll from '../assets/rajasthan/lake-city/object/roll.png';
 import lakeRibbon from '../assets/rajasthan/lake-city/object/ribbon.png';
 import lakeGeometry from '../assets/rajasthan/lake-city/object/geometry.json';
+import lakeModelGeometry from '../assets/rajasthan/lake-city/model/geometry.json';
 import lakeHaldi from '../assets/rajasthan/lake-city/events/haldi.png';
 import lakeMehndi from '../assets/rajasthan/lake-city/events/mehndi.png';
 import lakeSangeet from '../assets/rajasthan/lake-city/events/sangeet.png';
@@ -45,9 +47,18 @@ export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
 /** The invitation keepsake a theme opens in place of the paper envelope: its photo cut into
  *  layers (scripts/cut-invitation-objects.mjs) and their geometry, in layer pixels. */
 export type InvitationModel =
-  | { kind: 'envelope'; geometry: typeof amberGeometry; layers: { flap: ImageMetadata; body: ImageMetadata; seal: ImageMetadata } }
-  | { kind: 'scroll'; geometry: typeof lakeGeometry; layers: { roll: ImageMetadata; ribbon: ImageMetadata } };
+  | { kind: 'envelope'; geometry: typeof amberGeometry; layers: { flap: ImageMetadata; body: ImageMetadata; seal: ImageMetadata }; model3d?: KeepsakeModel3d<typeof amberModelGeometry> }
+  | { kind: 'scroll'; geometry: typeof lakeGeometry; layers: { roll: ImageMetadata; ribbon: ImageMetadata }; model3d?: KeepsakeModel3d<typeof lakeModelGeometry> };
+/** A keepsake's 3D model (scripts/envelope-model.ts, scroll-model.ts): its geometry and textures
+ *  by file name (scripts/build-envelope-model.mjs, build-scroll-model.mjs). The photo layers stay
+ *  as its poster and fallback. */
+export type KeepsakeModel3d<G> = { geometry: G; textures: Record<string, ImageMetadata> };
 export type ThemeCopy = typeof natureCopy.en;
+
+const byName = (images: Record<string, ImageMetadata>) => Object.fromEntries(Object.entries(images)
+  .map(([path, image]) => [path.slice(path.lastIndexOf('/') + 1, -'.webp'.length), image]));
+const amberModelTextures = byName(import.meta.glob<ImageMetadata>('../assets/rajasthan/amber-fort/model/*.webp', { eager: true, import: 'default' }));
+const lakeModelTextures = byName(import.meta.glob<ImageMetadata>('../assets/rajasthan/lake-city/model/*.webp', { eager: true, import: 'default' }));
 
 const amberAssets = {
   ...landscapes,
@@ -109,7 +120,7 @@ export const themeConfig = {
     description: 'Love stories against timeless forts.',
     themeColor: '#6C2632',
     assets: amberAssets,
-    invitationModel: { kind: 'envelope', geometry: amberGeometry, layers: { flap: amberFlap, body: amberBody, seal: amberSeal } } as InvitationModel,
+    invitationModel: { kind: 'envelope', geometry: amberGeometry, layers: { flap: amberFlap, body: amberBody, seal: amberSeal }, model3d: { geometry: amberModelGeometry, textures: amberModelTextures } } as InvitationModel,
     eventAssets: amberEventAssets,
   },
   'lake-city': {
@@ -118,7 +129,7 @@ export const themeConfig = {
     description: 'Serene waters, palaces and a timeless journey.',
     themeColor: '#17364A',
     assets: lakeAssets,
-    invitationModel: { kind: 'scroll', geometry: lakeGeometry, layers: { roll: lakeRoll, ribbon: lakeRibbon } } as InvitationModel,
+    invitationModel: { kind: 'scroll', geometry: lakeGeometry, layers: { roll: lakeRoll, ribbon: lakeRibbon }, model3d: { geometry: lakeModelGeometry, textures: lakeModelTextures } } as InvitationModel,
     eventAssets: lakeEventAssets,
   },
 } as const;

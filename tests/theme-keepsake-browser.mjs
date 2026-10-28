@@ -4,6 +4,8 @@
 // Per theme and viewport: closed at rest (seal or ribbon on, card hidden), opening part-way
 // (seal or ribbon gone, flap swung or roll levelled), presented at the end (card usable and on
 // screen, the roll riding the paper's lower edge), and the static pose under reduced motion.
+// Both keepsakes are drawn as 3D models (scripts/envelope-model.ts, scroll-model.ts) once loaded;
+// without WebGL they keep the photo layers on the same stages.
 import assert from 'node:assert/strict';
 
 const target = await (await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' })).json();
@@ -35,16 +37,26 @@ await command('Runtime.enable');
 await command('Page.enable');
 await command('Page.bringToFront');
 
-// Scroll to a point on the invitation track, let the paper's follow settle, and report the pose.
+// Scroll to a point on the invitation track, let the paper's follow settle (frames are slow
+// under software GL), and report the pose.
 const stage = k => evaluate(`(async () => {
   const s = document.querySelector('[data-envelope]'), v = s.querySelector('.envelope-viewport');
   scrollTo({ top: s.getBoundingClientRect().top + scrollY + ${k} * (s.offsetHeight - v.offsetHeight), behavior: 'instant' });
-  await new Promise(r => setTimeout(r, 1200));
-  const rig = s.querySelector('.envelope-rig'), card = s.querySelector('[data-envelope-card]'), c = card.getBoundingClientRect();
+  const rig = s.querySelector('.envelope-rig');
+  // The 3D model loads lazily: give it a moment the first time.
+  for (let t = 0; t < 100 && rig.dataset.model && !rig.classList.contains('object-3d') && !window.__noWebgl; t++) await new Promise(r => setTimeout(r, 100));
+  let last = '';
+  // Settled once whole frames pass with no change (each poll waits for real frames, so one slow
+  // frame never passes for a settled pose).
+  const frames = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  for (let t = 0, steady = 0; t < 120 && steady < 3; t++) { await frames(); await new Promise(r => setTimeout(r, 150)); await frames(); const now = s.getAttribute('style') + rig.getAttribute('style'); steady = now === last ? steady + 1 : 0; last = now; }
+  const card = s.querySelector('[data-envelope-card]'), c = card.getBoundingClientRect();
   const op = sel => { const el = s.querySelector(sel); return el ? +getComputedStyle(el).opacity : null; };
   const roll = s.querySelector('.obj-roll img')?.closest('.obj-roll');
   return {
     kind: rig.className.match(/object-(envelope|scroll)/)?.[1] ?? null,
+    three: rig.classList.contains('object-3d'), canvases: rig.querySelectorAll('canvas.obj-canvas').length,
+    photoShown: getComputedStyle(rig.querySelector('.obj-layer') ?? rig).display !== 'none',
     images: [...rig.querySelectorAll('img')].every(i => i.complete && i.naturalWidth > 0),
     seal: op('.obj-seal'), ribbon: op('.obj-ribbon'),
     flap: parseFloat(s.style.getPropertyValue('--flap-angle')) || 0,
@@ -64,18 +76,24 @@ try {
     { name: 'lake-mobile', theme: 'lake-city', kind: 'scroll', width: 390, height: 844, mobile: true },
     { name: 'lake-desktop', theme: 'lake-city', kind: 'scroll', width: 1440, height: 900, mobile: false },
     { name: 'amber-reduced', theme: 'amber-fort', kind: 'envelope', width: 390, height: 844, mobile: true, reduced: true },
+    { name: 'amber-no-webgl', theme: 'amber-fort', kind: 'envelope', width: 390, height: 844, mobile: true, noWebgl: true },
     { name: 'lake-reduced', theme: 'lake-city', kind: 'scroll', width: 390, height: 844, mobile: true, reduced: true },
+    { name: 'lake-no-webgl', theme: 'lake-city', kind: 'scroll', width: 390, height: 844, mobile: true, noWebgl: true },
   ]) {
     if (process.argv[2] && !view.name.includes(process.argv[2])) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: view.mobile });
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: view.reduced ? 'reduce' : 'no-preference' }] });
+    // Without WebGL the model declines to load and the photo layers stay.
+    const blocker = view.noWebgl ? await command('Page.addScriptToEvaluateOnNewDocument', { source: "window.__noWebgl = true; const get = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (type, ...rest) { return /webgl/.test(type) ? null : get.call(this, type, ...rest); };" }) : null;
     await command('Page.navigate', { url: `http://127.0.0.1:4321/${view.theme}/` });
+    if (blocker) await command('Page.removeScriptToEvaluateOnNewDocument', { identifier: blocker.identifier });
     await wait(2500);
     await evaluate('document.fonts.ready.then(() => true)');
 
     if (view.reduced) {
       const pose = await stage(0);
       assert.equal(pose.kind, view.kind, `${view.name}: theme keepsake rendered`);
+      assert.ok(pose.three && pose.canvases === (view.kind === 'envelope' ? 2 : 1), `${view.name}: static 3D ${view.kind} drawn`);
       assert.equal(pose.inert, false, `${view.name}: card readable without motion`);
       assert.ok(view.kind === 'envelope' ? pose.seal === 0 : pose.ribbon === 0, `${view.name}: static pose is opened`);
       assert.ok(pose.card.bottom - pose.card.top > 200 && pose.card.top >= 0 && pose.card.bottom <= pose.vh, `${view.name}: card on screen (${JSON.stringify(pose.card)})`);
@@ -85,6 +103,13 @@ try {
 
     const closed = await stage(0);
     assert.equal(closed.kind, view.kind, `${view.name}: theme keepsake rendered`);
+    {
+      // The envelope draws behind and in front of its card (two canvases), the scroll over it (one).
+      const want = !view.noWebgl;
+      assert.equal(closed.three, want, `${view.name}: 3D ${view.kind} ${want ? 'drawn' : 'declined'}`);
+      assert.equal(closed.canvases, want ? (view.kind === 'envelope' ? 2 : 1) : 0, `${view.name}: ${want ? 'its' : 'no'} model canvases`);
+      assert.equal(closed.photoShown, !want, `${view.name}: photo layers ${want ? 'replaced' : 'kept'}`);
+    }
     assert.ok(closed.images, `${view.name}: every layer decoded`);
     assert.equal(closed.inert, true, `${view.name}: card not operable while sealed`);
     if (view.kind === 'envelope') {

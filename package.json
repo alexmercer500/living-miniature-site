@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "cut-objects": "node scripts/cut-invitation-objects.mjs"
+    "cut-objects": "node scripts/cut-invitation-objects.mjs",
+    "build-envelope-model": "node scripts/build-envelope-model.mjs",
+    "build-scroll-model": "node scripts/build-scroll-model.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
@@ -17,11 +19,15 @@
     "@fontsource/tiro-devanagari-hindi": "5.3.0",
     "astro": "7.4.2",
     "gsap": "3.15.0",
-    "sharp": "0.35.5"
+    "sharp": "0.35.5",
+    "three": "0.186.1"
   },
   "description": "Living Miniature — a private, bilingual (EN/हिंदी) Indian wedding invitation website.",
   "engines": {
     "node": ">=22.23.4",
     "npm": ">=9.6.5"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0"
   }
 }
