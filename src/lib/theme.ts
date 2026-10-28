@@ -1,3 +1,4 @@
+import type { ImageMetadata } from 'astro';
 import { href, type Lang } from './content';
 import { natureCopy } from './nature-content';
 import { landscapes, natureEvents, eventFallback } from './nature-assets';
@@ -11,7 +12,10 @@ import amberClosingMobile from '../assets/rajasthan/amber-fort/closing-mobile.pn
 import amberClosingDesktop from '../assets/rajasthan/amber-fort/closing-desktop.png';
 import amberWishesMobile from '../assets/rajasthan/amber-fort/wishes-mobile.png';
 import amberWishesDesktop from '../assets/rajasthan/amber-fort/wishes-desktop.png';
-import amberInvitationObject from '../assets/rajasthan/amber-fort/invitation-object.png';
+import amberFlap from '../assets/rajasthan/amber-fort/object/flap.png';
+import amberBody from '../assets/rajasthan/amber-fort/object/body.png';
+import amberSeal from '../assets/rajasthan/amber-fort/object/seal.png';
+import amberGeometry from '../assets/rajasthan/amber-fort/object/geometry.json';
 import amberHaldi from '../assets/rajasthan/amber-fort/events/haldi.png';
 import amberMehndi from '../assets/rajasthan/amber-fort/events/mehndi.png';
 import amberSangeet from '../assets/rajasthan/amber-fort/events/sangeet.png';
@@ -27,7 +31,9 @@ import lakeClosingMobile from '../assets/rajasthan/lake-city/closing-mobile.png'
 import lakeClosingDesktop from '../assets/rajasthan/lake-city/closing-desktop.png';
 import lakeWishesMobile from '../assets/rajasthan/lake-city/wishes-mobile.png';
 import lakeWishesDesktop from '../assets/rajasthan/lake-city/wishes-desktop.png';
-import lakeInvitationObject from '../assets/rajasthan/lake-city/invitation-object.png';
+import lakeRoll from '../assets/rajasthan/lake-city/object/roll.png';
+import lakeRibbon from '../assets/rajasthan/lake-city/object/ribbon.png';
+import lakeGeometry from '../assets/rajasthan/lake-city/object/geometry.json';
 import lakeHaldi from '../assets/rajasthan/lake-city/events/haldi.png';
 import lakeMehndi from '../assets/rajasthan/lake-city/events/mehndi.png';
 import lakeSangeet from '../assets/rajasthan/lake-city/events/sangeet.png';
@@ -35,6 +41,12 @@ import lakeWedding from '../assets/rajasthan/lake-city/events/wedding.png';
 import lakeReception from '../assets/rajasthan/lake-city/events/reception.png';
 
 export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
+
+/** The invitation keepsake a theme opens in place of the paper envelope: its photo cut into
+ *  layers (scripts/cut-invitation-objects.mjs) and their geometry, in layer pixels. */
+export type InvitationModel =
+  | { kind: 'envelope'; geometry: typeof amberGeometry; layers: { flap: ImageMetadata; body: ImageMetadata; seal: ImageMetadata } }
+  | { kind: 'scroll'; geometry: typeof lakeGeometry; layers: { roll: ImageMetadata; ribbon: ImageMetadata } };
 export type ThemeCopy = typeof natureCopy.en;
 
 const amberAssets = {
@@ -88,7 +100,7 @@ export const themeConfig = {
     description: 'A living miniature wedding invitation.',
     themeColor: '#213B32',
     assets: landscapes,
-    invitationObject: null,
+    invitationModel: null as InvitationModel | null,
     eventAssets: natureEvents,
   },
   'amber-fort': {
@@ -97,7 +109,7 @@ export const themeConfig = {
     description: 'Love stories against timeless forts.',
     themeColor: '#6C2632',
     assets: amberAssets,
-    invitationObject: amberInvitationObject,
+    invitationModel: { kind: 'envelope', geometry: amberGeometry, layers: { flap: amberFlap, body: amberBody, seal: amberSeal } } as InvitationModel,
     eventAssets: amberEventAssets,
   },
   'lake-city': {
@@ -106,7 +118,7 @@ export const themeConfig = {
     description: 'Serene waters, palaces and a timeless journey.',
     themeColor: '#17364A',
     assets: lakeAssets,
-    invitationObject: lakeInvitationObject,
+    invitationModel: { kind: 'scroll', geometry: lakeGeometry, layers: { roll: lakeRoll, ribbon: lakeRibbon } } as InvitationModel,
     eventAssets: lakeEventAssets,
   },
 } as const;

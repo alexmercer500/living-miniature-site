@@ -7,6 +7,28 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Theme keepsakes replace the paper envelope (2026-10-28, `development`). The Amber Fort
+envelope and Lake City scroll photos (`src/assets/rajasthan/*/invitation-object.png`) are cut
+into layers by `npm run cut-objects` (`scripts/cut-invitation-objects.mjs` +
+`object-cut-lib.mjs`; outputs and `geometry.json` in each theme's `object/`). Envelope: the
+flap outline is hand-traced on its right lobes and snapped to the flap's cast shadow
+elsewhere; the wax seal and tassel are found by colour (crimson, plus the gilt bead and cap);
+the paper they hid is repainted by a harmonic fill (shading diffused in from the surrounding
+paper, grain from a clean patch), including the tassel's cast shadow, and the flap's double
+gold rule is redrawn to its tip. Scroll: the ribbon is found by colour (pink keeps blue near
+green, gilt does not) with its knot medallion added as a disc; the roll under it is repainted
+from its own cross-section profile (bright end of each slice, so print never leaks in) with a
+seamless correction diffused from the photo, and clipped to the roll's band. In
+`Envelope.astro` the themes reuse the envelope's scroll stages (`envelope.ts` now also writes
+`--obj-seal/swing/card/present`): the envelope's seal lifts away, the flap swings open on its
+own sloping hinge (inside face from `cos()` of the real angle, so springs cannot show the print
+from behind), the card rises out and is presented; the scroll's ribbon unties and falls, the
+roll swings level and unrolls downward, riding the lower edge of the paper it reveals. Layers
+are 700/1400 px WebP (~13–115 KB each); theme routes still load less than `/` (~1.0 / 0.9 MB
+vs 1.4 MB on a phone). Envelope-chapter frame timing at 4× CPU is within noise of `/` after
+compositing the flap and seal. Static / reduced-motion pose: opened, card readable.
+`tests/theme-keepsake-browser.mjs` covers both themes (phone, desktop, reduced motion).
+
 Rajasthan themes brought to parity (2026-10-28, `development`). `/amber-fort/` and
 `/lake-city/` set `data-theme` to their own name, but every theme-wide rule in `nature.css`
 was scoped to `data-theme='nature'`, so the new routes lost: the rim's mask shapes (the

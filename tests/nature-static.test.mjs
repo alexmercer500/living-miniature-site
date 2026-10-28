@@ -77,7 +77,11 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     assert.ok(html.includes('hero-desktop.') && html.includes('journey-desktop.'));
     assert.ok(html.includes('venue-desktop.') && html.includes('closing-desktop.'));
     assert.ok(html.includes('wishes-desktop.') && html.includes('wishes-mobile.'));
-    assert.ok(html.includes('envelope-theme-object'), `${route} includes its invitation object`);
+    // The theme opens its own keepsake (cut layers) in place of the paper envelope.
+    const keepsake = theme === 'amber-fort' ? { kind: 'object-envelope', layers: ['flap.', 'body.', 'seal.'] } : { kind: 'object-scroll', layers: ['roll.', 'ribbon.'] };
+    assert.ok(html.includes(keepsake.kind), `${route} opens its ${keepsake.kind}`);
+    for (const layer of keepsake.layers) assert.ok(html.includes(`/_astro/${layer}`), `${route} serves its ${layer.slice(0, -1)} layer`);
+    assert.ok(!html.includes('envelope-flap'), `${route} does not render the paper envelope`);
     assert.equal([...html.matchAll(/class="ns-event"/g)].length, 3);
     for (const title of events.map(pair => pair[lang === 'hi' ? 1 : 0])) assert.ok(html.includes(title), `${title} appears on ${route}`);
     for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
@@ -86,7 +90,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     }
   }
   for (const theme of ['amber-fort', 'lake-city']) {
-    for (const asset of ['hero-desktop.png', 'hero-mobile.png', 'journey-desktop.png', 'journey-mobile.png', 'venue-desktop.png', 'venue-mobile.png', 'wishes-desktop.png', 'wishes-mobile.png', 'closing-desktop.png', 'closing-mobile.png', 'invitation-object.png']) {
+    for (const asset of ['hero-desktop.png', 'hero-mobile.png', 'journey-desktop.png', 'journey-mobile.png', 'venue-desktop.png', 'venue-mobile.png', 'wishes-desktop.png', 'wishes-mobile.png', 'closing-desktop.png', 'closing-mobile.png', 'invitation-object.png', 'object/geometry.json', ...(theme === 'amber-fort' ? ['object/flap.png', 'object/body.png', 'object/seal.png'] : ['object/roll.png', 'object/ribbon.png'])]) {
       assert.ok(fs.existsSync(`src/assets/rajasthan/${theme}/${asset}`), `${theme}/${asset} exists`);
     }
   }
