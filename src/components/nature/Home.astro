@@ -111,6 +111,8 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
 <script>
   import { setupNature } from '../../scripts/nature';
   import { setupEnvelope } from '../../scripts/envelope';
+  // `?probe`: the on-device frame probe (scripts/probe.ts), for diagnosing a phone. Never loaded otherwise.
+  if (new URLSearchParams(location.search).has('probe')) import('../../scripts/probe').then(m => m.setupProbe());
   const initialHash = location.hash;
   let interrupted = false;
   // Ask for the chapter paintings as soon as this module runs — the DOM is parsed by then, and

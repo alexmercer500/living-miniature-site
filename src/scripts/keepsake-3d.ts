@@ -7,6 +7,8 @@ import {
 } from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import type { envelopeState } from '../lib/envelope-state';
+import { quiet } from './quiet';
+export { quiet };
 
 export type Pose = ReturnType<typeof envelopeState>;
 export interface KeepsakeModel { update(pose: Pose): void; dispose(): void }
@@ -47,9 +49,17 @@ export function grid(nu: number, nv: number, at: (u: number, v: number) => [numb
   return g;
 }
 
+/** Upload textures to the GPU one quiet slot at a time (each upload blocks the main thread). */
+export async function uploadTextures(renderer: WebGLRenderer, textures: Texture[]) {
+  for (const texture of textures) { await quiet(); renderer.initTexture(texture); }
+}
+
 /** A transparent renderer and a scene lit like the terrace at dusk: a warm key from the upper
- *  left that casts soft (VSM) shadows, a dim warm fill, and a room environment for the gold. */
-export function createStage() {
+ *  left that casts soft (VSM) shadows, a dim warm fill, and a room environment for the gold.
+ *  Creating the context and rendering the environment are each one slow task: each waits for
+ *  a quiet slot. */
+export async function createStage() {
+  await quiet();
   const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = NeutralToneMapping;
@@ -58,6 +68,7 @@ export function createStage() {
   renderer.shadowMap.type = VSMShadowMap;
   renderer.shadowMap.autoUpdate = false;
   const scene = new Scene();
+  await quiet();
   const pmrem = new PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
   scene.environmentIntensity = 1;

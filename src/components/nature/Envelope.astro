@@ -245,6 +245,8 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
   .wax-seal::before { content: ''; position: absolute; inset: 8%; border: 1px solid #d16559; border-radius: 50%; }
   .wax-seal :global(svg) { width: 42%; color: #e6c27b; }
   .seal-control:focus-visible { outline: 2px solid #fff1d8; outline-offset: 8px; border-radius: 50%; }
+  /* On a phone a tap anywhere on the closed keepsake opens it (scripts/envelope.ts). */
+  @media (max-width: 767px) { [data-enhanced] .envelope-rig { cursor: pointer; -webkit-tap-highlight-color: transparent; } }
   @media (prefers-reduced-motion: no-preference) {
     [data-enhanced] .wax-seal::after {
       content: ''; position: absolute; inset: -8px; border-radius: 50%; pointer-events: none;

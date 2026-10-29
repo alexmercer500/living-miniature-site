@@ -38,6 +38,16 @@ export async function setupNature() {
   cleanups.push(setupRsvp(root));
   cleanups.push(setupBlessing(root));
 
+  // Decode each chapter's painting while the chapter before it is still on screen, so a handoff
+  // never waits on a decode (on slower phones that shows as the new scene hitching in).
+  const decoder = new IntersectionObserver(entries => entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    decoder.unobserve(e.target);
+    e.target.querySelectorAll<HTMLImageElement>('.ns-plate [data-nature-image]').forEach(image => image.decode().catch(() => {}));
+  }), { rootMargin: '100% 0px' });
+  all(':scope > section').forEach(section => decoder.observe(section));
+  cleanups.push(() => decoder.disconnect());
+
   // On a celebration's own day its card says "Today" (local date, so it is right in India).
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;

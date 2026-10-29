@@ -127,7 +127,7 @@ try {
         assert.ok(Math.abs(await evaluate("document.querySelector('.envelope-viewport').getBoundingClientRect().top"))<2,'Fast wheel gesture keeps the reveal pinned');
         await wait(2200);
         assert.equal(await evaluate("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')"),'false','One fast gesture cannot skip the entire slow reveal');
-        assert.ok(await evaluate("parseFloat(document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle'))<5"),'Scroll gesture advances the lift');
+        assert.ok(await evaluate("parseFloat(document.querySelector('.envelope-viewport').style.getPropertyValue('--rig-angle'))<5"),'Scroll gesture advances the lift');
         await shot(`${view.name}-envelope-fast-scroll`);
         await scroll('#invitation');await wait(1800);
       }
