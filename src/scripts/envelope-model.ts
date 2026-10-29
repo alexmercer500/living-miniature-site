@@ -8,7 +8,7 @@ import {
   ShadowMaterial, Shape, SphereGeometry, Texture, Vector3, BackSide, type Material,
 } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { createStage, grid, loadTexture, smooth, webgl2, type KeepsakeModel, type Pose } from './keepsake-3d';
+import { createStage, grid, loadTexture, quiet, smooth, uploadTextures, webgl2, type KeepsakeModel, type Pose } from './keepsake-3d';
 
 export interface ModelSpec {
   geometry: { height: number; flap: { tip: number; crop: number }; seal: { center: number[]; radius: number } };
@@ -61,7 +61,7 @@ export async function mountEnvelopeModel(rig: HTMLElement, spec: ModelSpec): Pro
   if (!webgl2()) return null;
   const tex = Object.fromEntries(await Promise.all(Object.entries(spec.textures).map(async ([name, url]) => [name, await loadTexture(url, name.endsWith('-color'))]))) as Record<string, Texture>;
 
-  const { renderer, scene } = createStage();
+  const { renderer, scene } = await createStage();
   for (const t of Object.values(tex)) t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   const front = renderer.domElement, back = document.createElement('canvas'), backContext = back.getContext('2d')!;
   front.className = 'obj-canvas obj-canvas-front';
@@ -196,13 +196,14 @@ export async function mountEnvelopeModel(rig: HTMLElement, spec: ModelSpec): Pro
   };
 
   size();
-  for (const t of Object.values(tex)) renderer.initTexture(t);
+  await uploadTextures(renderer, Object.values(tex));
   bendFlap(0);
+  await quiet();
   await renderer.compileAsync(scene, camera);
-  // One unseen draw of both passes compiles the shadow blur and uploads everything now, not on
-  // the first scroll frame.
-  renderer.shadowMap.needsUpdate = true;
-  for (const pass of ['back', 'front']) { setPass(pass); renderer.render(scene, camera); }
+  // One unseen draw of each pass compiles the shadow blur and uploads everything now, not on
+  // the first scroll frame (each in its own quiet slot).
+  for (const pass of ['back', 'front']) { await quiet(); renderer.shadowMap.needsUpdate = true; setPass(pass); renderer.render(scene, camera); }
+  size(); // the rig may have changed size while the slots waited
   rig.prepend(back);
   rig.append(front);
   ready = true;

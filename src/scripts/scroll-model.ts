@@ -9,7 +9,7 @@ import {
   Mesh, MeshPhysicalMaterial, MeshStandardMaterial, MirroredRepeatWrapping, PerspectiveCamera, PlaneGeometry,
   RepeatWrapping, ShadowMaterial, SphereGeometry, SRGBColorSpace, Texture, Vector2, Vector3, type Material,
 } from 'three';
-import { createStage, grid, loadTexture, smooth, webgl2, type KeepsakeModel, type Pose } from './keepsake-3d';
+import { createStage, grid, loadTexture, quiet, smooth, uploadTextures, webgl2, type KeepsakeModel, type Pose } from './keepsake-3d';
 
 export interface ScrollSpec {
   geometry: { radius: number; paper: number; tilt: number; axis: number[]; knot: { along: number; up: number } };
@@ -58,7 +58,7 @@ export async function mountScrollModel(rig: HTMLElement, spec: ScrollSpec): Prom
   const card = rig.querySelector<HTMLElement>('[data-envelope-card]');
   if (!card || !webgl2()) return null;
   const tex = Object.fromEntries(await Promise.all(Object.entries(spec.textures).map(async ([name, url]) => [name, await loadTexture(url, name.endsWith('-color'))]))) as Record<string, Texture>;
-  const { renderer, scene } = createStage();
+  const { renderer, scene } = await createStage();
   const canvas = renderer.domElement;
   canvas.className = 'obj-canvas obj-canvas-scroll';
   canvas.setAttribute('aria-hidden', 'true');
@@ -232,11 +232,14 @@ export async function mountScrollModel(rig: HTMLElement, spec: ScrollSpec): Prom
   };
 
   size();
-  for (const t of [...Object.values(tex), capBump, satin, satinDetail, rosette]) renderer.initTexture(t);
+  await uploadTextures(renderer, [...Object.values(tex), capBump, satin, satinDetail, rosette]);
+  await quiet();
   await renderer.compileAsync(scene, camera);
   // One unseen draw compiles the shadow blur and uploads everything now, not on the first scroll.
+  await quiet();
   renderer.shadowMap.needsUpdate = true;
   renderer.render(scene, camera);
+  size(); // the rig may have changed size while the slots waited
   rig.append(canvas);
   ready = true;
   const resize = new ResizeObserver(() => { size(); draw(); });
