@@ -76,13 +76,13 @@ try {
         assert.ok(stage.travel>=2800,'Slow reveal has sufficient scroll distance');
         if(progress>0&&progress<1) assert.equal(stage.snap,'none','Page snapping cannot skip animation poses');
         if(name==='rest') {
-          const angle=await evaluate("document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')");
+          const angle=await evaluate("document.querySelector('.envelope-viewport').style.getPropertyValue('--rig-angle')");
           await settle();
-          assert.equal(await evaluate("document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')"),angle,'Stationary scrolling must not autoplay the envelope');
+          assert.equal(await evaluate("document.querySelector('.envelope-viewport').style.getPropertyValue('--rig-angle')"),angle,'Stationary scrolling must not autoplay the envelope');
         }
       }
       if (name === 'open') await waitFor("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded') === 'true'");
-      if (name === 'reverse') await waitFor("parseFloat(document.querySelector('[data-envelope]').style.getPropertyValue('--rig-angle')) > 57.99");
+      if (name === 'reverse') await waitFor("parseFloat(document.querySelector('.envelope-viewport').style.getPropertyValue('--rig-angle')) > 57.99");
       const state = await evaluate(`(() => {
         const s=document.querySelector('[data-envelope]'), card=s.querySelector('[data-envelope-card]');
         const bounds=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}};
@@ -126,7 +126,7 @@ try {
         await command('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
         await waitFor(`document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded') === '${expected}'`);
         const actual = await evaluate("document.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded')");
-        if (actual !== expected) console.log(await evaluate("({scroll:scrollY,focus:document.activeElement?.outerHTML,style:document.querySelector('[data-envelope]').getAttribute('style')})"));
+        if (actual !== expected) console.log(await evaluate("({scroll:scrollY,focus:document.activeElement?.outerHTML,style:document.querySelector('.envelope-viewport').getAttribute('style')})"));
         assert.equal(actual, expected, `${view.name}: keyboard toggle`);
       }
     }

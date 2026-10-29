@@ -7,6 +7,39 @@
 
 ## Nature & Stories — independent second theme (2026-10-25)
 
+Handoff stalls, tap-to-open, centred theme welcome (2026-10-29, `staging`). Reported: a
+noticeable stuck moment between chapters on phones. Measured (prod build, 390×844 @3x, 4× CPU,
+scrolling from 0.2 s after load): the 3D keepsake mounted mid-scroll in one go: a 2.28 s
+blocking task in `keepsake-3d` (renderer, room environment, every texture upload, warm-up
+draws) plus 490 and 177 ms tasks. Now `quiet.ts` gates each setup step (import, renderer,
+environment, each texture, compile, each warm-up pass) on 260 ms without scroll input plus an
+idle callback, so none lands on a moving frame; the same run has no long task while scrolling,
+and letter-chapter frames over 50 ms fell from 18 to 1 (worst 134 → 67 ms). Low-end phones
+(`deviceMemory` ≤ 4, ≤ 4 cores, or data saver) skip the 3D model and keep the photo keepsake.
+`envelope.ts` now writes its custom properties on `.envelope-viewport`, not the chapter, so the
+scene plate is not restyled each frame; each chapter's painting is `decode()`d one screen
+ahead. Phones: a tap anywhere on the closed keepsake (or its seal) scrolls the chapter fully on
+screen and plays the opening by time (3.6 s; closing 2 s), then moves the page, unseen since the
+stage is pinned, to the open pose's place on the track (0.84), so scrolling carries on from
+there; a touch mid-way hands over the same way. Wider screens keep the scroll-the-track tap.
+Theme welcome: the copy is centred on every screen (auto margins in a box above the scroll cue:
+the tilt parallax writes `translate`, which had been wiping the phone centring), names large in
+script on one line on desktop, and they write themselves in (a feathered mask swept across
+each name; whole text, so Hindi shapes). A selector clash had kept the phone names' pale gold
+from applying; fixed. Phone journey: the cards peeking in at the edges fade their captions on
+the row's inline view timeline, so no half-cut lines. Tests: 21 unit/static; theme keepsake
+suite (now with tap-to-open), scene plates, hero, keepsakes, routing, envelope, nature suites.
+Follow-up, same day: still a stall at the start of a handoff on an Android phone (Nothing Phone
+2a; iPhone and desktop fine). Two Android-only costs: the hero's tilt parallax (Android grants
+the sensor without asking) restyled three layers every frame, including during the scroll away
+from the welcome: it now holds still while the page scrolls. And on Android the 3D keepsake's
+shader compiles occupy the GPU process, so no frame is drawn, a scroll included, while they run;
+gated on stillness alone they still ran on the welcome, right before a guest scrolls away. On
+touch devices the setup now starts only once the letter chapter is on screen, and each step
+waits until that chapter fills the screen (`gateQuiet`). `?probe` loads an on-device frame
+probe (`scripts/probe.ts`): slow frames, whether the main thread or the GPU/raster caused them,
+the chapter, resizes and 3D setup steps, with a Copy button.
+
 Lake City scroll rebuilt as a 3D model (2026-10-28, `development`). `npm run build-scroll-model`
 (`scripts/build-scroll-model.mjs`) unwraps the visible half of the roll off the cut layer
 (`object/roll.png`): each texture row is one angle around the roll, sampled across its

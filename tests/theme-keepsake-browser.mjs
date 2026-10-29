@@ -43,13 +43,13 @@ const stage = k => evaluate(`(async () => {
   const s = document.querySelector('[data-envelope]'), v = s.querySelector('.envelope-viewport');
   scrollTo({ top: s.getBoundingClientRect().top + scrollY + ${k} * (s.offsetHeight - v.offsetHeight), behavior: 'instant' });
   const rig = s.querySelector('.envelope-rig');
-  // The 3D model loads lazily: give it a moment the first time.
-  for (let t = 0; t < 100 && rig.dataset.model && !rig.classList.contains('object-3d') && !window.__noWebgl; t++) await new Promise(r => setTimeout(r, 100));
+  // The 3D model loads lazily, a step at a time between scroll gestures: give it a moment the first time.
+  for (let t = 0; t < 250 && rig.dataset.model && !rig.classList.contains('object-3d') && !window.__noWebgl; t++) await new Promise(r => setTimeout(r, 100));
   let last = '';
   // Settled once whole frames pass with no change (each poll waits for real frames, so one slow
   // frame never passes for a settled pose).
   const frames = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-  for (let t = 0, steady = 0; t < 120 && steady < 3; t++) { await frames(); await new Promise(r => setTimeout(r, 150)); await frames(); const now = s.getAttribute('style') + rig.getAttribute('style'); steady = now === last ? steady + 1 : 0; last = now; }
+  for (let t = 0, steady = 0; t < 120 && steady < 3; t++) { await frames(); await new Promise(r => setTimeout(r, 150)); await frames(); const now = v.getAttribute('style') + rig.getAttribute('style'); steady = now === last ? steady + 1 : 0; last = now; }
   const card = s.querySelector('[data-envelope-card]'), c = card.getBoundingClientRect();
   const op = sel => { const el = s.querySelector(sel); return el ? +getComputedStyle(el).opacity : null; };
   const roll = s.querySelector('.obj-roll img')?.closest('.obj-roll');
@@ -59,7 +59,7 @@ const stage = k => evaluate(`(async () => {
     photoShown: getComputedStyle(rig.querySelector('.obj-layer') ?? rig).display !== 'none',
     images: [...rig.querySelectorAll('img')].every(i => i.complete && i.naturalWidth > 0),
     seal: op('.obj-seal'), ribbon: op('.obj-ribbon'),
-    flap: parseFloat(s.style.getPropertyValue('--flap-angle')) || 0,
+    flap: parseFloat(v.style.getPropertyValue('--flap-angle')) || 0,
     clip: getComputedStyle(card).clipPath,
     card: { top: c.top, bottom: c.bottom, left: c.left, right: c.right },
     inert: card.inert,
@@ -137,7 +137,29 @@ try {
     const back = await stage(0);
     assert.equal(back.inert, true, `${view.name}: scrolling back reseals`);
     assert.ok(view.kind === 'envelope' ? back.seal === 1 : back.ribbon === 1, `${view.name}: reversible`);
-    console.log(`${view.name}: closed, opening, presented and reversed ok`);
+
+    if (view.mobile) {
+      // Phones: a tap on the keepsake itself (not only its seal), with the chapter still coming
+      // on screen, brings it fully on screen and opens it by time; it lands on the track at the
+      // open pose, so scrolling carries on from there.
+      const tapped = await evaluate(`(async () => {
+        const s = document.querySelector('[data-envelope]'), v = s.querySelector('.envelope-viewport'), rig = s.querySelector('.envelope-rig');
+        const start = s.getBoundingClientRect().top + scrollY, track = s.offsetHeight - v.offsetHeight;
+        scrollTo({ top: start - innerHeight * .3, behavior: 'instant' });
+        await new Promise(r => setTimeout(r, 600));
+        rig.click();
+        for (let t = 0; t < 120 && s.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded') !== 'true'; t++) await new Promise(r => setTimeout(r, 100));
+        // (The card is usable just before the timeline ends; the page moves when it does.)
+        for (let t = 0; t < 60 && scrollY < start + 1; t++) await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 300));
+        const c = s.querySelector('[data-envelope-card]').getBoundingClientRect();
+        return { open: s.querySelector('[data-envelope-toggle]').getAttribute('aria-expanded'), at: (scrollY - start) / track, top: v.getBoundingClientRect().top, card: { top: c.top, bottom: c.bottom } };
+      })()`);
+      assert.equal(tapped.open, 'true', `${view.name}: a tap opens the keepsake`);
+      assert.ok(Math.abs(tapped.at - .84) < .01, `${view.name}: lands at the open pose on the track (${tapped.at})`);
+      assert.ok(Math.abs(tapped.top) < 2 && tapped.card.top >= 56 && tapped.card.bottom <= view.height, `${view.name}: opened in the middle of the screen (${JSON.stringify(tapped)})`);
+    }
+    console.log(`${view.name}: closed, opening, presented, reversed${view.mobile ? ' and tapped open' : ''} ok`);
   }
   assert.deepEqual(errors, []);
 } finally {
