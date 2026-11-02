@@ -136,8 +136,16 @@ export const themeConfig = {
 
 const overrides: Record<Exclude<ThemeId, 'nature'>, Record<Lang, Partial<ThemeCopy>>> = {
   'amber-fort': {
-    en: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
-    hi: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
+    en: {
+      chapter: 'A Royal Welcome', welcome: 'A Royal Welcome', heroOne: 'From this moment,', heroTwo: 'a lifetime together.',
+      dateLine: '23–26 November 2026', roots: 'Our beginnings',
+      rootsBody: 'The love, traditions, and blessings that brought us to this beautiful day.',
+    },
+    hi: {
+      chapter: 'शाही स्वागत', welcome: 'शाही स्वागत', heroOne: 'इस पल से,', heroTwo: 'उम्र भर का साथ।',
+      dateLine: '23–26 नवम्बर 2026', roots: 'हमारी शुरुआत',
+      rootsBody: 'वह प्रेम, परंपराएँ और आशीर्वाद जो हमें इस सुंदर दिन तक लाए।',
+    },
   },
   'lake-city': {
     en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },

@@ -12,6 +12,7 @@ import Venue from './Venue.astro';
 import Wishes from './Wishes.astro';
 import FinalNote from './FinalNote.astro';
 import Envelope from './Envelope.astro';
+import InvitationModal from './InvitationModal.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t, formatDate } from '../../lib/content';
@@ -71,13 +72,12 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
         <h1 id="nature-title"><span>{c.heroOne}</span><em>{c.heroTwo}</em></h1>
         <p class="ns-couple">{nameTwo ? <><span>{nameOne}</span> <em>{joiner}</em> <span>{nameTwo}</span></> : nameOne}</p>
         <div class="ornament"><span></span></div>
-        <p class="ns-date">{loc(content.site.weddingDateLabel, lang)}</p>
+        <p class="ns-date">{c.dateLine}</p>
       </div>
       <button class="ns-lantern-touch" type="button" data-nature-lantern aria-label={c.light} aria-pressed="false" disabled><span class="ns-lantern-swing"><HeroLantern /></span></button>
       <button class="ns-petal-touch" type="button" data-nature-petals aria-label={c.petals} disabled><span aria-hidden="true">✿</span></button>
       <div class="ns-hero-foot">
         <a href="#journey" class="ns-scroll"><span><Icon name="arrow-down" /></span>{t(lang, 'scrollToBegin')}</a>
-        <a href="#celebrations" class="ns-skip">{t(lang, 'jumpToDetails')} ↗</a>
       </div>
       <HeroAtmosphere />
     </section>
@@ -104,8 +104,9 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
 
     <FinalNote lang={lang} theme={theme} />
   </main>
+  <InvitationModal lang={lang} />
   <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang)}</p></footer>
-  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
+  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>
 <script>

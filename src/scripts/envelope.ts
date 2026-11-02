@@ -40,14 +40,27 @@ export async function setupEnvelope() {
   // between gestures, creating the WebGL renderer alone is a few hundred milliseconds there.
   const device = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const lowEnd = (device.deviceMemory ?? 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 || Boolean(device.connection?.saveData);
+  // The server-rendered photo layers and the enhanced model are intentionally different assets.
+  // Mark the rig as pending before starting the lazy handoff so the photo cannot flash briefly
+  // before the model replaces it. On devices where WebGL is skipped, reveal the photo fallback.
+  const showPhotoFallback = () => { if (modelRig) modelRig.dataset.modelState = 'fallback'; };
+  if (modelRig) modelRig.dataset.modelState = 'pending';
   // On phones each setup step also waits until the chapter fills the screen (see whenNear).
   if (modelRig && matchMedia('(pointer: coarse)').matches) gateQuiet(() => { const r = scene.getBoundingClientRect(); return r.top <= 1 && r.bottom >= innerHeight - 1; });
   if (modelRig && !lowEnd) whenNear(scene, () => quiet().then(() => JSON.parse(modelRig.dataset.model!))
     .then(spec => spec.kind === 'scroll'
       ? import('./scroll-model').then(m => m.mountScrollModel(modelRig, spec))
       : import('./envelope-model').then(m => m.mountEnvelopeModel(modelRig, spec)))
-    .then(mounted => { if (mounted) { model = mounted; mounted.update(shown); (window as { __nsProbe?: (text: string) => void }).__nsProbe?.('3D keepsake ready'); } })
-    .catch(error => console.warn('3D keepsake unavailable; the photo keepsake remains.', error)));
+    .then(mounted => {
+      if (mounted) {
+        model = mounted;
+        mounted.update(shown);
+        modelRig.dataset.modelState = 'ready';
+        (window as { __nsProbe?: (text: string) => void }).__nsProbe?.('3D keepsake ready');
+      } else showPhotoFallback();
+    })
+    .catch(error => { showPhotoFallback(); console.warn('3D keepsake unavailable; the photo keepsake remains.', error); }));
+  else showPhotoFallback();
 
   // Keep the fully visible static card when motion is reduced (and drop the motion if the
   // guest turns reduced motion on mid-visit).

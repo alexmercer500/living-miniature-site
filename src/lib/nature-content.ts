@@ -2,7 +2,7 @@ import { href, type Lang } from './content';
 export const natureHref = (lang: Lang, path = '') => href(lang, path || '/');
 export const natureCopy = {
   en: {
-    chapter: 'A journey together', heroOne: 'Two paths.', heroTwo: 'One journey.',
+    chapter: 'A journey together', heroOne: 'Two paths.', heroTwo: 'One journey.', dateLine: 'Wedding date to be confirmed',
     welcome: 'The beginning', story: 'Our journey', storyTitle: 'Every path leads us here.',
     storyIntro: 'Two families, countless blessings, and a beautiful new beginning.',
     keepsakeHint: 'Choose a keepsake to linger a little longer.',
@@ -27,7 +27,7 @@ export const natureCopy = {
     opened: 'The invitation is open.', closed: 'The invitation is rolled closed.',
   },
   hi: {
-    chapter: 'साथ का एक सफ़र', heroOne: 'दो राहें।', heroTwo: 'एक सफ़र।',
+    chapter: 'साथ का एक सफ़र', heroOne: 'दो राहें।', heroTwo: 'एक सफ़र।', dateLine: 'विवाह की तिथि शीघ्र घोषित होगी',
     welcome: 'शुभ शुरुआत', story: 'हमारा सफ़र', storyTitle: 'हर राह हमें यहाँ लाती है।',
     storyIntro: 'दो परिवार, अनगिनत आशीर्वाद और एक सुंदर नई शुरुआत।',
     keepsakeHint: 'किसी याद को चुनें और कुछ पल ठहरें।',

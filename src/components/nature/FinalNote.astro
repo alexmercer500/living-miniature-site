@@ -50,7 +50,7 @@ const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality
       </div>
     </div>
     <nav class="ns-note-actions" aria-label={c.finalNote}>
-      <a class="ns-button" href={themeHref(lang, theme, '/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
+      <a class="ns-button" href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={themeHref(lang, theme, '/invitation')}>{loc(content.invitation.label,lang)}<Icon name="arrow-right" /></a>
       {photosConfigured() && <a class="ns-button ns-button-light" href={content.photos.albumUrl} target="_blank" rel="noopener"><Icon name="camera" />{t(lang,'sharePhotos')}</a>}
       <a class="ns-note-back" href="#welcome"><Icon name="up" />{t(lang,'backToTop')}</a>
     </nav>

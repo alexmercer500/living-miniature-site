@@ -91,7 +91,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
         <h3 id="invitation-card-title"><span class="name-one">{one}</span><em>{lang === 'hi' ? 'एवं' : '&'}</em><span class="name-two">{two}</span></h3>
         <p class="card-date">{date}</p>
         <p class="card-venue">{content.venue.name}</p>
-        <a class="card-link" href={invitationHref}>{loc(content.invitation.label, lang)} <Icon name="arrow-right" /></a>
+        <a class="card-link" href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={invitationHref}>{loc(content.invitation.label, lang)} <Icon name="arrow-right" /></a>
       </article>
       <div class="obj-roll">
       {model?.kind === 'scroll' && <><img {...layer('roll', '')} aria-hidden="true" /><img {...layer('ribbon', 'obj-ribbon')} aria-hidden="true" /></>}
@@ -118,7 +118,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     </div>
 
     <div class="envelope-footer">
-      <a href={invitationHref}>{loc(content.invitation.label, lang)}</a>
+      <a href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={invitationHref}>{loc(content.invitation.label, lang)}</a>
       <a href={continueHref}>{t(lang, 'continueJourney')} <Icon name="arrow-down" /></a>
     </div>
     <p class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-envelope-status
@@ -355,6 +355,10 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     left: calc(var(--knot-x) * (1 - var(--obj-present)) + var(--rest-x) * var(--obj-present));
     translate: -50% -50%;
   }
+  /* The photo keepsake is the SSR fallback, while the 3D keepsake is loaded lazily. Keep the
+     fallback out of the first paint until that choice is made, otherwise visitors see one
+     envelope flash into another on both mobile and desktop. */
+  .envelope-rig[data-model]:not([data-model-state="ready"]):not([data-model-state="fallback"]) { visibility: hidden; }
   /* Until the keepsake opens, its own seal or knot glows to invite the tap. */
   @media (prefers-reduced-motion: no-preference) {
     [data-enhanced] .object-rig .seal-control::before {

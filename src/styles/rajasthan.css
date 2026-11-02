@@ -55,6 +55,11 @@
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']) :is(.ns-hero-copy .ns-kicker,.ns-couple,.ns-hero-copy .ornament,.ns-hero-copy .ns-lotus) { color: var(--theme-accent); text-shadow: 0 1px 8px var(--theme-deep); }
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-date { color: var(--theme-ivory); background: color-mix(in srgb,var(--theme-deep) 55%,transparent); }
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-greeting { color: var(--theme-ivory); text-shadow: 0 0 14px var(--theme-deep); }
+:root[data-theme='amber-fort'] .ns-date {
+  font-size: clamp(.95rem, 1.35vw, 1.3rem) !important;
+  padding: .42rem 1rem;
+  letter-spacing: .035em;
+}
 /* Mid-screen the copy crosses the lit architecture: a deeper shade, and the script names in
    pale gold with a firm dusk shadow so their fine strokes hold. */
 :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy::before { background: radial-gradient(closest-side,color-mix(in srgb,var(--theme-deep) 72%,transparent),color-mix(in srgb,var(--theme-deep) 42%,transparent) 58%,transparent); }
@@ -87,7 +92,20 @@
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy > .ns-couple > em { animation-duration: .5s; animation-delay: 2.25s; }
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy > .ns-couple > span:last-child { animation-delay: 2.6s; }
 }
+:root[data-theme='amber-fort'] .ns-hero-copy > .ns-couple > * {
+  -webkit-mask-image: none;
+  mask-image: none;
+  animation: none !important;
+}
 @media (max-width: 767px) {
   /* Below the hanging lantern, so it can use the width. */
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy { left: 6%; width: 88%; }
+  :root[data-theme='amber-fort'] .ns-date {
+    font-size: clamp(.95rem, 3.8vw, 1.15rem) !important;
+    padding-inline: .85rem;
+  }
+  /* On a narrow Amber screen the story path lands directly across the photo row.
+     Keep the cards' own hanging cords, but remove the sweeping background thread so
+     it cannot cross the copy or appear to run through a photograph. */
+  :root[data-theme='amber-fort'] .ns-story .ns-path { display: none; }
 }
