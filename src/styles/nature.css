@@ -671,6 +671,7 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 /* Confirmed destination cards keep the venue section practical and bilingual. */
 .ns-venue-stage { display: block; }
 .ns-venue-locations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2.8rem); width: 100%; max-width: 1180px; margin-inline: auto; }
+.ns-venue-locations-single { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
 .ns-location-card { display: grid; justify-items: center; gap: .55rem; min-width: 0; padding: clamp(1.2rem, 3vw, 2rem); color: #42513d; text-align: center; text-shadow: none; background: #f3dfbeed; border: 1px solid #d1a96b; box-shadow: inset 0 0 0 5px #fff4db88, 0 18px 45px #081d1860; }
 .ns-location-card .ns-lotus { width: 32px; color: #9a6d2f; }
 .ns-location-card .ns-kicker { margin: 0; color: #76552b; }

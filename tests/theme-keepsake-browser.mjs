@@ -65,6 +65,15 @@ const stage = k => evaluate(`(async () => {
     inert: card.inert,
     // The roll's axis is pinned to its top: its distance down the sheet against the sheet height.
     rollAt: roll ? roll.offsetTop : null, sheet: roll ? roll.parentElement.offsetHeight : null,
+    // Nothing decorative may sit over the invitation links: a guest clicking either one must
+    // reach it (the scroll's roll frame used to swallow both).
+    hits: ['[data-envelope-card] a[data-invitation-modal-open]', '.envelope-footer a[data-invitation-modal-open]'].map(sel => {
+      const el = s.querySelector(sel);
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+      return hit === el || el.contains(hit);
+    }),
     width: document.documentElement.scrollWidth, vw: innerWidth, vh: innerHeight,
   };
 })()`);
@@ -130,6 +139,7 @@ try {
 
     const open = await stage(1);
     assert.equal(open.inert, false, `${view.name}: card operable once presented`);
+    assert.ok(open.hits.every(Boolean), `${view.name}: both invitation links are clickable (${JSON.stringify(open.hits)})`);
     assert.ok(open.card.top >= 56 && open.card.bottom <= open.vh, `${view.name}: presented card fully on screen (${JSON.stringify(open.card)})`);
     assert.ok(open.card.left >= 0 && open.card.right <= open.vw && open.width <= open.vw, `${view.name}: no horizontal overflow`);
     if (view.kind === 'scroll') assert.ok(Math.abs(open.rollAt - open.sheet) < 2, `${view.name}: roll rides the paper's lower edge (${open.rollAt} vs ${open.sheet})`);

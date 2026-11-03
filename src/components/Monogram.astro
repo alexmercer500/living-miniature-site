@@ -1,7 +1,7 @@
 ---
-import { initials } from '../lib/content';
-interface Props { class?: string }
-const [a, b] = initials();
+import { coupleInitials, type ThemeId } from '../lib/theme';
+interface Props { class?: string; theme?: ThemeId }
+const [a, b] = coupleInitials(Astro.props.theme ?? 'nature');
 ---
 <span class:list={['monogram', Astro.props.class]} aria-hidden="true"><span>{a}</span><i></i><span>{b}</span></span>
 

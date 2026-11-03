@@ -59,9 +59,10 @@ test('Nature assets and entrypoints exist', () => {
 test('Rajasthan theme routes keep bilingual routing and theme-specific scene assets', () => {
   const data = JSON.parse(fs.readFileSync('src/data/site-content.json', 'utf8'));
   const events = [
-    ['The Turmeric Affair', 'हल्दी की सुनहरी महफ़िल'],
-    ['The Henna &amp; Harmony Soirée', 'मेहंदी और सुरों की शाम'],
-    ['The Vow &amp; Wonder Chapter', 'सात फेरों का नया अध्याय'],
+    ['The Promise Begins', 'वचन की शुरुआत'],
+    ['A Turmeric Affair', 'हल्दी का उत्सव'],
+    ['The Vow &amp; Wonder Chapter', 'वचन एवं विस्मय का नया अध्याय'],
+    ['An Evening to Remember', 'यादगार आशीर्वादों की शाम'],
   ];
   for (const { route, theme, lang } of [
     { route: '/amber-fort/', theme: 'amber-fort', lang: 'en' },
@@ -90,7 +91,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     const parts = theme === 'amber-fort' ? ['body', 'flap', 'flap-inside', 'lining', 'seal'] : ['scroll'];
     assert.deepEqual(Object.keys(model.textures).sort(), parts.flatMap(p => [`${p}-color`, `${p}-detail`]).sort());
     for (const url of Object.values(model.textures)) assert.ok(fs.existsSync(`dist${url}`), `${route}: ${url} is built`);
-    assert.equal([...html.matchAll(/class="ns-event"/g)].length, 3);
+    assert.equal([...html.matchAll(/class="ns-event"/g)].length, 4);
     for (const title of events.map(pair => pair[lang === 'hi' ? 1 : 0])) assert.ok(html.includes(title), `${title} appears on ${route}`);
     for (const match of html.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/g)) {
       const path = match[1];
@@ -108,9 +109,47 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     for (const [, src] of html.matchAll(/<script[^>]+src="([^"]+)"/g)) assert.ok(!fs.readFileSync(`dist${src}`, 'utf8').includes('WebGLRenderer'), `${route}: ${src} does not bundle three.js`);
     assert.ok(!html.includes('envelope-model.'), `${route} does not preload the 3D model`);
   }
-  assert.equal(data.events[0].title.en, 'The Turmeric Affair');
-  assert.equal(data.events[1].title.en, 'The Henna & Harmony Soirée');
+  assert.equal(data.events[0].title.en, 'The Promise Begins');
+  assert.equal(data.events[1].title.en, 'A Turmeric Affair');
   assert.equal(data.events[2].title.en, 'The Vow & Wonder Chapter');
+  assert.equal(data.events[3].title.en, 'An Evening to Remember');
+});
+
+test('the bride\'s side (lake-city) puts Pallavi first, ends on the 25th and shows one venue', () => {
+  for (const [route, lang] of [['/lake-city/', 'en'], ['/hi/lake-city/', 'hi']]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    const couple = html.match(/<p class="ns-couple">([\s\S]*?)<\/p>/)[1];
+    const [her, him] = lang === 'hi' ? ['पल्लवी', 'रत्नेश'] : ['Pallavi', 'Ratnesh'];
+    assert.ok(couple.indexOf(her) < couple.indexOf(him), `${route}: the bride's name comes first`);
+    assert.equal([...html.matchAll(/data-event-date="2026-11-25"/g)].length, 2, `${route}: the reception shares the wedding day`);
+    assert.equal([...html.matchAll(/data-event-date="2026-11-26"/g)].length, 0, `${route}: nothing on the 26th`);
+    assert.equal([...html.matchAll(/class="ns-location-card"/g)].length, 1, `${route}: only the wedding venue`);
+  }
+  // The groom's side keeps the 26th reception and both venues.
+  for (const [route, lang] of [['/amber-fort/', 'en'], ['/hi/amber-fort/', 'hi']]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    const couple = html.match(/<p class="ns-couple">([\s\S]*?)<\/p>/)[1];
+    const [him, her] = lang === 'hi' ? ['रत्नेश', 'पल्लवी'] : ['Ratnesh', 'Pallavi'];
+    assert.ok(couple.indexOf(him) < couple.indexOf(her), `${route}: the groom's name comes first`);
+    assert.equal([...html.matchAll(/data-event-date="2026-11-26"/g)].length, 1, `${route}: the reception keeps the 26th`);
+    assert.equal([...html.matchAll(/class="ns-location-card"/g)].length, 2, `${route}: both venues`);
+  }
+});
+
+test('a themed invitation is its printed card', () => {
+  for (const [route, image] of [
+    ['/amber-fort/invitation/', 'royal-ratnesh-pallavi-invitation'],
+    ['/lake-city/invitation/', 'royal-wedding-by-the-lake'],
+    ['/hi/lake-city/invitation/', 'royal-wedding-by-the-lake'],
+  ]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    assert.ok(html.includes('ns-card-page'), `${route} shows the printed card`);
+    assert.ok(html.includes(image), `${route} shows its own card, not the other`);
+    assert.ok(!html.includes('class="ns-event"'), `${route} drops the written schedule`);
+  }
+  // The nature root has no card, so it keeps the written invitation.
+  assert.ok(fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-invite-page'));
+  assert.ok(fs.readFileSync('dist/hi/invitation/index.html', 'utf8').includes('ns-invite-page'));
 });
 
 test('Nature venue has three semantic signs, gated maps and a printable fallback', () => {

@@ -4,7 +4,7 @@ import ScenePlate from './ScenePlate.astro';
 import { getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
 import { type Lang, content, loc, t, photosConfigured } from '../../lib/content';
-import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
+import { coupleDisplay, themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
@@ -41,7 +41,7 @@ const paperMaterial = await getImage({src:paper,width:1024,format:'webp',quality
           <span class="ns-note-pin top" aria-hidden="true"></span><span class="ns-note-pin bottom" aria-hidden="true"></span>
           <div class="ns-note-copy">
             <p class="ns-note-salutation">{t(lang,'withLove')}</p>
-            <h3 id="ns-note-names">{loc(content.couple.displayName,lang)}</h3>
+            <h3 id="ns-note-names">{coupleDisplay(lang, theme)}</h3>
             <div class="ns-note-ornament" aria-hidden="true"><span></span><svg viewBox="0 0 28 28" focusable="false"><path d="M14 1L18 7L14 12L10 7ZM27 14L21 18L16 14L21 10ZM14 27L10 21L14 16L18 21ZM1 14L7 10L12 14L7 18Z" fill="currentColor" /></svg><span></span></div>
             <p class="ns-note-message">{loc(content.closing.line,lang)}</p>
             <p class="ns-note-epilogue">{c.closingOne} <em>{c.closingTwo}</em></p>

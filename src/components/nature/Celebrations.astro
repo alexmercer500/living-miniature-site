@@ -1,11 +1,12 @@
 ---
 import Art from './Art.astro';
 import ScenePlate from './ScenePlate.astro';
-import { type Lang, content, loc, t, formatDate, formatTime } from '../../lib/content';
-import { themeConfig, themeCopy, themeEventFallback, type ThemeId } from '../../lib/theme';
+import { type Lang, loc, t, formatDate, formatTime } from '../../lib/content';
+import { eventsFor, themeConfig, themeCopy, themeEventFallback, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
+const events = eventsFor(theme);
 const landscapes = themeConfig[theme].assets;
 const eventAssets = themeConfig[theme].eventAssets;
 const lights=[[25,30],[95,51],[165,60],[235,56],[305,38],[375,9],[445,37],[515,55],[585,60],[655,51],[725,28],[795,11],[865,39],[935,55]];
@@ -27,7 +28,7 @@ const lights=[[25,30],[95,51],[165,60],[235,56],[305,38],[375,9],[445,37],[515,5
     <div><p class="ns-kicker">{c.celebrationsKicker}</p><h2 id="ns-events-title">{t(lang,'celebrations')}</h2><p class="ns-celebrations-intro">{c.eventLine}</p></div>
   </header>
   <ol class="ns-events" tabindex="0" aria-label={t(lang,'celebrations')}>
-    {content.events.map((event,i)=><li class="ns-event" data-nature-event={event.id} data-event-date={event.date}>
+    {events.map((event,i)=><li class="ns-event" data-nature-event={event.id} data-event-date={event.date}>
       <div class="ns-event-art"><Art mobile={eventAssets[event.visualKey] ?? themeEventFallback} eager priority="low" /><span class="ns-event-number" aria-hidden="true">0{i+1}</span><span class="ns-event-today" data-event-today hidden>{t(lang,'today')}</span></div>
       <div class="ns-event-copy">
         <svg class="ns-event-scallop" viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0Q150 54 300 0V30H0Z" fill="#f3dfbe" /><path d="M0 1Q150 55 300 1" fill="none" stroke="#b99761" stroke-width="1.2" /></svg>

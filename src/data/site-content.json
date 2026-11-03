@@ -139,12 +139,18 @@
         "hi": "आत्मीय स्वजनों में हिंगलाजिनी एवं परमपिता परमेश्वर के आशीर्वाद से हमारे लाडले रत्नेश के मंगल परिणय के अवसर पर आपको सादर आमंत्रित करते हैं।"
       },
       "familyOne": {
-        "en": "Ratnesh — grandson of Late Shri Bakhariya Ram Sahu; son of Late Shri Hariram Sahu, Khairagarh.",
-        "hi": "चि. रत्नेश — सुपौत्र स्व. श्री बखरिया राम साहू एवं सुपुत्र स्व. श्री हरिराम साहू, खैरागढ़।"
+        "name": { "en": "Ratnesh", "hi": "चि. रत्नेश" },
+        "line": {
+          "en": "grandson of Late Shri Bakhariya Ram Sahu; son of Late Shri Hariram Sahu, Khairagarh.",
+          "hi": "सुपौत्र स्व. श्री बखरिया राम साहू एवं सुपुत्र स्व. श्री हरिराम साहू, खैरागढ़।"
+        }
       },
       "familyTwo": {
-        "en": "Pallavi — granddaughter of Shri Samaylal Sahu; daughter of Shri Vishnu Sahu, Bhilai.",
-        "hi": "सौ. का. पल्लवी — सुपौत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
+        "name": { "en": "Pallavi", "hi": "सौ. का. पल्लवी" },
+        "line": {
+          "en": "granddaughter of Shri Samaylal Sahu; daughter of Shri Vishnu Sahu, Bhilai.",
+          "hi": "सुपौत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
+        }
       },
       "hosts": {
         "en": "With love and blessings from both families. The wedding and fera will be held at Dhancha Bhavan, Sai Mandir, Bhilai. The reception will be at Uttam Villa, Khairagarh.",
@@ -346,12 +352,12 @@
   },
   "music": {
     "enabled": true,
-    "src": "",
+    "src": "/music/ambient.mp3",
     "label": {
       "en": "Play ambient music",
       "hi": "संगीत चलाएं"
     },
-    "_note": "src empty = music is synthesised in the browser (tanpura drone + reed melody). Set src to a local file in /public to use a recording instead. Never autoplays."
+    "_note": "src empty = music is synthesised in the browser (tanpura drone + reed melody). Set src to a file in /public (like /music/ambient.mp3) to loop that recording instead. Never autoplays: the guest taps the sound button."
   },
   "_placeholderNotice": "All names, dates, venues and links are placeholders from the design kit. Replace only with approved details.",
   "closing": {

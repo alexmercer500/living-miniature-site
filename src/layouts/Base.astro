@@ -20,14 +20,14 @@ import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tir
 import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
 import { getImage } from 'astro:assets';
 import { type Lang, content, loc, t, href } from '../lib/content';
-import { themeConfig, type ThemeId } from '../lib/theme';
+import { coupleDisplay, themeConfig, type ThemeId } from '../lib/theme';
 
 interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: ThemeId }
 const requestedTheme = Astro.props.theme as ThemeId | undefined;
 const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : Astro.url.pathname.includes('/lake-city') ? 'lake-city' : 'nature');
 const { lang, page = 'home' } = Astro.props;
 const themeMeta = themeConfig[theme];
-const title = Astro.props.title ?? (lang === 'hi' ? `${loc(content.couple.displayName, 'hi')} — विवाह उत्सव` : content.site.title);
+const title = Astro.props.title ?? (lang === 'hi' ? `${coupleDisplay('hi', theme)} — विवाह उत्सव` : content.site.title);
 const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
 const suppliedPath = Astro.props.routePath as string | undefined;
 const path = suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' && theme !== 'nature' && suppliedPath === '/invitation'))
@@ -59,7 +59,7 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta property="og:image" content={new URL(preview.src, Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={loc(content.couple.displayName, lang)} />
+    <meta property="og:image:alt" content={coupleDisplay(lang, theme)} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
     <slot name="head" />
