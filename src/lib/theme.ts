@@ -44,14 +44,14 @@ import lakeReception from '../assets/rajasthan/lake-city/events/reception.png';
 
 export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
 
-/** The invitation keepsake a theme opens in place of the paper envelope: its photo cut into
- *  layers (scripts/cut-invitation-objects.mjs) and their geometry, in layer pixels. */
+/** The invitation keepsake a theme opens in place of the paper envelope: its 3D model's parts,
+ *  rendered as layers (scripts/render-keepsake-standins.mjs), and their geometry in layer pixels. */
 export type InvitationModel =
   | { kind: 'envelope'; geometry: typeof amberGeometry; layers: { flap: ImageMetadata; body: ImageMetadata; seal: ImageMetadata }; model3d?: KeepsakeModel3d<typeof amberModelGeometry> }
   | { kind: 'scroll'; geometry: typeof lakeGeometry; layers: { roll: ImageMetadata; ribbon: ImageMetadata }; model3d?: KeepsakeModel3d<typeof lakeModelGeometry> };
 /** A keepsake's 3D model (scripts/envelope-model.ts, scroll-model.ts): its geometry and textures
- *  by file name (scripts/build-envelope-model.mjs, build-scroll-model.mjs). The photo layers stay
- *  as its poster and fallback. */
+ *  by file name (scripts/build-envelope-model.mjs, build-scroll-model.mjs). Its rendered layers
+ *  are its stand-in and fallback. */
 export type KeepsakeModel3d<G> = { geometry: G; textures: Record<string, ImageMetadata> };
 export type ThemeCopy = typeof natureCopy.en;
 

@@ -92,7 +92,8 @@
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy > .ns-couple > em { animation-duration: .5s; animation-delay: 2.25s; }
   :root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy > .ns-couple > span:last-child { animation-delay: 2.6s; }
 }
-:root[data-theme='amber-fort'] .ns-hero-copy > .ns-couple > * {
+/* The names no longer write themselves in on either theme: they are simply there. */
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-copy > .ns-couple > * {
   -webkit-mask-image: none;
   mask-image: none;
   animation: none !important;

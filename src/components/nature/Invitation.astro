@@ -10,10 +10,15 @@ interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang), p = content.invitation.placeholders;
 ---
-<Fragment slot="head">
-  <script is:inline>if (new URLSearchParams(location.search).get('modal') === '1') document.documentElement.dataset.modalInvitation = '';</script>
-</Fragment>
 <Base lang={lang} routePath="/invitation" page="invitation" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
+  <Fragment slot="head">
+    <!-- Opened inside the home page's invitation modal: no header, and Escape closes the modal
+         even once the guest has scrolled (focus is in here then, not on the home page). -->
+    <script is:inline>if (new URLSearchParams(location.search).get('modal') === '1') {
+      document.documentElement.dataset.modalInvitation = '';
+      addEventListener('keydown', event => { if (event.key === 'Escape') try { parent.document.querySelector('[data-invitation-modal]')?.close(); } catch {} });
+    }</script>
+  </Fragment>
   <Header lang={lang} theme={theme} invitation />
   <main id="main" class="ns-invite-page">
     <article class="ns-invite-card" aria-labelledby="ns-invite-title">
@@ -48,7 +53,9 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
   .ns-invite-locations li { display: grid; gap: .45rem; justify-items: center; padding: 1rem; border: 1px solid #b08a5266; background: #fffaf2aa; }
   .ns-invite-locations h3, .ns-invite-locations p { margin: 0; }
   address { font-style: normal; }
-  :global(html[data-modal-invitation]) .ns-header { display: none; }
+  :global(html[data-modal-invitation]) { overscroll-behavior: contain; }
+  /* The header is another component's markup, so the whole selector is global. */
+  :global(html[data-modal-invitation] .ns-header) { display: none; }
   :global(html[data-modal-invitation]) .ns-invite-page { padding-top: 2rem; }
   @media print {
     :global(.ns-header), :global(.skip-link) { display: none !important; }

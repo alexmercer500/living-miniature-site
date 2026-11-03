@@ -11,8 +11,10 @@ import { themeConfig, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; theme?: ThemeId }
 const { lang, id = 'invitation', invitationHref = href(lang, '/invitation'), continueHref = '#celebrations', theme = 'nature' } = Astro.props;
 // A theme may open its own keepsake instead of the paper envelope: the Amber Fort envelope (flap,
-// body, wax seal) or the Lake City scroll (roll, ribbon). Each is one photo cut into layers by
-// scripts/cut-invitation-objects.mjs; the same scroll stages drive them (scripts/envelope.ts).
+// body, wax seal) or the Lake City scroll (roll, ribbon). Each is its 3D model, rendered part by
+// part by scripts/render-keepsake-standins.mjs, so the stand-in shown until the model is drawn (or
+// on devices that never draw it) is the same keepsake; the same scroll stages drive both
+// (scripts/envelope.ts).
 const model = themeConfig[theme].invitationModel;
 const LAYER_WIDTHS = [700, 1400]; // the rig is at most 35rem wide; 1400 covers it at 2x
 const layers: Record<string, { src: string; srcset: string; width: number; height: number }> = model
@@ -34,12 +36,15 @@ if (model?.kind === 'envelope') {
   ].join('; ');
 } else if (model?.kind === 'scroll') {
   const g = model.geometry, [[x0, y0], [x1, y1]] = g.axis, mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+  const rig: number[] = 'rig' in g ? g.rig as number[] : [g.width, g.height];
   rigStyle = [
-    `aspect-ratio: ${g.width} / ${g.height}`,
-    // The unrolled paper is as wide as the roll's paper; the roll layer is wider (end caps).
+    // The rig is the `rig` box inside the layers' larger frame (the bow's tails and the finials
+    // reach past it).
+    `aspect-ratio: ${rig[0]} / ${rig[1]}`,
     `--layer-ratio: ${g.width} / ${g.height}`,
-    // (The photo foreshortens the roll a little; the unrolled sheet is drawn 6% wider to match.)
-    `--paper: ${pct(g.paperLength * 1.06, g.width)}`, `--roll-width: ${pct(g.width, g.paperLength * 1.06)}`,
+    // The unrolled paper is as wide as the roll's paper (paperLength × 1.06: the roll is turned a
+    // little, so it looks shorter); the roll layer is wider (end caps).
+    `--paper: ${pct(g.paperLength * 1.06, rig[0])}`, `--roll-width: ${pct(g.width, g.paperLength * 1.06)}`,
     `--axis-x: ${pct(mx, g.width)}`, `--axis-y: ${pct(my, g.height)}`,
     `--level: ${(-Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI).toFixed(2)}deg`,
     `--knot-x: ${pct(g.knot[0], g.width)}`, `--knot-y: ${pct(g.knot[1], g.height)}`,
@@ -49,7 +54,7 @@ if (model?.kind === 'envelope') {
   ].join('; ');
 }
 // A keepsake with a 3D model (scripts/envelope-model.ts, scroll-model.ts) loads it lazily; the
-// photo layers above are its poster until then and its fallback without WebGL.
+// rendered layers above are its stand-in until then and its fallback without WebGL.
 const model3d = model?.model3d ? JSON.stringify({
   kind: model.kind,
   geometry: model.model3d.geometry,
@@ -264,15 +269,17 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     .envelope-flap, .obj-flap { display: none; }
   }
 
-  /* Theme keepsakes: photo layers in place of the paper envelope, on the same stages. The photo
-     is already in perspective, so the lift from the table tilts it half as far. */
+  /* Theme keepsakes: their 3D model's rendered parts in place of the paper envelope, on the same
+     stages, lifted from the table as the model is (seen from 2.6 rig widths, like its camera). The
+     envelope is drawn face-on, so it tilts the model's full 58°; the scroll's model lies at 32°. */
   .envelope-sheet, .obj-roll { display: contents; }
-  .object-rig { transform: perspective(1600px) rotateX(calc(var(--rig-angle) * .55)) rotateZ(var(--rig-roll)) scale(var(--rig-scale)); }
+  .object-rig { transform: perspective(calc(2.6 * min(87vw, 35rem))) rotateX(calc(var(--rig-angle) * .55)) rotateZ(var(--rig-roll)) scale(var(--rig-scale)); }
+  .object-envelope { transform: perspective(calc(2.6 * min(87vw, 35rem))) rotateX(var(--rig-angle)) rotateZ(var(--rig-roll)) scale(var(--rig-scale)); }
   .obj-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
   .object-rig .wax-seal { opacity: var(--obj-present); transform: none; }
 
-  /* Amber Fort: the flap swings open on its own (sloping) top edge, with an inside face once it
-     passes upright; the photo's wax seal and tassel lift away first. */
+  /* Amber Fort: the flap swings open on the envelope's top edge, with an inside face once it
+     passes upright; the wax seal and tassel lift away first. */
   .obj-lining {
     position: absolute; inset: 0; z-index: 0; clip-path: var(--flap-clip);
     background: radial-gradient(120% 80% at 50% 0%, #1f080d, transparent 62%), linear-gradient(#4d1a24, #6c2632 72%, #823846);
@@ -282,7 +289,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     /* Leans back at 165° rather than lying flat, so the tall flap stays clear of the heading. */
     --open: clamp(-165deg, var(--flap-angle), 0deg);
     transform: rotate(var(--hinge-angle)) perspective(1100px) rotateX(var(--open)) rotate(calc(-1 * var(--hinge-angle)));
-    /* Its own layer: the photo is only re-composited as it swings, never repainted. (The whole
+    /* Its own layer: the image is only re-composited as it swings, never repainted. (The whole
        keepsake casts the shadow; a second one on the flap cost more than it showed.) */
     will-change: transform;
   }
@@ -294,9 +301,6 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     opacity: clamp(0, cos(var(--open)) * -40, 1);
   }
   .obj-body { z-index: 3; }
-  /* The photo's bottom edge slopes up to ~81% of its box on the right, so the card (masked to the
-     box's bottom by the script) is clipped higher until it is presented in front. */
-  .object-envelope .invitation-card { clip-path: inset(0 0 calc(var(--card-mask) + min(87vw, 35rem) * .117 * (1 - var(--obj-present))) 0); }
   .obj-seal {
     z-index: 5; transform-origin: var(--seal-x) var(--seal-y); will-change: transform, opacity;
     opacity: calc(1 - var(--obj-seal));
@@ -308,12 +312,11 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     translate: -50% calc(-50% * (1 - var(--obj-present)));
   }
 
-  /* The 3D model, once drawn, replaces the photo layers. It tilts and shadows itself, so the rig
+  /* The 3D model, once drawn, replaces its stand-in. It tilts and shadows itself, so the rig
      keeps only its position; its canvases reach past the rig for the opened flap. The back canvas
      sits under the card, the front one over it until the card is presented. */
-  .object-3d { transform: none; filter: none; }
+  .envelope-rig.object-3d { transform: none; filter: none; }
   .object-3d :is(.obj-layer, .obj-lining, .obj-flap) { display: none; }
-  .object-3d.object-envelope .invitation-card { clip-path: inset(0 0 var(--card-mask) 0); }
   .envelope-rig :global(.obj-canvas) { position: absolute; left: -15%; top: -75%; width: 130%; height: 250%; pointer-events: none; }
   .envelope-rig :global(.obj-canvas-back) { z-index: 1; }
   .envelope-rig :global(.obj-canvas-front) { z-index: 4; }
@@ -355,10 +358,11 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     left: calc(var(--knot-x) * (1 - var(--obj-present)) + var(--rest-x) * var(--obj-present));
     translate: -50% -50%;
   }
-  /* The photo keepsake is the SSR fallback, while the 3D keepsake is loaded lazily. Keep the
-     fallback out of the first paint until that choice is made, otherwise visitors see one
-     envelope flash into another on both mobile and desktop. */
-  .envelope-rig[data-model]:not([data-model-state="ready"]):not([data-model-state="fallback"]) { visibility: hidden; }
+  /* The model dissolves in over its stand-in when the guest can see it (swapIn in
+     scripts/envelope.ts), capturing only the keepsake, not the page. */
+  :global(html[data-keepsake-swap]) { view-transition-name: none; }
+  :global(html[data-keepsake-swap]) .envelope-rig { view-transition-name: keepsake; }
+  :global(::view-transition-group(keepsake)) { animation-duration: .5s; }
   /* Until the keepsake opens, its own seal or knot glows to invite the tap. */
   @media (prefers-reduced-motion: no-preference) {
     [data-enhanced] .object-rig .seal-control::before {

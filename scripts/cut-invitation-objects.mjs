@@ -1,3 +1,7 @@
+// SUPERSEDED: the layers in `object/` are now rendered from the 3D models by
+// scripts/render-keepsake-standins.mjs, so the stand-in is the same keepsake as the model. Running
+// this would put the photo cut-outs (the photo's pouch and bow) back. Kept for reference.
+//
 // Cuts each Rajasthan theme's invitation object (a single photo-real PNG) into the parts the
 // envelope chapter animates, and records their geometry. Run after replacing either object:
 //   node scripts/cut-invitation-objects.mjs [debugDir]

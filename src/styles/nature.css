@@ -623,6 +623,9 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 
 /* Venue: the garden is the scene; real HTML wayfinding is its foreground. */
 .ns-venue { position: relative; isolation: isolate; background: #172e28; color: #fff3e4; padding: calc(var(--ns-top) + 16px) clamp(1.3rem,6vw,7rem) calc(var(--ns-bottom) + 8px); display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
+/* Two full location cards outgrow a small or landscape phone's screen: there the chapter grows
+   (its painting stays pinned) rather than clipping the second card's map buttons. */
+.ns-home > section.ns-venue { height: auto; min-height: var(--ns-screen); }
 .ns-venue-landscape { position: absolute; z-index: -2; inset: 0; overflow: hidden; }
 .ns-venue-shade { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: var(--ns-shade-venue); }
 .ns-venue-head { display: flex; align-items: center; gap: 1.3rem; text-shadow: 0 2px 20px #102923; }

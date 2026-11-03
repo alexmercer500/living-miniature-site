@@ -55,6 +55,17 @@ sheet; the knot's control follows the projected medallion in the photo roll's tu
 renderer, lighting and loaders moved to `keepsake-3d.ts` (the one three.js chunk, ~142 KB gz,
 for both themes). Phone scroll at 4× CPU (GPU Chrome): at parity with the photo fallback.
 
+Keepsake stand-ins rendered from the 3D models (2026-11-03, `development`). Guests saw the photo
+cut-outs (Amber Fort's pouch, Lake City's satin bow) until the model was drawn, then a different
+keepsake; hiding the rig until then left phones with an empty letter while scrolling (the model
+only sets up once the guest pauses on the chapter). `scripts/render-keepsake-standins.mjs` now
+draws each model's parts through a dev-only `?standin` hook (envelope: body = lining + pocket,
+flap, seal + tassel, upright and face-on; scroll: roll and ribbon, lifted, on the photo's
+diagonal, in a frame padded 0.3 rig widths for the finials and tails) and measures their
+geometry. The envelope's CSS stage now tilts the full 58° (the model's), the scroll's keeps .55×58
+≈ 32° (also the model's), both from 2.6 rig widths. The stand-in is always shown; the model
+dissolves in over it (a keepsake-only view transition) when the guest can see the swap.
+
 Amber Fort envelope rebuilt as a 3D model (2026-10-28, `development`). The cut photo layers
 showed a guessed back to the flap, a torn hole where the flap had been and ragged edges, because
 the photo never had those parts. `npm run build-envelope-model`

@@ -12,7 +12,7 @@ import {
 import { createStage, grid, loadTexture, quiet, smooth, uploadTextures, webgl2, type KeepsakeModel, type Pose } from './keepsake-3d';
 
 export interface ScrollSpec {
-  geometry: { radius: number; paper: number; tilt: number; axis: number[]; knot: { along: number; up: number } };
+  geometry: { radius: number; paper: number; tilt: number; axis: number[]; pad?: number; knot: { along: number; up: number } };
   textures: Record<string, string>;
 }
 
@@ -222,12 +222,14 @@ export async function mountScrollModel(rig: HTMLElement, spec: ScrollSpec): Prom
     renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, camera);
 
-    // The knot's control follows the medallion, in the photo roll's own (turned) box.
+    // The knot's control follows the medallion, in the stand-in roll layer's own (turned) box: the
+    // rig's box grown by `pad` rig widths on every side.
     const at = knotAnchor.getWorldPosition(new Vector3()).project(camera);
     const x = (at.x + 1) / 2 * cw - PAD_X * rigW, y = (1 - at.y) / 2 * ch + topPx;
+    const pad = (g.pad ?? 0) * rigW, fw = rigW + 2 * pad, fh = rigH + 2 * pad;
     const angle = -g.tilt * swing * Math.PI / 180, dx = x - rigW / 2, dy = y - (rigH / 2 + unroll * sheetH / 2);
-    const lx = g.axis[0] * rigW + dx * Math.cos(angle) + dy * Math.sin(angle), ly = g.axis[1] * rigH - dx * Math.sin(angle) + dy * Math.cos(angle);
-    const knotX = `${(lx / rigW * 100).toFixed(2)}%`, knotY = `${(ly / rigH * 100).toFixed(2)}%`;
+    const lx = g.axis[0] * fw + dx * Math.cos(angle) + dy * Math.sin(angle), ly = g.axis[1] * fh - dx * Math.sin(angle) + dy * Math.cos(angle);
+    const knotX = `${(lx / fw * 100).toFixed(2)}%`, knotY = `${(ly / fh * 100).toFixed(2)}%`;
     if (knotX + knotY !== knotOnScreen) { knotOnScreen = knotX + knotY; rig.style.setProperty('--knot-x', knotX); rig.style.setProperty('--knot-y', knotY); }
   };
 
@@ -242,6 +244,33 @@ export async function mountScrollModel(rig: HTMLElement, spec: ScrollSpec): Prom
   size(); // the rig may have changed size while the slots waited
   rig.append(canvas);
   ready = true;
+  // Dev only (`?standin`): scripts/render-keepsake-standins.mjs draws the roll or the ribbon, lifted
+  // but still along the photo's diagonal, in a frame `pad` rig widths larger than the rig on each
+  // side, `width` pixels per rig width; with the points the stand-in's stages are measured from.
+  if (import.meta.env.DEV && location.search.includes('standin')) (window as unknown as Record<string, unknown>).__standIn = (part: 'roll' | 'ribbon', width: number, pad: number) => {
+    pose = { liftSpring: 1, seal: 0, flapSpring: 0, card: 0 } as Pose; drawn = ''; draw();
+    sheet.visible = false;
+    ribbon.visible = part === 'ribbon';
+    spinner.visible = part === 'roll';
+    const k = width / rigW;
+    renderer.setPixelRatio(k);
+    renderer.setSize(cw, ch, false);
+    renderer.shadowMap.needsUpdate = true;
+    renderer.render(scene, camera);
+    // Rig pixels → frame pixels (the frame starts `pad` rig widths left of and above the rig).
+    const frame = (v: Vector3) => { const at = v.project(camera); return [((at.x + 1) / 2 * cw - PAD_X * rigW + pad * rigW) * k, ((1 - at.y) / 2 * ch + topPx + pad * rigW) * k]; };
+    const out = document.createElement('canvas');
+    out.width = Math.round((rigW + 2 * pad * rigW) * k); out.height = Math.round((rigH + 2 * pad * rigW) * k);
+    out.getContext('2d')!.drawImage(canvas, (PAD_X - pad) * rigW * k, (-topPx - pad * rigW) * k, out.width, out.height, 0, 0, out.width, out.height);
+    const ends = [-1, 1].map(s => frame(spinner.localToWorld(new Vector3(s * L / 2, 0, 0))));
+    const rim = frame(spinner.localToWorld(new Vector3(0, r, 0))), centre = frame(spinner.localToWorld(new Vector3(0, 0, 0)));
+    return {
+      image: out.toDataURL('image/png'),
+      ends, centre,
+      thickness: 2 * Math.hypot(rim[0] - centre[0], rim[1] - centre[1]),
+      knot: frame(knotAnchor.getWorldPosition(new Vector3())),
+    };
+  };
   const resize = new ResizeObserver(() => { size(); draw(); });
   resize.observe(rig);
   resize.observe(card);

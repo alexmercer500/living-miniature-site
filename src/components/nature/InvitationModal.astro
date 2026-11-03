@@ -27,15 +27,19 @@ const { lang } = Astro.props;
       const link = event.currentTarget as HTMLAnchorElement;
       const url = new URL(link.dataset.invitationModalUrl || link.href, location.href);
       url.searchParams.set('modal', '1');
-      frame.src = url.href;
+      // Reopening keeps the page already loaded (and where the guest had scrolled it to).
+      if (frame.src !== url.href) frame.src = url.href;
       lastTrigger = link;
+      // The page behind stays put: no wheel or overscroll reaches it while the invitation is open.
+      document.documentElement.dataset.invitationOpen = '';
       if (!dialog.open) dialog.showModal();
       close.focus();
     };
     document.querySelectorAll<HTMLAnchorElement>('[data-invitation-modal-open]').forEach(link => link.addEventListener('click', open));
     close.addEventListener('click', () => dialog.close());
     dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
-    dialog.addEventListener('close', () => lastTrigger?.focus());
+    // Without preventScroll, focusing a link inside the sticky letter would jump the page.
+    dialog.addEventListener('close', () => { delete document.documentElement.dataset.invitationOpen; lastTrigger?.focus({ preventScroll: true }); });
   }
 </script>
 
@@ -55,6 +59,7 @@ const { lang } = Astro.props;
     box-shadow: 0 2rem 7rem #000b;
   }
   .ns-invitation-modal::backdrop { background: #160907cc; backdrop-filter: blur(8px); }
+  :global(html[data-invitation-open]) { overflow: hidden; }
   .ns-invitation-modal-frame { position: relative; width: 100%; height: 100%; }
   .ns-invitation-modal iframe { display: block; width: 100%; height: 100%; border: 0; background: #213b32; }
   .ns-invitation-modal-close {
