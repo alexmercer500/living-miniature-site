@@ -110,3 +110,10 @@
      it cannot cross the copy or appear to run through a photograph. */
   :root[data-theme='amber-fort'] .ns-story .ns-path { display: none; }
 }
+/* Countdown windows: ivory figures in a dusk pane edged in the theme's gold. */
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-countdown {
+  --count-ink: var(--theme-ivory); --count-label: color-mix(in srgb,var(--theme-accent) 55%,var(--theme-ivory));
+  --count-gold: var(--theme-accent); --count-spark: color-mix(in srgb,var(--theme-accent) 70%,#fff);
+  --count-pane: color-mix(in srgb,var(--theme-deep) 62%,transparent);
+}
+:root:is([data-theme='amber-fort'],[data-theme='lake-city']) .ns-hero-countdown .ns-count-value { text-shadow: 0 1px 10px var(--theme-deep); }

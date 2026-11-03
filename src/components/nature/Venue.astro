@@ -10,8 +10,9 @@ const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const landscapes = themeConfig[theme].assets;
 const locations = content.venue.locations ?? [];
+// A venue whose name is not a mapped place (`directionsTo`) is found by its street address.
 const directionsFor = (location: (typeof locations)[number]) =>
-  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${loc(location.name, 'en')}, ${loc(location.address, 'en')}`)}`;
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('directionsTo' in location ? location.directionsTo : `${loc(location.name, 'en')}, ${loc(location.address, 'en')}`)}`;
 ---
 <section id="venue" class="ns-venue ns-scene" aria-labelledby="ns-venue-title">
   <ScenePlate><Art {...landscapes.venue} /><div class="ns-venue-shade"></div></ScenePlate>

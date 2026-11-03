@@ -3,7 +3,8 @@ import { setupVenue } from './venue';
 import { setupWishes } from './wishes';
 import { setupInvitationMorph } from './invitation-morph';
 import { setupTiltParallax } from './tilt-parallax';
-import { setupRsvp } from './rsvp';
+import { setupCountdowns } from './countdown';
+import { setupReveal } from './reveal';
 import { setupBlessing } from './blessing';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
@@ -13,6 +14,7 @@ export async function setupNature() {
   const q = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s);
   const all = <T extends Element = HTMLElement>(s: string) => [...root.querySelectorAll<T>(s)];
   const cleanups: (() => void)[] = [];
+  cleanups.push(setupReveal(root, motion)); // first, so below-the-fold content is marked before it can paint
 
   const header = document.querySelector<HTMLElement>('[data-nature-header]');
   const observer = new IntersectionObserver(entries => entries.forEach(e => {
@@ -35,7 +37,7 @@ export async function setupNature() {
   cleanups.push(setupVenue(root, motion));
   cleanups.push(setupWishes(root, motion));
   cleanups.push(setupInvitationMorph(root));
-  cleanups.push(setupRsvp(root));
+  cleanups.push(setupCountdowns(root, motion));
   cleanups.push(setupBlessing(root));
 
   // Decode each chapter's painting while the chapter before it is still on screen, so a handoff
@@ -107,23 +109,6 @@ export async function setupNature() {
     const stop = () => { if (document.hidden) { player?.stop(); sound.setAttribute('aria-pressed', 'false'); sound.setAttribute('aria-label', sound.dataset.off ?? ''); } };
     document.addEventListener('visibilitychange', stop);
     cleanups.push(() => { player?.stop(); document.removeEventListener('visibilitychange', stop); });
-  }
-
-  const counter = q<HTMLElement>('[data-nature-countdown]');
-  if (counter) {
-    const target = new Date(counter.dataset.natureCountdown!).getTime();
-    const tick = () => {
-      const ms = Math.max(0, target - Date.now());
-      const parts = { days: Math.floor(ms / 864e5), hours: Math.floor(ms / 36e5) % 24, minutes: Math.floor(ms / 6e4) % 60, seconds: Math.floor(ms / 1e3) % 60 };
-      for (const [unit, value] of Object.entries(parts)) { const node = counter.querySelector(`[data-nature-unit='${unit}']`); if (node) node.textContent = String(value).padStart(2, '0'); }
-    };
-    tick(); let interval = 0;
-    const stop = () => { clearInterval(interval); interval = 0; };
-    let visible = false;
-    const update = () => { stop(); if (visible && !document.hidden) { tick(); interval = window.setInterval(tick, 1000); } };
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; update(); }); io.observe(counter);
-    document.addEventListener('visibilitychange', update);
-    cleanups.push(() => { stop(); io.disconnect(); document.removeEventListener('visibilitychange', update); });
   }
 
   // Chapter handoffs are native scrolling plus CSS scroll-driven animations (ScenePlate.astro),

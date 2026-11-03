@@ -13,9 +13,10 @@ import Wishes from './Wishes.astro';
 import FinalNote from './FinalNote.astro';
 import Envelope from './Envelope.astro';
 import InvitationModal from './InvitationModal.astro';
+import Countdown from './Countdown.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t } from '../../lib/content';
+import { type Lang, content, loc, t, parseDate } from '../../lib/content';
 import { artPreview } from '../../lib/art-preview';
 import { artSources } from '../../lib/art-sources';
 import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
@@ -24,6 +25,7 @@ interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const themeAssets = themeConfig[theme].assets;
+const weddingDay = parseDate(content.site.weddingDate);
 // The couple's names as two names and their joiner, so a phone can set them on their own lines.
 const joiner = lang === 'hi' ? 'एवं' : '&';
 const [nameOne, nameTwo] = loc(content.couple.displayName, lang).split(` ${joiner} `);
@@ -73,6 +75,7 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
         <p class="ns-couple">{nameTwo ? <><span>{nameOne}</span> <em>{joiner}</em> <span>{nameTwo}</span></> : nameOne}</p>
         <div class="ornament"><span></span></div>
         <p class="ns-date">{c.dateLine}</p>
+        {weddingDay && <Countdown lang={lang} target={weddingDay} class="ns-hero-countdown" />}
       </div>
       <button class="ns-lantern-touch" type="button" data-nature-lantern aria-label={c.light} aria-pressed="false" disabled><span class="ns-lantern-swing"><HeroLantern /></span></button>
       <button class="ns-petal-touch" type="button" data-nature-petals aria-label={c.petals} disabled><span aria-hidden="true">✿</span></button>

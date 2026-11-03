@@ -148,8 +148,8 @@ const overrides: Record<Exclude<ThemeId, 'nature'>, Record<Lang, Partial<ThemeCo
     },
   },
   'lake-city': {
-    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
-    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
+    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 November 2026' },
+    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 नवम्बर 2026' },
   },
 };
 

@@ -95,7 +95,7 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
         <LotusMark class="card-mark" />
         <h3 id="invitation-card-title"><span class="name-one">{one}</span><em>{lang === 'hi' ? 'एवं' : '&'}</em><span class="name-two">{two}</span></h3>
         <p class="card-date">{date}</p>
-        <p class="card-venue">{content.venue.name}</p>
+        <p class="card-venue">{loc(content.venue.locations[0].name, lang)}</p>
         <a class="card-link" href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={invitationHref}>{loc(content.invitation.label, lang)} <Icon name="arrow-right" /></a>
       </article>
       <div class="obj-roll">
