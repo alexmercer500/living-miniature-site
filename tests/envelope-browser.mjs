@@ -63,7 +63,7 @@ try {
     const fallback = view.reduced || view.noJs;
     {
       assert.equal(await evaluate("document.querySelector('.ns-scroll-rig')"), null, 'Old scroll letter is removed');
-      assert.equal(await evaluate("document.querySelector('.card-link').getAttribute('href')"), `${path.replace(/\/$/, '')}/invitation`);
+      assert.deepEqual(await evaluate("(l => [l.getAttribute('href'), new URL(l.dataset.invitationModalUrl, location.href).pathname])(document.querySelector('.card-link'))"), ['#invitation-modal', `${path.replace(/\/$/, '')}/invitation`]);
       assert.equal(await evaluate("document.querySelector('.envelope-footer a:last-child').getAttribute('href')"), '#celebrations');
     }
     assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), !fallback, 'Enhancement must respect static fallback');

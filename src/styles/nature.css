@@ -122,56 +122,39 @@ html[data-theme] body { background: #172e28; }
   72%,100% { opacity: 0; transform: translate3d(calc(var(--dir) * -34%),-28%,0) scale(1.85); }
 }
 
-/* Chapter arrivals and departures, on the same view timelines: the arriving chapter's copy
-   and cards settle while its scene settles. Transform/opacity only (plus two thin SVG
-   strokes); native focus always shows the finished pose. */
+/* Departures stay on the scroll: the welcome copy lifts and fades as the guest leaves it.
+   Arrivals are the one-time reveals below. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .ns-home :is(.ns-story-copy,[data-memory-hanger],.ns-event,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card) {
-      --arrive-y: 16px; --arrive-rot: 0deg; --arrive-scale: 1; --arrive-opacity: .75; --from: 22%; --to: 80%;
-      animation-name: ns-arrive; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene;
-    }
-    .ns-home :is(.ns-story-copy,[data-memory-hanger],.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card) {
-      animation-range: entry calc(var(--from) + var(--i,0) * var(--step,8%)) entry calc(var(--to) + var(--i,0) * var(--step,8%));
-    }
-    .ns-home .ns-venue-card { --arrive-y: 18px; --arrive-opacity: .65; }
-    .ns-home .ns-story-copy { --arrive-y: 30px; --arrive-opacity: .65; --from: 32%; --to: 82%; }
-    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],[data-wish-arrival]) { --arrive-opacity: .12; --from: 10%; --to: 62%; }
-    .ns-home [data-memory-hanger] { --arrive-y: 56px; --arrive-rot: -6deg; }
-    .ns-home [data-memory-hanger]:nth-child(even) { --arrive-rot: 6deg; }
-    .ns-home .ns-event { --arrive-y: 44px; --arrive-rot: 1.4deg; --arrive-scale: .96; }
-    .ns-home .ns-event:nth-child(even) { --arrive-rot: -1.4deg; }
-    .ns-home [data-venue-sign] { --arrive-y: 32px; --arrive-rot: 4deg; }
-    .ns-home [data-venue-sign]:nth-child(even) { --arrive-rot: -4deg; }
-    .ns-home [data-wish-arrival] { --arrive-y: 22px; --arrive-rot: 8deg; --from: 8%; --to: 48%; --step: 6%; }
-    .ns-home .ns-wish-hanger:nth-child(even) [data-wish-arrival] { --arrive-rot: -8deg; }
-    /* Stagger: each card, sign, keepsake or tag arrives a little after the one before. */
-    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(2) { --i: 1; }
-    .ns-home :is([data-memory-hanger],.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(3) { --i: 2; }
-    .ns-home :is(.ns-event,[data-venue-sign],.ns-wish-hanger):nth-child(4) { --i: 3; }
-    .ns-home .ns-wish-hanger:nth-child(5) { --i: 4; }
-    .ns-home .ns-wish-hanger:nth-child(6) { --i: 5; }
-    .ns-home .ns-event-art .ns-art { animation-name: ns-arrive-image; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; }
-    .ns-home [data-note-arrival] { animation-name: ns-note-breathe, ns-arrive-note; animation-duration: 9s, auto; animation-timing-function: ease-in-out; animation-iteration-count: infinite, 1; animation-direction: alternate, normal; animation-fill-mode: none, both; animation-timeline: auto, --scene; animation-range: normal, entry 10% entry 62%; }
-    @media (scripting: none) { .ns-home [data-note-arrival] { animation-name: none, ns-arrive-note; } }
-    .ns-home .ns-signpost { animation-name: ns-arrive-post; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 10% entry 65%; }
-    .ns-home .ns-note-glint { animation-name: ns-arrive-glint; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 20% entry 90%; }
-    .ns-home .ns-path path { animation-name: ns-arrive-path; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: entry 28% entry 96%; }
-    /* The welcome copy lifts and fades as the guest leaves it. */
     .ns-home .ns-hero-copy { animation-name: ns-leave-lift, ns-leave-fade; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene, --scene; animation-range: exit 2% exit 50%, exit 10% exit 50%; }
     .ns-home .ns-hero-foot { animation-name: ns-leave-out; animation-fill-mode: both; animation-timing-function: ease-in-out; animation-timeline: --scene; animation-range: exit 1.5% exit 20%; }
-    .ns-home section:focus-within :is(.ns-story-copy,[data-memory-hanger],.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost),
     .ns-home .ns-hero-foot:focus-within { animation: none; }
-    .ns-home section:focus-within [data-note-arrival] { animation: ns-note-breathe 9s ease-in-out infinite alternate; }
     .ns-progress span { animation-name: ns-progress; animation-fill-mode: both; animation-timing-function: linear; animation-timeline: scroll(root block); }
   }
 }
-@keyframes ns-arrive { from { transform: translate3d(0,var(--arrive-y),0) rotate(var(--arrive-rot)) scale(var(--arrive-scale)); opacity: var(--arrive-opacity); } to { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; } }
-@keyframes ns-arrive-image { from { transform: scale(1.065); } to { transform: scale(1); } }
-@keyframes ns-arrive-note { from { transform: perspective(1200px) translate3d(0,36px,0) rotateX(5deg) rotate(-.7deg) scale(.955); opacity: .12; } to { transform: perspective(1200px) translate3d(0,0,0) rotateX(0deg) rotate(0deg) scale(1); opacity: 1; } }
-@keyframes ns-arrive-post { from { transform: scaleY(.7); } to { transform: scaleY(1); } }
+/* First-pass reveals (scripts/reveal.ts). Only what is still below the fold is ever marked, and
+   only with motion allowed, so nothing waits on script. Each piece rises in once, the first time
+   it comes on screen, and is then left alone: scrolling back never replays it. A celebration
+   card's photo settles from a slight zoom, the story path draws itself and the note's frame
+   catches one glint. Transform/opacity on the compositor (plus two thin SVG strokes). */
+[data-reveal] { opacity: 0; transform: translate3d(0,var(--reveal-y,1.1rem),0) rotate(var(--reveal-rot,0deg)) scale(var(--reveal-scale,1)); }
+[data-revealed] { transition: opacity .75s cubic-bezier(.33,1,.68,1) var(--reveal-delay,0s), transform 1.15s cubic-bezier(.16,1,.3,1) var(--reveal-delay,0s); }
+:is(.ns-event,.ns-location-card)[data-reveal] { --reveal-y: 3rem; --reveal-scale: .96; }
+.ns-event[data-reveal] { --reveal-rot: 1.2deg; }
+.ns-event:nth-child(even)[data-reveal] { --reveal-rot: -1.2deg; }
+.ns-event[data-reveal] .ns-event-art .ns-art { transform: scale(1.12); }
+.ns-event[data-revealed] .ns-event-art .ns-art { transition: transform 1.6s cubic-bezier(.16,1,.3,1) var(--reveal-delay,0s); }
+[data-memory-hanger][data-reveal] { --reveal-y: 3.4rem; --reveal-rot: -5deg; }
+[data-memory-hanger]:nth-child(even)[data-reveal] { --reveal-rot: 5deg; }
+[data-wish-arrival][data-reveal] { --reveal-y: 1.6rem; --reveal-rot: 7deg; }
+.ns-wish-hanger:nth-child(even) [data-wish-arrival][data-reveal] { --reveal-rot: -7deg; }
+.ns-note-arrival[data-reveal] { transform: perspective(1200px) translate3d(0,2.2rem,0) rotateX(5deg) scale(.955); }
+.ns-note-arrival[data-revealed] .ns-note-glint { animation: ns-arrive-glint 1.8s ease-in-out calc(var(--reveal-delay,0s) + .7s) both; }
+.ns-path[data-reveal] { opacity: .55; transform: none; }
+.ns-path[data-reveal] path { stroke-dashoffset: 1; }
+.ns-path[data-revealed] path { transition: stroke-dashoffset 2.2s cubic-bezier(.45,0,.2,1) .25s; }
+@media print { [data-reveal] { opacity: 1; transform: none; } }
 @keyframes ns-arrive-glint { from { stroke-dashoffset: 1; opacity: 0; } 50% { opacity: .8; } to { stroke-dashoffset: -1; opacity: 0; } }
-@keyframes ns-arrive-path { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes ns-leave-lift { to { transform: translate3d(0,-32px,0); } }
 @keyframes ns-leave-fade { to { opacity: .25; } }
 @keyframes ns-leave-out { to { opacity: 0; } }
@@ -258,23 +241,6 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-event-copy h3 { font-size: clamp(1.6rem,2.8vw,2.3rem); }
 .ns-event-copy .ns-kicker { font-size: .65rem; color: #825b41; letter-spacing: .1em; }
 .ns-event-copy > p:last-of-type { color: #676a59; }
-.ns-rsvp { display: grid; justify-items: center; gap: 1.5rem; margin: 3rem auto 0; }
-.ns-rsvp h3 { font-size: 2rem; }
-.ns-countdown { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; }
-.ns-countdown > div { display: grid; min-width: 60px; padding: .7rem; border: 1px solid #efd2a055; }
-.ns-countdown strong { font: 500 2rem var(--font-display); } .ns-countdown span { font-size: .75rem; }
-.ns-footer { padding: 2rem 1rem 7rem; color: #d5d8c6; background: #172e28; text-align: center; font-size: .85rem; display: grid; gap: .5rem; }
-/* The home page ends on the closing painting, not a flat colour slab: the footer turns
-   transparent and is lifted by its own measured height, so the scene's own artwork shows
-   behind the names. --ns-footer-lift is set once the footer has been measured. */
-html[data-theme]:has(.ns-home) .ns-footer {
-  position: relative; z-index: 1;
-  background: transparent;
-  margin-top: calc(-1 * var(--ns-footer-lift, 0px));
-  /* Match the chapters' own bottom clearance so the end-card text clears the dock. */
-  padding-bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 4.75rem));
-}
-html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0 1px 2px #08140f; }
 .ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28f0; box-shadow: 0 8px 30px #0003; }
 .ns-dock a { display: flex; gap: .4rem; align-items: center; justify-content: center; min-height: 44px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; text-decoration: none; }
 .ns-dock a:hover { color: #efd2a0; }
@@ -322,7 +288,7 @@ html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0
 }
 /* Ambient loops pause off screen. Scroll-driven animations are exempt: they cost nothing
    at rest, and pausing them would freeze a scene until the observer caught up. */
-.ns-scene[data-offscreen] :not(.ns-plate,.ns-plate *,.ns-story-copy,[data-memory-hanger],.ns-keepsake-title,.ns-keepsake-body,.ns-memory-number,.ns-event,.ns-event-art .ns-art,[data-venue-sign],[data-wish-arrival],[data-note-arrival],.ns-section-head,.ns-venue-head,.ns-wishes-head,.ns-note-head,.ns-venue-card,.ns-signpost,.ns-note-glint,.ns-path path,.ns-hero-copy,.ns-hero-foot), .ns-scene[data-offscreen] *::before { animation-play-state: paused !important; }
+.ns-scene[data-offscreen] :not(.ns-plate,.ns-plate *,.ns-keepsake-title,.ns-keepsake-body,.ns-memory-number,.ns-hero-copy,.ns-hero-foot), .ns-scene[data-offscreen] *::before { animation-play-state: paused !important; }
 @keyframes ns-nudge { 0%,100% { translate: 0 0; } 50% { translate: 0 5px; } }
 @media (prefers-reduced-motion: reduce) { .ns-keepsake, .ns-button { transition: none; } }
 @media (scripting: none) { .ns-dock, .ns-petal-touch { display: none; } .ns-header { background: #172e28ee; } }
@@ -367,7 +333,6 @@ html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0
 .ns-event-art { min-height: 0; aspect-ratio: auto; }
 .ns-event-copy { gap: .4rem; padding: .7rem 1rem 1rem; }
 .ns-event-copy > p:last-of-type { font-size: .85rem; line-height: 1.4; }
-.ns-rsvp { margin: 0; gap: .6rem; }
 @media (max-width: 767px) {
   .ns-home { --ns-top: 78px; }
   .ns-home h2 { font-size: clamp(1.65rem, 6vw, 2.4rem); }
@@ -425,9 +390,10 @@ html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0
 @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
   .ns-hero-copy > .ns-lotus, .ns-hero-copy > .ns-kicker,
   .ns-hero-copy h1 > *, .ns-hero-copy > .ns-couple,
-  .ns-hero-copy > .ornament, .ns-hero-copy > .ns-date {
+  .ns-hero-copy > .ornament, .ns-hero-copy > .ns-date, .ns-hero-copy > .ns-countdown {
     animation: ns-hero-arrive 1.5s cubic-bezier(.2,.75,.25,1) both;
   }
+  .ns-hero-copy > .ns-countdown { animation-delay: 1.1s; }
   .ns-hero-copy > .ns-kicker { animation-delay: .1s; }
   .ns-hero-copy h1 > span { animation-delay: .22s; }
   .ns-hero-copy h1 > em { animation-delay: .42s; }
@@ -581,14 +547,18 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 /* Reproduces the wire's xMidYMin meet box, so bulbs land on the exact same points. */
 .ns-festoon-bulbs { position: absolute; top: 0; left: 50%; translate: -50% 0; width: min(100%,1000px); aspect-ratio: 1000 / 110; }
 .ns-festoon-bulb { position: absolute; width: 1.8%; height: 18.182%; overflow: visible; }
-.ns-celebrations .ns-events { max-width: 1140px; grid-template-columns: repeat(3,minmax(0,300px)); justify-content: center; align-items: center; gap: clamp(1rem,3vw,2.5rem); padding: 1rem; }
-.ns-event { position: relative; height: min(100%,520px); min-height: 0; grid-template-rows: minmax(0,1fr) auto; border: 1px solid #cfb37a; border-radius: 22px; background: #f3dfbe; box-shadow: 0 18px 38px #030e1080,0 0 0 3px #b797591a; transform-origin: center 70%; }
+/* Every card shares one photo row and one copy row (subgrid), so the photos match whatever each
+   card says. The row is as tall as the 3:2 photo when there is room, shorter only when the
+   screen is not; the row of cards is never taller than the chapter (max-height). */
+.ns-celebrations .ns-events { max-width: 1400px; height: auto; max-height: 100%; align-self: center; grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: minmax(0,1fr) auto; justify-content: center; align-items: stretch; gap: clamp(1rem,2.4vw,2.5rem); padding: 1rem; }
+.ns-event { position: relative; height: auto; min-height: 0; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; border: 1px solid #cfb37a; border-radius: 22px; background: #f3dfbe; box-shadow: 0 18px 38px #030e1080,0 0 0 3px #b797591a; transform-origin: center 70%; }
 .ns-event::after { content: ''; position: absolute; z-index: 4; inset: 4px; border: 1px solid #f1d5a777; border-radius: 18px; pointer-events: none; }
 .ns-event-art { position: relative; isolation: isolate; min-height: 0; overflow: hidden; }
+.ns-event-art::before { content: ''; display: block; aspect-ratio: 3 / 2; } /* the photo's own shape */
 .ns-event-art::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(transparent 70%,#392a1940); }
 .ns-event-art .ns-art { transform-origin: center; }
 .ns-event-number { top: .8rem; bottom: auto; left: .8rem; width: 26px; height: 26px; font-size: .6rem; background: #172e2870; border-color: #efd2a088; }
-.ns-event-copy { position: relative; z-index: 2; min-height: 164px; align-content: center; gap: .35rem; padding: 1.1rem 1rem 1.15rem; color: #34402e; background: radial-gradient(at 15% 0,#fff6df66,transparent 70%),linear-gradient(#f3dfbe,#dfc298); }
+.ns-event-copy { position: relative; z-index: 2; min-height: 0; align-content: center; gap: .35rem; padding: 1.1rem 1rem 1.15rem; color: #34402e; background: radial-gradient(at 15% 0,#fff6df66,transparent 70%),linear-gradient(#f3dfbe,#dfc298); }
 .ns-event-scallop { position: absolute; top: -29px; left: 0; width: 100%; height: 30px; overflow: visible; pointer-events: none; }
 .ns-event-mark { position: absolute; width: 24px; height: 24px; left: 50%; top: -13px; translate: -50% 0; }
 .ns-event-copy h3 { font-size: clamp(1.25rem,1.7vw,1.6rem); line-height: 1.15; font-weight: 500; text-transform: uppercase; letter-spacing: .035em; max-width: 100%; }
@@ -596,7 +566,6 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 .ns-event-date { font-family: var(--font-display); font-size: 1.05rem; line-height: 1.25; color: #503b25; }
 .ns-event-rule { width: 40px; height: 1px; background: #a07d4c66; margin: .2rem 0; }
 .ns-event-copy > .ns-event-description { font-size: .78rem; line-height: 1.4; color: #65543c; }
-.ns-event-copy .cal-btn { margin-top: .4rem; }
 @media (max-width: 767px) {
   .ns-celebrations { gap: .5rem; }
   .ns-celebrations-head { padding-inline: 1.3rem !important; gap: .8rem; }
@@ -605,11 +574,31 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
   .ns-celebrations-head h2 { font-size: 2rem; }
   .ns-celebrations-intro { font-size: 1rem; max-width: 26ch; }
   .ns-event-festoon { width: 100%; top: 64px; opacity: .35; }
-  .ns-celebrations .ns-events { grid-template-columns: none; grid-auto-columns: 78%; justify-content: initial; align-items: center; padding: .8rem 1.3rem; gap: 1.3rem; scroll-padding-inline: 1.3rem; }
-  .ns-event { height: min(100%,520px); border-radius: 22px; }
+  .ns-celebrations .ns-events { grid-template-columns: none; grid-auto-columns: 78%; justify-content: initial; padding: .8rem 1.3rem; gap: 1.3rem; scroll-padding-inline: 1.3rem; }
+  .ns-event { border-radius: 22px; }
   .ns-event-copy h3 { font-size: 1.3rem; }
 }
-@media (max-height: 650px) {
+@media (max-width: 400px) { .ns-celebrations .ns-events { grid-auto-columns: 84%; } }
+/* Older and smaller phones: a quieter heading and tighter copy leave the photo its room. */
+@media (max-width: 767px) and (max-height: 760px) {
+  .ns-celebrations-head h2 { font-size: 1.7rem; }
+  .ns-celebrations-index { font-size: 2.6rem; }
+  .ns-celebrations-intro { max-width: none; margin-top: .15rem; font-size: .88rem; }
+  .ns-event-copy { gap: .2rem; padding: .55rem .8rem .8rem; }
+  .ns-event-copy h3 { font-size: 1.12rem; }
+  .ns-event-date { font-size: .9rem; }
+  .ns-event-copy > .ns-event-description { font-size: .72rem; line-height: 1.35; }
+  .ns-event-rule { margin: 0; }
+}
+@media (max-width: 767px) and (max-height: 600px) {
+  .ns-celebrations-intro { display: none; }
+  .ns-event-mark { width: 18px; height: 18px; top: -12px; }
+}
+/* Tablets: two rows of two upright, all four in a row when held sideways. */
+@media (min-width: 768px) and (max-width: 1199px) and (orientation: portrait) {
+  .ns-celebrations .ns-events { grid-template-columns: repeat(2,minmax(0,300px)); grid-template-rows: none; grid-auto-rows: minmax(0,1fr) auto; }
+}
+@media (max-height: 720px) {
   .ns-celebrations-head h2 { font-size: 1.7rem; }
   .ns-celebrations-index { font-size: 2.8rem; }
   .ns-celebrations-intro { margin-top: .2rem; font-size: .9rem; }
@@ -633,6 +622,9 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 
 /* Venue: the garden is the scene; real HTML wayfinding is its foreground. */
 .ns-venue { position: relative; isolation: isolate; background: #172e28; color: #fff3e4; padding: calc(var(--ns-top) + 16px) clamp(1.3rem,6vw,7rem) calc(var(--ns-bottom) + 8px); display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
+/* Two full location cards outgrow a small or landscape phone's screen: there the chapter grows
+   (its painting stays pinned) rather than clipping the second card's map buttons. */
+.ns-home > section.ns-venue { height: auto; min-height: var(--ns-screen); }
 .ns-venue-landscape { position: absolute; z-index: -2; inset: 0; overflow: hidden; }
 .ns-venue-shade { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: var(--ns-shade-venue); }
 .ns-venue-head { display: flex; align-items: center; gap: 1.3rem; text-shadow: 0 2px 20px #102923; }
@@ -674,6 +666,21 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 .ns-venue-close { position: absolute; z-index: 2; top: 23px; right: 23px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: #172e28ee; border: 1px solid #efd2a0; color: #fff3e4; cursor: pointer; }
 .ns-venue-close svg { width: 20px; height: 20px; }
 .ns-venue-close:focus-visible { outline: 2px solid #fff3e4; outline-offset: 3px; }
+
+/* Confirmed destination cards keep the venue section practical and bilingual. */
+.ns-venue-stage { display: block; }
+.ns-venue-locations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2.8rem); width: 100%; max-width: 1180px; margin-inline: auto; }
+.ns-location-card { display: grid; justify-items: center; gap: .55rem; min-width: 0; padding: clamp(1.2rem, 3vw, 2rem); color: #42513d; text-align: center; text-shadow: none; background: #f3dfbeed; border: 1px solid #d1a96b; box-shadow: inset 0 0 0 5px #fff4db88, 0 18px 45px #081d1860; }
+.ns-location-card .ns-lotus { width: 32px; color: #9a6d2f; }
+.ns-location-card .ns-kicker { margin: 0; color: #76552b; }
+.ns-location-card h3 { margin: 0; font: 500 clamp(1.65rem, 3vw, 2.65rem)/1.08 var(--font-display); text-wrap: balance; }
+.ns-location-card address { max-width: 42ch; margin: 0; font-style: normal; font-size: clamp(.9rem, 1.4vw, 1.05rem); line-height: 1.5; }
+.ns-location-note { max-width: 42ch; margin: 0; font-size: .95rem; line-height: 1.45; }
+.ns-location-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; width: 100%; margin-top: .35rem; }
+.ns-location-actions .ns-wood-sign { min-height: 56px; padding: .55rem .75rem; gap: .55rem; justify-content: center; font-size: .9rem; text-transform: none; letter-spacing: .01em; clip-path: none; border: 1px solid #9e7438; border-radius: 999px; background: linear-gradient(#f9e9c6, #dfb777); }
+.ns-location-actions .ns-wood-sign::before, .ns-location-actions .ns-wood-sign::after { display: none; }
+.ns-location-actions .ns-sign-icon { flex-basis: 30px; width: 30px; height: 30px; box-shadow: inset 0 0 0 2px #efd09d, inset 0 0 0 3px #805d3580; }
+.ns-location-actions .ns-sign-icon svg { width: 16px; height: 16px; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .ns-wood-sign:not(:disabled):hover { translate: 5px -3px; filter: brightness(1.07); }
 }
@@ -697,6 +704,11 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-venue-map-note { font-size: .67rem; }
   .ns-venue-preview-art { height: 47dvh; }
   .ns-venue-preview-copy { padding: .8rem .5rem .5rem; }
+  .ns-venue-locations { grid-template-columns: 1fr; gap: 1rem; }
+  .ns-location-card { padding: 1rem; }
+  .ns-location-card .ns-lotus { display: none; }
+  .ns-location-actions { gap: .5rem; }
+  .ns-location-actions .ns-wood-sign { min-height: 50px; padding-inline: .5rem; font-size: .78rem; }
 }
 @media (max-height: 650px) {
   .ns-venue { padding-top: calc(var(--ns-top) + 2px); gap: .5rem; }
@@ -758,11 +770,6 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 .ns-wish-hint { font: italic 400 1.05rem/1.3 var(--font-display); color: #ffedcb; }
 .ns-wish-hint[hidden] { display: none; }
 #ns-wishes-demo { font-size: .68rem; line-height: 1.4; color: #e2cfab; }
-.ns-wishes .ns-rsvp { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .8rem; }
-.ns-wishes .ns-countdown { gap: .4rem; }
-.ns-wishes .ns-countdown > div { min-width: 42px; padding: .3rem .5rem; background: #14281e88; }
-.ns-wishes .ns-countdown strong { font-size: 1.3rem; }
-.ns-wishes .ns-countdown span { font-size: .6rem; }
 .ns-wishes-with-details { --wish-tag-h: clamp(120px,21svh,205px); }
 .ns-wish-atmosphere { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
 .ns-wish-drift { position: absolute; left: var(--x); top: -20px; width: 6px; height: 6px; opacity: 0; }
@@ -837,10 +844,6 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-wishes-with-details .ns-wish-tag { padding: 26px 7px 12px; }
   .ns-wishes-with-details .ns-wish-message { font-size: .85rem; }
   :lang(hi) .ns-wishes-with-details .ns-wish-message { font-size: .8rem; line-height: 1.3; }
-  .ns-wishes-with-details .ns-rsvp { gap: .35rem; }
-  .ns-wishes-with-details .ns-button { min-height: 44px; padding: .5rem .8rem; font-size: .75rem; }
-  .ns-wishes-with-details .ns-countdown > div { min-width: 40px; padding: .2rem .35rem; }
-  .ns-wishes-with-details .ns-countdown strong { font-size: 1.1rem; }
 }
 @media (min-width: 768px) and (max-height: 450px) {
   .ns-wishes-with-details { --wish-tag-h: 60px; }
@@ -851,7 +854,7 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-wishes-with-details .ns-wish-string { height: calc(var(--cord) + 20px); }
   .ns-wishes-with-details .ns-wish-message { font-size: .8rem; }
 }
-/* Landscape phones: the RSVP row moves up beside the heading, so the tags keep their height. */
+/* Landscape phones: the countdown moves up beside the heading, so the tags keep their height. */
 @media (min-width: 768px) and (max-height: 450px) {
   .ns-wishes-with-details { --wish-tag-h: 78px; grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto minmax(0,1fr); column-gap: 1rem; }
   .ns-wishes-with-details .ns-wishes-head { grid-column: 1; grid-row: 1; }
@@ -1048,7 +1051,7 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-wish-own:not([data-written]) .ns-wish-message::before { display: none; }
 }
 
-/* Parchment form dialogs (RSVP, blessing). */
+/* Parchment form dialog (the blessing). */
 .ns-sheet-dialog { width: min(92vw, 30rem); max-width: none; max-height: calc(100dvh - 2rem); padding: 0; border: 0; overflow: visible; background: transparent; color: #334537; }
 .ns-sheet-dialog::backdrop { background: #081d18cf; backdrop-filter: blur(6px); }
 .ns-sheet { position: relative; display: grid; gap: 1rem; max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; padding: 1.6rem clamp(1.1rem,5vw,2rem) 1.4rem;
@@ -1065,37 +1068,56 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 .ns-sheet-head { display: grid; justify-items: center; gap: .35rem; text-align: center; padding-inline: 1.5rem; }
 .ns-sheet-head h2 { font-size: clamp(1.7rem,6vw,2.2rem); color: #2f4535; }
 .ns-sheet-head p { font-size: .88rem; line-height: 1.45; color: #5e5644; }
-.ns-sheet-head .ns-sheet-deadline { font-weight: 600; color: #7a4d2e; }
 .ns-field { display: grid; gap: .35rem; margin: 0; padding: 0; border: 0; font-size: .82rem; font-weight: 500; letter-spacing: .02em; color: #4d4a38; }
 .ns-field input:not([type='checkbox'],[type='radio']), .ns-field textarea { width: 100%; min-height: 46px; padding: .6rem .8rem; font: 400 1rem/1.4 var(--font-ui); color: #26372b; background: #fffaf0; border: 1px solid #c7a97a; border-radius: 10px; }
 .ns-field textarea { resize: vertical; min-height: 4.2rem; }
 .ns-field :focus-visible { outline: 2px solid #425d43; outline-offset: 1px; }
 .ns-blessing-text textarea { font: 400 1.5rem/1.3 var(--font-script); text-align: center; }
 :lang(hi) .ns-blessing-text textarea { font: 400 1.1rem/1.5 var(--font-display); }
-.ns-rsvp-attend { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin: 0; padding: 0; border: 0; }
-.ns-rsvp-attend label { position: relative; }
-.ns-rsvp-attend input { position: absolute; opacity: 0; }
-.ns-rsvp-attend span { display: grid; place-items: center; min-height: 48px; padding: .5rem; text-align: center; font-size: .86rem; line-height: 1.25; border: 1px solid #c7a97a; border-radius: 12px; background: #fffaf0; cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
-.ns-rsvp-attend input:checked + span { color: #fff6e6; background: #425d43; border-color: #425d43; }
-.ns-rsvp-attend input:focus-visible + span { outline: 2px solid #425d43; outline-offset: 2px; }
-.ns-rsvp-coming { display: grid; gap: 1rem; }
-.ns-rsvp-coming[hidden] { display: none; }
-.ns-stepper { display: grid; grid-template-columns: 46px 1fr 46px; gap: .4rem; }
-.ns-stepper button { min-height: 46px; border: 1px solid #c7a97a; border-radius: 10px; background: #f4e3c4; font-size: 1.3rem; color: #3a3a2a; cursor: pointer; }
-.ns-field .ns-stepper input { text-align: center; font-weight: 600; -moz-appearance: textfield; appearance: textfield; }
-.ns-stepper input::-webkit-inner-spin-button, .ns-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.ns-rsvp-events { display: flex; flex-wrap: wrap; gap: .45rem; }
-.ns-rsvp-events legend { width: 100%; margin-bottom: .35rem; }
-.ns-rsvp-events label { position: relative; }
-.ns-rsvp-events input { position: absolute; opacity: 0; }
-.ns-rsvp-events span { display: inline-flex; align-items: center; gap: .35rem; min-height: 40px; padding: .35rem .85rem; border: 1px solid #c7a97a; border-radius: 30px; background: #fffaf0; font-weight: 400; cursor: pointer; }
-.ns-rsvp-events input:checked + span { background: #e9dcbd; border-color: #8f7448; }
-.ns-rsvp-events input:checked + span::before { content: '✓'; color: #425d43; font-weight: 600; }
-.ns-rsvp-events input:focus-visible + span { outline: 2px solid #425d43; outline-offset: 2px; }
 .ns-sheet > .ns-button, .ns-sheet-actions .ns-button { width: 100%; }
 .ns-sheet-actions { display: grid; gap: .55rem; }
 .ns-sheet-status { min-height: 1.2em; text-align: center; font-size: .85rem; color: #425d43; }
 .ns-sheet-status:empty { display: none; }
+
+/* Countdown (Countdown.astro): four jharokha windows on the welcome screen and in the wishes
+   garden. A changed digit tips away upwards as the next swings down into the window; the
+   seconds window's gilt edge fills as each minute runs out, and a window catches a glint when
+   its unit rolls over (scripts/countdown.ts). Transform and opacity only, except that one thin
+   stroke, which moves once a second. Colours come from the --count-* tokens: dark ink on
+   Nature's ivory welcome, light on every dusk scene. */
+.ns-countdown {
+  --count-w: 3.5rem; --count-ink: #3d2b1d; --count-label: #6d5236; --count-gold: #a87f45; --count-spark: #c9923b; --count-pane: #fff6e6b8;
+  display: flex; justify-content: center; align-items: flex-end; gap: calc(var(--count-w) * .22);
+}
+.ns-count { position: relative; isolation: isolate; width: var(--count-w); aspect-ratio: 60 / 84; display: grid; align-content: end; justify-items: center; gap: calc(var(--count-w) * .05); padding-bottom: calc(var(--count-w) * .17); color: var(--count-ink); }
+.ns-count-frame { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ns-count-pane { fill: var(--count-pane); stroke: var(--count-gold); stroke-width: 1.3; }
+.ns-count-inner { fill: none; stroke: var(--count-gold); stroke-width: .7; opacity: .55; }
+.ns-count-finial { fill: var(--count-gold); }
+.ns-count-trace { fill: none; stroke: var(--count-spark); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 60 60; stroke-dashoffset: var(--s, 60); }
+/* The glint is clipped to the arch: a semicircle on a 60 x 84 window whose arch starts 8 down. */
+.ns-count-glint { position: absolute; z-index: -1; inset: 9.5% 1.7% .5%; overflow: hidden; border-radius: 50% 50% 0 0 / 38% 38% 0 0; pointer-events: none; }
+.ns-count-glint > i { position: absolute; inset: 0; opacity: 0; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--count-spark) 55%, #fff) 50%, transparent 70%); }
+.ns-count-value { display: flex; font: 500 calc(var(--count-w) * .44)/1 var(--font-display); font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0; }
+.ns-count-digit { display: grid; width: .6em; height: 1.12em; overflow: hidden; perspective: 2.4em; }
+.ns-count-digit > i { grid-area: 1 / 1; place-self: center; font-style: normal; backface-visibility: hidden; }
+.ns-count-label { font: 600 calc(var(--count-w) * .135)/1 var(--font-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--count-label); }
+:lang(hi) .ns-count-label { font-size: calc(var(--count-w) * .17); letter-spacing: 0; text-transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .ns-count-digit > i[data-in] { animation: ns-digit-in .62s cubic-bezier(.2,.8,.25,1) both; }
+  .ns-count-digit > i[data-out] { animation: ns-digit-out .46s cubic-bezier(.5,0,.75,.4) both; }
+  .ns-count-trace { transition: stroke-dashoffset .45s cubic-bezier(.3,.7,.3,1); }
+}
+@keyframes ns-digit-in { from { transform: translate3d(0,68%,0) rotateX(-82deg); opacity: 0; } }
+@keyframes ns-digit-out { to { transform: translate3d(0,-68%,0) rotateX(82deg); opacity: 0; } }
+.ns-hero-countdown { margin-top: .35rem; }
+@media (min-width: 768px) { .ns-hero-countdown { --count-w: 4.5rem; } }
+@media (max-width: 767px) { .ns-hero-countdown { --count-w: clamp(3rem, 13.5vw, 3.5rem); } }
+@media (max-height: 650px) { .ns-hero-countdown { --count-w: 2.7rem; margin-top: .15rem; } }
+.ns-wishes-countdown { --count-w: 3rem; --count-ink: #fff1db; --count-label: #e9d8b9; --count-gold: #d6b06a; --count-spark: #f2c56c; --count-pane: #14281e99; text-shadow: none; }
+@media (min-width: 768px) and (min-height: 651px) { .ns-wishes-countdown { --count-w: 3.6rem; } }
+@media (max-width: 767px) and (max-height: 650px) { .ns-wishes-countdown { --count-w: 2.5rem; } }
+@media (min-width: 768px) and (max-height: 450px) { .ns-wishes-countdown { --count-w: 2.3rem; } }
 
 /* Family contacts: Call / WhatsApp. */
 .ns-contacts { display: grid; gap: .6rem; padding-top: .9rem; border-top: 1px solid #b58e5044; }

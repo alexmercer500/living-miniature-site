@@ -71,6 +71,8 @@ try {
         }
         await evaluate(`document.querySelector('${row}').scrollLeft=0; true`); await wait(350);
       }
+      // First-pass reveals are short timed entrances; read the chapter once they have played.
+      await waitFor(`[...document.querySelectorAll('#${section} [data-revealed]')].every(e=>e.getAnimations().every(a=>a.playState==='finished'))`);
       const state = await evaluate(`(() => {
         const s=document.getElementById('${section}'), b=s.getBoundingClientRect();
         return {height:s.matches('[data-envelope][data-enhanced]')?s.querySelector('.envelope-viewport').getBoundingClientRect().height:b.height,width:document.documentElement.scrollWidth,left:b.left,right:b.right,
@@ -98,9 +100,9 @@ try {
       records.push({ view: view.name, section, ...state });
       if ([390,1440].includes(view.width) || view.lang === 'hi' && view.width === 320) await shot(`${view.name}-${section}`);
     }
-    const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-venue-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-signs a[target=\"_blank\"]').length,rsvp:!!document.getElementById('rsvp')})");
-    assert.deepEqual(details.titles, data.events.map(e => e.title[view.lang])); assert.equal(details.address, data.venue.address);
-    assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, data.rsvp.enabled);
+    const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-location-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-signs a[target=\"_blank\"]').length,rsvp:!!document.getElementById('rsvp'),countdowns:document.querySelectorAll('[data-nature-countdown]').length})");
+    assert.deepEqual(details.titles, data.events.map(e => e.title[view.lang])); assert.equal(details.address, data.venue.locations[0].address[view.lang]);
+    assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, false); assert.equal(details.countdowns, 2, 'Countdown on the welcome screen and in the wishes garden');
     if (view.reduced || view.noJs) assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), false);
     if (view.name === 'width-390' || view.name === 'width-1440') {
       await scroll('#welcome');

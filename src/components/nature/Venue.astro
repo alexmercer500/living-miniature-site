@@ -3,17 +3,16 @@ import Art from './Art.astro';
 import ScenePlate from './ScenePlate.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, mapConfigured, directionsUrl } from '../../lib/content';
-import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
+import { type Lang, content, loc, t } from '../../lib/content';
+import { themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const landscapes = themeConfig[theme].assets;
-const hasMap = mapConfigured();
-const actions = [
-  { label:t(lang,'viewMap'), icon:'pin' as const, href:content.venue.mapUrl },
-  { label:loc(content.venue.directionsLabel,lang), icon:'arrow-right' as const, href:directionsUrl() },
-];
+const locations = content.venue.locations ?? [];
+// A venue whose name is not a mapped place (`directionsTo`) is found by its street address.
+const directionsFor = (location: (typeof locations)[number]) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('directionsTo' in location ? location.directionsTo : `${loc(location.name, 'en')}, ${loc(location.address, 'en')}`)}`;
 ---
 <section id="venue" class="ns-venue ns-scene" aria-labelledby="ns-venue-title">
   <ScenePlate><Art {...landscapes.venue} /><div class="ns-venue-shade"></div></ScenePlate>
@@ -22,30 +21,22 @@ const actions = [
     <div><p class="ns-kicker">{c.venueKicker}</p><h2 id="ns-venue-title">{c.venueExperience}</h2><p class="ns-venue-intro">{c.venueLine}</p></div>
   </header>
   <div class="ns-venue-stage">
-    <div class="ns-venue-card" data-venue-reveal>
-      <LotusMark class="ns-lotus" /><p class="ns-kicker">{c.venueNote}</p>
-      <h3>{content.venue.name}</h3><address>{content.venue.address}</address>
-    </div>
-    <div class="ns-wayfinding">
-      <span class="ns-signpost" aria-hidden="true"></span>
-      <nav class="ns-venue-signs" aria-label={t(lang,'venueHeading')}>
-        {actions.map((action,i)=><div class="ns-sign-mount" data-venue-sign style={`--sign-tilt:${[-1.5,1.2][i]}deg`}>
-          {hasMap
-            ? <a class="ns-wood-sign" href={action.href} target="_blank" rel="noopener"><span class="ns-sign-icon"><Icon name={action.icon} /></span><span>{action.label}</span></a>
-            : <button class="ns-wood-sign" type="button" disabled aria-describedby="ns-venue-map-note"><span class="ns-sign-icon"><Icon name={action.icon} /></span><span>{action.label}</span></button>}
-        </div>)}
-        <div class="ns-sign-mount" data-venue-sign style="--sign-tilt:-.8deg">
-          <a class="ns-wood-sign" data-venue-explore href={`${themeHref(lang, theme, '/invitation')}#ns-invite-venue`}><span class="ns-sign-icon"><LotusMark /></span><span>{c.exploreVenue}</span><Icon name="arrow-right" /></a>
+    <div class="ns-venue-locations" data-venue-reveal>
+      {locations.map(location => <article class="ns-location-card">
+        <LotusMark class="ns-lotus" />
+        <p class="ns-kicker">{loc(location.label, lang)}</p>
+        <h3>{loc(location.name, lang)}</h3>
+        <address>{loc(location.address, lang)}</address>
+        <p class="ns-location-note">{loc(location.note, lang)}</p>
+        <div class="ns-location-actions">
+          <a class="ns-wood-sign ns-wood-sign-compact" href={location.mapUrl} target="_blank" rel="noopener">
+            <span class="ns-sign-icon"><Icon name="pin" /></span><span>{t(lang, 'viewMap')}</span>
+          </a>
+          <a class="ns-wood-sign ns-wood-sign-compact" href={directionsFor(location)} target="_blank" rel="noopener">
+            <span class="ns-sign-icon"><Icon name="arrow-right" /></span><span>{loc(content.venue.directionsLabel, lang)}</span>
+          </a>
         </div>
-      </nav>
-      <p class="ns-venue-map-note" id="ns-venue-map-note">{hasMap ? c.venuePreviewNote : c.mapSoon}</p>
+      </article>)}
     </div>
   </div>
-  <dialog id="ns-venue-preview" class="ns-venue-dialog" aria-labelledby="ns-venue-preview-title" aria-describedby="ns-venue-preview-note">
-    <article class="ns-venue-preview">
-      <form method="dialog"><button class="ns-venue-close" type="submit" aria-label={t(lang,'close')} autofocus><Icon name="close" /></button></form>
-      <div class="ns-venue-preview-art"><Art {...landscapes.venue} sizes="90vw" /></div>
-      <div class="ns-venue-preview-copy"><p class="ns-kicker">{c.venueNote}</p><h2 id="ns-venue-preview-title">{content.venue.name}</h2><address>{content.venue.address}</address>{content.venue.notes[lang].length > 0 && <ul class="ns-venue-notes">{content.venue.notes[lang].map(note => <li>{note}</li>)}</ul>}<p id="ns-venue-preview-note">{c.venuePreviewNote}</p></div>
-    </article>
-  </dialog>
 </section>

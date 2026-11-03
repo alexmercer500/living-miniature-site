@@ -74,7 +74,7 @@ The **EN | हिंदी** toggle switches routes and keeps your place (it car
 | 3 | **The letter** (`#invitation`) | An envelope on the garden table. Scrolling breaks the wax seal, opens the flap and raises the card. | Tap the seal to open or close it; "View full invitation". |
 | 4 | **Celebrations** (`#celebrations`) | One painted card per event, with date, time and a short line. | **Add to calendar** (only when the event has a real date). |
 | 5 | **Venue** (`#venue`) | A lantern-lit garden approach with three signs: the venue, directions and a preview. | Map / directions (only when `venue.mapUrl` is set). |
-| 6 | **Wishes** (`#wishes`) | Six decorative blessing tags in a lantern garden, a countdown, and RSVP. | Touch a tag to make it flutter. Countdown and RSVP show only once configured. |
+| 6 | **Wishes** (`#wishes`) | Six decorative blessing tags in a lantern garden and the countdown. | Touch a tag to make it flutter; write a blessing on the last tag. The countdown shows once `site.weddingDate` is a real date. |
 | 7 | **A final note** (`#closing`) | Ivory stationery on the closing terrace with the thank-you line. | Back to the beginning, or the full invitation. |
 
 Between chapters a fixed "camera" carries you from one painting into the next (zoom, a leafy reveal edge with a gold rim, drifting petals, a sweep of late light, out-of-focus bougainvillea passing the lens).
@@ -99,13 +99,10 @@ Every visible string has an `en` and `hi` version.
 | `couple.displayName` | Names as displayed. **Keep ` & ` (EN) and ` एवं ` (HI) between the two names**: the layout splits on them. | — |
 | `couple.tagline` | Line under the names on the invitation page | — |
 | `venue.name`, `venue.address` | Venue card | — |
-| `venue.mapUrl` | An `https://` map link (the venue is confirmed) | **View map**, plus **Get directions** built from the venue name and address |
+| `venue.mapUrl` | An `https://` map link (the venue is confirmed) | **View map**, plus **Get directions** built from the venue name and address (or from `directionsTo`, when the name is not a mapped place, e.g. Shubh Aangan) |
 | `venue.notes` | Short lines (parking, entrance, landmark) per language | Shown in the **Explore venue** preview |
-| `rsvp.enabled` | `true` | **RSVP** button and form in the Wishes chapter. The form writes a WhatsApp message for the guest; nothing is stored. |
-| `rsvp.whatsapp` | The number replies go to, with country code (`919812345678`). Empty = WhatsApp asks the guest which chat to use. | — |
-| `rsvp.deadline` | `YYYY-MM-DD` | "Kindly reply by …" in the RSVP form |
-| `rsvp.url` | Optional external form (Google Form etc.) | Replaces the WhatsApp form with a link to it |
-| `contacts[]` | `name`, `role` (EN/HI), `phone`, `whatsapp` | **Call / WhatsApp** buttons in the RSVP form and on the invitation page, once a real number is set |
+| `blessings.whatsapp` | The number a written blessing is sent to, with country code (`919812345678`). Empty = WhatsApp asks the guest which chat to use. | **Send it to the couple** on the blessing tag |
+| `contacts[]` | `name`, `role` (EN/HI), `phone`, `whatsapp` | **Call / WhatsApp** buttons on the invitation page, once a real number is set |
 | `photos.albumUrl` | A shared album link (Google Photos, Drive) | **Share your photos** on the final note |
 | `invitation.downloadUrl` | Path/URL of a PDF or image card | **Download invitation** button |
 | `invitation.placeholders.*` | Invocation, blessings, family lines, hosts on the invitation page | — |
@@ -192,7 +189,7 @@ living-miniature-site/
 - CSS handles small ambient loops (lantern sway, candle flicker, drifting petals), all gated by `prefers-reduced-motion`.
 - **Chapter handoffs need no script.** Each chapter's painting sits in a `ScenePlate`: a sticky camera that holds the painting still while its chapter is on screen, so the chapter's own top edge reveals it over the one before. The browser does this on its scrolling thread, so a handoff can never lag behind the finger, show the next chapter early or snap in late (the previous script-driven cameras did all three on phones).
 - On top of that, CSS scroll-driven animations (`animation-timeline: --scene`) add the feathered leafy band, gold rim, petals, light sweep, the settle/push-in of the paintings and the arrival of each chapter's cards and copy. Browsers without scroll timelines get a clean hard-edged reveal and still content. Write those rules with longhands (`animation-name`, `animation-timeline`, …): the CSS minifier folds a longhand timeline into the `animation` shorthand, which browsers reject; `nature-static.test.mjs` guards this.
-- **Theme keepsakes.** Amber Fort opens a photo-real envelope and Lake City a scroll in place of the paper envelope. Each is one photo cut into layers by `npm run cut-objects` (re-run it after replacing `invitation-object.png`; it writes `object/` with the layers and their `geometry.json`). They animate on the envelope's own scroll stages, so timing, tap-to-open and the static fallback match the Nature route. Both are also lit 3D models (`src/scripts/envelope-model.ts`, `scroll-model.ts`, sharing `keepsake-3d.ts`; three.js, loaded lazily) built from textures made from the same photos: `npm run build-envelope-model` and `npm run build-scroll-model` (re-run after replacing a photo, the scroll after `cut-objects`; each writes `model/`). The photo layers remain the poster and the no-WebGL fallback.
+- **Theme keepsakes.** Amber Fort opens a photo-real envelope and Lake City a scroll in place of the paper envelope. Each is one photo cut into layers by `npm run cut-objects` (re-run it after replacing `invitation-object.png`; it writes `object/` with the layers and their `geometry.json`). They animate on the envelope's own scroll stages, so timing, tap-to-open and the static fallback match the Nature route. Both are also lit 3D models (`src/scripts/envelope-model.ts`, `scroll-model.ts`, sharing `keepsake-3d.ts`; three.js, loaded lazily) built from textures made from the same photos: `npm run build-envelope-model` and `npm run build-scroll-model` (re-run after replacing a photo, the scroll after `cut-objects`; each writes `model/`). The layers in `object/` are no longer the photo cut-outs (the photo's pouch-like envelope and satin-bow scroll were not the design): they are the 3D models' own parts, rendered by `scripts/render-keepsake-standins.mjs` (needs `npm run dev` and a headless Chrome on :9333; see its header), so the stand-in shown until the model is drawn, and on phones that never draw it, is the same envelope / scroll. Re-run it after changing a model. Do not run `cut-objects` again: it would put the photo layers back.
 - The envelope is the one scroll scene still driven by script (`envelope.ts`, a light follow of the scroll position, idle when not scrolling). On phones a tap on the keepsake brings it to the middle of the screen and opens it by time, then hands back to the scroll track at the open pose. The 3D models set up one step at a time, only while the guest is not scrolling (`quiet.ts`), and low-end phones (≤ 4 GB, ≤ 4 cores, or data saver) keep the photo keepsake. GSAP is only fetched as a fallback for the reading-progress line in browsers without scroll timelines.
 - Markup always ships in its **final**, readable state; scripts add motion on top. Chapters scrolled off-screen pause their loops (`data-offscreen`).
 
@@ -225,7 +222,7 @@ Measured on the production build, emulating a mid-range phone (4× slower CPU), 
 - Semantic headings, landmarks and real buttons and links. Every interactive item is keyboard-reachable with a visible focus ring. Touch targets are at least 44px.
 - Language toggle is a labelled nav with `aria-current`. The menu is a native `<details>` (works without JS, closes with Esc).
 - Reduced-motion users get static scenes. All art is decorative (`aria-hidden`); the lantern, petals, keepsakes, seal and wishing tags are labelled buttons.
-- Countdown and RSVP never show half-configured.
+- The countdown never shows half-configured. There is no RSVP: guests reach the families by Call / WhatsApp on the invitation page.
 
 ---
 
@@ -249,14 +246,14 @@ Not yet done: a social preview image for WhatsApp link previews (see Roadmap).
 | Port 4321 is busy | `npm run dev -- --port 4400` |
 | Odd build errors after moving folders | Delete `node_modules`, `.astro` and `dist`, then `npm ci`. |
 | Music silent | Phones need the tap (that's by design). Check the phone's silent switch and the header speaker button. |
-| "Add to calendar" / countdown / map / RSVP missing | They appear only once real values are set (see section 5). |
+| "Add to calendar" / countdown / map missing | They appear only once real values are set (see section 5). |
 | Changes to the JSON don't show | Save the file; if the dev server was stopped, run `npm run dev` again. |
 
 ---
 
 ## 11. Roadmap / ideas not built yet
 
-- **Real details**: names, dates, events, venue, map link, RSVP method, family lines, monogram.
+- **Real details**: names, dates, events, venue, map link, family lines, monogram.
 - **Quick Info mode** for elders: one large-text screen with every event, venue and call buttons.
 - **Personalised guest links** (`/?to=sharma-parivar`) that greet the family and show only their events.
 - **WhatsApp preview image** (1200×630) drawn from the same art.

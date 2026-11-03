@@ -30,24 +30,42 @@ export async function setupEnvelope() {
 
   // A keepsake with a 3D model (the Amber Fort envelope, the Lake City scroll) loads it once the
   // chapter is near or the page is idle, then draws every pose; until then (or without WebGL)
-  // its photo layers play the same stages. Its setup is slow, one-off main-thread work, so each
-  // step waits for the guest to pause scrolling (`quiet`): never mid-handoff.
+  // its stand-in (the model's own parts, pre-rendered) plays the same stages. Its setup is slow,
+  // one-off main-thread work, so each step waits for the guest to pause scrolling (`quiet`): never
+  // mid-handoff.
   let model: KeepsakeModel | undefined;
   let shown = envelopeState(1);
   const show = (pose: ReturnType<typeof envelopeState>) => { shown = pose; model?.update(pose); };
   const modelRig = scene.querySelector<HTMLElement>('.envelope-rig[data-model]');
-  // Low-end phones (little memory or few cores, or data saver on) keep the photo keepsake: even
-  // between gestures, creating the WebGL renderer alone is a few hundred milliseconds there.
+  // Low-end phones (little memory or few cores, or data saver on) keep the stand-in: even between
+  // gestures, creating the WebGL renderer alone is a few hundred milliseconds there.
   const device = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const lowEnd = (device.deviceMemory ?? 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 || Boolean(device.connection?.saveData);
-  // On phones each setup step also waits until the chapter fills the screen (see whenNear).
-  if (modelRig && matchMedia('(pointer: coarse)').matches) gateQuiet(() => { const r = scene.getBoundingClientRect(); return r.top <= 1 && r.bottom >= innerHeight - 1; });
+  // The model takes over from its stand-in with a short dissolve when the guest can see it (the
+  // two match, but the model is lit where the stand-in is a picture).
+  const swapIn = (mounted: KeepsakeModel) => {
+    const swap = () => {
+      model = mounted;
+      mounted.update(shown);
+      (window as { __nsProbe?: (text: string) => void }).__nsProbe?.('3D keepsake ready');
+    };
+    const r = modelRig!.getBoundingClientRect();
+    const seen = r.bottom > 0 && r.top < innerHeight;
+    const doc = document as Document & { startViewTransition?: (update: () => void) => { finished: Promise<void> } };
+    if (!seen || !doc.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches || document.querySelector('dialog[open]')) { swap(); return; }
+    const root = document.documentElement;
+    root.dataset.keepsakeSwap = '';
+    doc.startViewTransition(swap).finished.finally(() => delete root.dataset.keepsakeSwap);
+  };
+  // On phones each setup step also waits until the chapter fills the screen (see whenNear), and
+  // not while the invitation is open over it: scrolling inside that never reaches this page.
+  if (modelRig && matchMedia('(pointer: coarse)').matches) gateQuiet(() => { const r = scene.getBoundingClientRect(); return r.top <= 1 && r.bottom >= innerHeight - 1 && !document.querySelector('dialog[open]'); });
   if (modelRig && !lowEnd) whenNear(scene, () => quiet().then(() => JSON.parse(modelRig.dataset.model!))
     .then(spec => spec.kind === 'scroll'
       ? import('./scroll-model').then(m => m.mountScrollModel(modelRig, spec))
       : import('./envelope-model').then(m => m.mountEnvelopeModel(modelRig, spec)))
-    .then(mounted => { if (mounted) { model = mounted; mounted.update(shown); (window as { __nsProbe?: (text: string) => void }).__nsProbe?.('3D keepsake ready'); } })
-    .catch(error => console.warn('3D keepsake unavailable; the photo keepsake remains.', error)));
+    .then(mounted => { if (mounted) swapIn(mounted); })
+    .catch(error => console.warn('3D keepsake unavailable; its stand-in remains.', error)));
 
   // Keep the fully visible static card when motion is reduced (and drop the motion if the
   // guest turns reduced motion on mid-visit).

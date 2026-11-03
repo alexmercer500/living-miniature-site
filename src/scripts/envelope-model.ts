@@ -207,6 +207,26 @@ export async function mountEnvelopeModel(rig: HTMLElement, spec: ModelSpec): Pro
   rig.prepend(back);
   rig.append(front);
   ready = true;
+  // Dev only (`?standin`): scripts/render-keepsake-standins.mjs draws each part upright and face-on,
+  // `width` pixels wide, as the stand-in shown until (or instead of) this model.
+  if (import.meta.env.DEV && location.search.includes('standin')) (window as unknown as Record<string, unknown>).__standIn = (parts: string[], width: number) => {
+    const named: Record<string, Mesh[]> = { lining: [lining], pocket: [pocket], flap: [flapOut, flapIn], seal: [...halves] };
+    hanging.group.traverse(o => { if ((o as Mesh).isMesh) named.seal.push(o as Mesh); });
+    pose = { liftSpring: 1, seal: 0, flapSpring: 0 } as Pose; drawn = ''; draw();
+    wall.visible = false;
+    for (const [name, meshes] of Object.entries(named)) for (const m of meshes) {
+      const on = parts.includes(name), mat = m.material as Material;
+      mat.colorWrite = on; mat.depthWrite = on; m.castShadow = on;
+    }
+    renderer.setPixelRatio(width / rig.clientWidth);
+    renderer.setSize(rig.clientWidth * (1 + 2 * PAD_X), rig.clientHeight * (1 + 2 * PAD_Y), false);
+    renderer.shadowMap.needsUpdate = true;
+    renderer.render(scene, camera);
+    const out = document.createElement('canvas'), k = width / rig.clientWidth;
+    out.width = width; out.height = Math.round(rig.clientHeight * k);
+    out.getContext('2d')!.drawImage(front, PAD_X * rig.clientWidth * k, PAD_Y * rig.clientHeight * k, out.width, out.height, 0, 0, out.width, out.height);
+    return out.toDataURL('image/png');
+  };
   const resize = new ResizeObserver(() => { size(); draw(); });
   resize.observe(rig);
   const lost = (event: Event) => { event.preventDefault(); dispose(); };

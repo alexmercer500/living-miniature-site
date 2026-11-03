@@ -1,4 +1,4 @@
-/** Shared behaviour for the parchment form dialogs (RSVP, blessing): open from a trigger,
+/** Shared behaviour for the parchment form dialogs (the blessing): open from a trigger,
  *  close on the × button, Escape or a tap outside, and give focus back to the trigger. */
 export function sheetDialog(dialog: HTMLDialogElement) {
   let opener: HTMLElement | null = null;

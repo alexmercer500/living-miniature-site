@@ -1,0 +1,76 @@
+---
+import Icon from '../Icon.astro';
+import { type Lang, t } from '../../lib/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+
+<dialog id="invitation-modal" class="ns-invitation-modal" data-invitation-modal aria-labelledby="invitation-modal-title">
+  <div class="ns-invitation-modal-frame">
+    <h2 id="invitation-modal-title" class="visually-hidden">{t(lang, 'weddingInvitation')}</h2>
+    <button class="ns-invitation-modal-close" type="button" data-invitation-modal-close aria-label={t(lang, 'close')}>
+      <Icon name="close" />
+    </button>
+    <iframe title={t(lang, 'weddingInvitation')} data-invitation-modal-frame loading="lazy"></iframe>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-invitation-modal]');
+  const frame = dialog?.querySelector<HTMLIFrameElement>('[data-invitation-modal-frame]');
+  const close = dialog?.querySelector<HTMLButtonElement>('[data-invitation-modal-close]');
+  if (dialog && frame && close) {
+    let lastTrigger: HTMLAnchorElement | null = null;
+    const open = (event: Event) => {
+      event.preventDefault();
+      const link = event.currentTarget as HTMLAnchorElement;
+      const url = new URL(link.dataset.invitationModalUrl || link.href, location.href);
+      url.searchParams.set('modal', '1');
+      // Reopening keeps the page already loaded (and where the guest had scrolled it to).
+      if (frame.src !== url.href) frame.src = url.href;
+      lastTrigger = link;
+      // The page behind stays put: no wheel or overscroll reaches it while the invitation is open.
+      document.documentElement.dataset.invitationOpen = '';
+      if (!dialog.open) dialog.showModal();
+      close.focus();
+    };
+    document.querySelectorAll<HTMLAnchorElement>('[data-invitation-modal-open]').forEach(link => link.addEventListener('click', open));
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    // Without preventScroll, focusing a link inside the sticky letter would jump the page.
+    dialog.addEventListener('close', () => { delete document.documentElement.dataset.invitationOpen; lastTrigger?.focus({ preventScroll: true }); });
+  }
+</script>
+
+<style>
+  .ns-invitation-modal {
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: #213b32;
+    box-shadow: 0 2rem 7rem #000b;
+  }
+  .ns-invitation-modal::backdrop { background: #160907cc; backdrop-filter: blur(8px); }
+  :global(html[data-invitation-open]) { overflow: hidden; }
+  .ns-invitation-modal-frame { position: relative; width: 100%; height: 100%; }
+  .ns-invitation-modal iframe { display: block; width: 100%; height: 100%; border: 0; background: #213b32; }
+  .ns-invitation-modal-close {
+    position: absolute; z-index: 2; top: .8rem; right: .8rem; width: 2.75rem; height: 2.75rem;
+    display: grid; place-items: center; border: 1px solid #fff1d899; border-radius: 50%;
+    background: #3a1720e8; color: #fff1d8; cursor: pointer; box-shadow: 0 4px 18px #0008;
+  }
+  .ns-invitation-modal-close :global(svg) { width: 1.2rem; }
+  .ns-invitation-modal-close:focus-visible { outline: 2px solid #fff1d8; outline-offset: 3px; }
+  @media (max-width: 767px) {
+    .ns-invitation-modal { width: 100vw; height: 100dvh; }
+    .ns-invitation-modal-close { top: calc(env(safe-area-inset-top) + .65rem); right: .65rem; }
+  }
+</style>

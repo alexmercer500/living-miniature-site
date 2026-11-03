@@ -44,14 +44,14 @@ import lakeReception from '../assets/rajasthan/lake-city/events/reception.png';
 
 export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
 
-/** The invitation keepsake a theme opens in place of the paper envelope: its photo cut into
- *  layers (scripts/cut-invitation-objects.mjs) and their geometry, in layer pixels. */
+/** The invitation keepsake a theme opens in place of the paper envelope: its 3D model's parts,
+ *  rendered as layers (scripts/render-keepsake-standins.mjs), and their geometry in layer pixels. */
 export type InvitationModel =
   | { kind: 'envelope'; geometry: typeof amberGeometry; layers: { flap: ImageMetadata; body: ImageMetadata; seal: ImageMetadata }; model3d?: KeepsakeModel3d<typeof amberModelGeometry> }
   | { kind: 'scroll'; geometry: typeof lakeGeometry; layers: { roll: ImageMetadata; ribbon: ImageMetadata }; model3d?: KeepsakeModel3d<typeof lakeModelGeometry> };
 /** A keepsake's 3D model (scripts/envelope-model.ts, scroll-model.ts): its geometry and textures
- *  by file name (scripts/build-envelope-model.mjs, build-scroll-model.mjs). The photo layers stay
- *  as its poster and fallback. */
+ *  by file name (scripts/build-envelope-model.mjs, build-scroll-model.mjs). Its rendered layers
+ *  are its stand-in and fallback. */
 export type KeepsakeModel3d<G> = { geometry: G; textures: Record<string, ImageMetadata> };
 export type ThemeCopy = typeof natureCopy.en;
 
@@ -136,12 +136,20 @@ export const themeConfig = {
 
 const overrides: Record<Exclude<ThemeId, 'nature'>, Record<Lang, Partial<ThemeCopy>>> = {
   'amber-fort': {
-    en: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
-    hi: { chapter: 'Amber Fort Romance', heroOne: 'Love stories', heroTwo: 'against timeless forts.' },
+    en: {
+      chapter: 'A Royal Welcome', welcome: 'A Royal Welcome', heroOne: 'From this moment,', heroTwo: 'a lifetime together.',
+      dateLine: '23–26 November 2026', roots: 'Our beginnings',
+      rootsBody: 'The love, traditions, and blessings that brought us to this beautiful day.',
+    },
+    hi: {
+      chapter: 'शाही स्वागत', welcome: 'शाही स्वागत', heroOne: 'इस पल से,', heroTwo: 'उम्र भर का साथ।',
+      dateLine: '23–26 नवम्बर 2026', roots: 'हमारी शुरुआत',
+      rootsBody: 'वह प्रेम, परंपराएँ और आशीर्वाद जो हमें इस सुंदर दिन तक लाए।',
+    },
   },
   'lake-city': {
-    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
-    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.' },
+    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 November 2026' },
+    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 नवम्बर 2026' },
   },
 };
 

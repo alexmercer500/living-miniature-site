@@ -55,6 +55,54 @@ sheet; the knot's control follows the projected medallion in the photo roll's tu
 renderer, lighting and loaders moved to `keepsake-3d.ts` (the one three.js chunk, ~142 KB gz,
 for both themes). Phone scroll at 4× CPU (GPU Chrome): at parity with the photo fallback.
 
+Countdown, no RSVP, even celebration cards (2026-11-03, `development`). RSVP (button, WhatsApp
+form, `rsvp.ts`, its strings and styles) is removed; a written blessing still goes by WhatsApp,
+to `blessings.whatsapp`. The countdown (Countdown.astro + `countdown.ts`) sits under the
+welcome date and in the wishes garden: four round-topped jharokha windows; a changed digit tips
+up and away as the next swings down (transform/opacity), the seconds window's gilt edge fills
+over the minute (one short stroke transition a second), a bigger unit's window glints when it
+rolls over (WAAPI transform). One timer, aligned to the second, runs only while a countdown is
+on screen and the tab is visible. Celebration cards share a photo row and a copy row (subgrid)
+so every photo is the same height whatever the card says; the row grows to the photo's 3:2
+shape and shrinks only when the screen is short (`max-height: 100%` re-resolves the `1fr`).
+Before, a long title or a venue line took the space from that card's photo: 47–151 px on
+320–375 px phones, 29 px on a 1024×768 tablet (now four across held sideways). Short phones get
+a quieter heading and tighter copy. The bride's home is now named **Shubh Aangan / शुभ आँगन**
+everywhere; its directions go by street address (`directionsTo`), since the name is not a
+mapped place. Event venues are bilingual objects. Lake City shows the real date line.
+
+One-time scroll reveals (2026-11-03, `development`). The chapter arrivals were scroll-linked
+(view timelines), so they replayed on every scroll back. They are now first-pass reveals
+(`reveal.ts`, "First-pass reveals" in nature.css):
+- One IntersectionObserver marks only what is still below the fold, and only with motion
+  allowed, so nothing ever waits on script.
+- Each piece rises in once when it arrives and is never replayed. A row of cards reveals
+  together, so a sideways phone row has settled before it is swiped.
+- Whatever arrives together is staggered in reading order.
+- The reveal styles drop off after about 2.6 s, so nothing keeps a layer or overrides an
+  element's own transitions.
+- A celebration photo settles from a slight zoom, the story path draws itself, and the
+  note's frame glints once.
+
+What stays on the scroll: the envelope (its own rig), the scene-plate handoffs, the welcome
+copy's departure and the keepsake peek.
+
+The celebration card's rows had inherited the parent grid's row gap through the subgrid.
+That pushed the copy and its curved scallop below the photo, so the curve showed on plain
+paper. `row-gap: 0` puts the curve back over the photo. Tighter card copy now starts at 720 px
+tall rather than 650, which gives the photo its room on 1366×768 laptops.
+
+Keepsake stand-ins rendered from the 3D models (2026-11-03, `development`). Guests saw the photo
+cut-outs (Amber Fort's pouch, Lake City's satin bow) until the model was drawn, then a different
+keepsake; hiding the rig until then left phones with an empty letter while scrolling (the model
+only sets up once the guest pauses on the chapter). `scripts/render-keepsake-standins.mjs` now
+draws each model's parts through a dev-only `?standin` hook (envelope: body = lining + pocket,
+flap, seal + tassel, upright and face-on; scroll: roll and ribbon, lifted, on the photo's
+diagonal, in a frame padded 0.3 rig widths for the finials and tails) and measures their
+geometry. The envelope's CSS stage now tilts the full 58° (the model's), the scroll's keeps .55×58
+≈ 32° (also the model's), both from 2.6 rig widths. The stand-in is always shown; the model
+dissolves in over it (a keepsake-only view transition) when the guest can see the swap.
+
 Amber Fort envelope rebuilt as a 3D model (2026-10-28, `development`). The cut photo layers
 showed a guessed back to the flap, a torn hole where the flap had been and ragged edges, because
 the photo never had those parts. `npm run build-envelope-model`

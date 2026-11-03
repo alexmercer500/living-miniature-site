@@ -29,7 +29,7 @@ try {
     await command('Network.setBlockedURLs',{urls:view.failed?['*closing-*.avif','*closing-*.webp']:[]});
     await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}`});await wait(1700);
     if(!view.noJs&&!view.reduced)assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('[data-note-arrival]')).opacity)<.2"),'Note waits for section entry');
-    await evaluate("window.scrollTo({top:document.getElementById('closing').offsetTop-innerHeight*.65,behavior:'instant'});true");await wait(1200);
+    await evaluate("document.querySelector('.ns-note-arrival').scrollIntoView({block:'center',behavior:'instant'});true");await wait(600);
     const early=await evaluate("(()=>{const n=document.getElementById('ns-note-names');return {opacity:getComputedStyle(n).opacity,animations:n.getAnimations().length,text:n.textContent,parent:Number(getComputedStyle(document.querySelector('[data-note-arrival]')).opacity)};})()");
     assert.equal(early.opacity,'1');assert.equal(early.animations,0);assert.ok(early.text,'Names are printed, not revealed separately');
     if(!view.noJs&&!view.reduced){assert.ok(early.parent>.08&&early.parent<1,'Slow intermediate card reveal');await shot(`${view.name}-entering`);}
@@ -51,15 +51,15 @@ try {
     assert.ok(layout.card.top>=64&&layout.card.bottom<=view.height-65&&layout.card.left>=0&&layout.card.right<=view.width,`${view.name}: card fits ${JSON.stringify(layout.card)}`);
     for(const copy of layout.copy)assert.ok(copy.top>=layout.card.top&&copy.bottom<=layout.card.bottom&&copy.left>=layout.card.left&&copy.right<=layout.card.right,`${view.name}: copy fits paper ${JSON.stringify(copy)}`);
     for(const action of layout.actions)assert.ok(action.top>=64&&action.bottom<=view.height-65&&action.height>=44&&action.left>=0&&action.right<=view.width,`${view.name}: link fits ${JSON.stringify(action)}`);
-    assert.equal(layout.actions[0].href,`${view.hi?'/hi':''}/invitation`);assert.equal(layout.actions[1].href,'#welcome');
+    assert.equal(layout.actions[0].href,'#invitation-modal');assert.equal(layout.actions[1].href,'#welcome');
     if(!view.noJs&&!view.failed){assert.ok(layout.ready);assert.ok(layout.src.includes(view.width>=768&&view.width>=view.height?'closing-desktop.':'closing-mobile.'));}
-    assert.equal(layout.float,view.noJs||view.reduced?'none':'ns-note-breathe');assert.equal(layout.glint,'0');count++;
+    assert.equal(layout.float,view.noJs||view.reduced?'none':'ns-note-breathe');await wait(1800);assert.equal(await evaluate("getComputedStyle(document.querySelector('.ns-note-glint')).opacity"),'0','The frame glint passes once and is gone');count++;
     // Ordinary keyboard links remain real navigation, including the no-JS path.
     if(view.name==='mobile'||view.name==='short-hindi'||view.reduced||view.noJs){
       await evaluate("document.querySelector('.ns-note-back').focus({preventScroll:true});true");await enter();await wait(2300);
       assert.ok(Math.abs(await evaluate("document.getElementById('welcome').getBoundingClientRect().top"))<2,'Back-to-beginning works');
       await evaluate("document.getElementById('closing').scrollIntoView({behavior:'instant'});document.querySelector('.ns-note-actions .ns-button').focus({preventScroll:true});true");await enter();await wait(1100);
-      assert.ok(await evaluate("location.pathname.endsWith('/invitation')||location.pathname.endsWith('/invitation/')"));count++;
+      if(!view.noJs)assert.ok(await evaluate("document.querySelector('[data-invitation-modal]').open&&new URL(document.querySelector('[data-invitation-modal-frame]').src).pathname.includes('/invitation')"),'Invitation opens in its modal');count++;
     }
   }
   assert.deepEqual(errors,[]);console.log(`PASS: ${count} final-note composition/reveal/names/links/fallback checks. Screenshots: ${out}`);

@@ -1,0 +1,31 @@
+---
+/**
+ * The days to the wedding as a row of four jharokha windows. Each digit turns over like a page as
+ * it changes, the seconds window's gilt edge fills as the minute runs out, and a window catches a
+ * glint of light when its unit rolls over (scripts/countdown.ts). Without script the windows stay
+ * empty dashes; nothing else depends on them.
+ */
+import { type Lang, t } from '../../lib/content';
+interface Props { lang: Lang; target: Date; class?: string }
+const { lang, target, class: cls } = Astro.props;
+const units = ['days', 'hours', 'minutes', 'seconds'] as const;
+// A round-topped window (60 wide, 84 tall) with a small finial above the arch.
+const arch = 'M1 83V37A29 29 0 0 1 59 37V83Z';
+const edge = 'M1 83V37A29 29 0 0 1 59 37V83';
+---
+<div class:list={['ns-countdown', cls]} data-nature-countdown={target.toISOString()} role="timer" aria-label={t(lang, 'countdownHeading')}>
+  {units.map(unit => (
+    <div class="ns-count" data-count={unit}>
+      <svg class="ns-count-frame" viewBox="0 0 60 84" aria-hidden="true" focusable="false">
+        <path class="ns-count-pane" d={arch} />
+        <path class="ns-count-inner" d="M5 83V38A25 25 0 0 1 55 38V83" />
+        <path class="ns-count-finial" d="M30 0L33.5 4.5L30 9L26.5 4.5Z" />
+        {unit === 'seconds' && <path class="ns-count-trace" d={edge} pathLength="60" />}
+      </svg>
+      <span class="ns-count-glint" aria-hidden="true"><i></i></span>
+      <strong class="ns-count-value" aria-hidden="true" data-count-value><span class="ns-count-digit"><i>–</i></span><span class="ns-count-digit"><i>–</i></span></strong>
+      <span class="ns-count-label" aria-hidden="true">{t(lang, unit)}</span>
+      <span class="visually-hidden" data-count-text data-label={t(lang, unit)}></span>
+    </div>
+  ))}
+</div>

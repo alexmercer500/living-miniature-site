@@ -1,87 +1,123 @@
 {
   "site": {
-    "title": "Partner One & Partner Two — Wedding Celebration",
-    "description": "Join us for a celebration of love, family, and new beginnings.",
+    "title": "Ratnesh & Pallavi — A Royal Wedding Story",
+    "description": "Join Ratnesh and Pallavi as two families come together in a beautiful wedding celebration.",
     "defaultLocale": "en",
     "availableLocales": [
       "en",
       "hi"
     ],
-    "weddingDate": "YYYY-MM-DD",
+    "weddingDate": "2026-11-25",
     "weddingDateLabel": {
-      "en": "Wedding date to be confirmed",
-      "hi": "विवाह की तिथि शीघ्र घोषित होगी"
+      "en": "23–26 November 2026",
+      "hi": "23–26 नवम्बर 2026"
     }
   },
   "couple": {
-    "partnerOne": "Partner One",
-    "partnerTwo": "Partner Two",
+    "partnerOne": "Ratnesh",
+    "partnerTwo": "Pallavi",
     "displayName": {
-      "en": "Partner One & Partner Two",
-      "hi": "साथी एक एवं साथी दो"
+      "en": "Ratnesh & Pallavi",
+      "hi": "रत्नेश एवं पल्लवी"
     },
     "tagline": {
-      "en": "Two paths, one beautiful celebration.",
-      "hi": "दो राहें, एक सुंदर उत्सव।"
+      "en": "A royal beginning to a beautiful wedding story.",
+      "hi": "एक सुंदर विवाह कथा की शाही शुरुआत।"
     }
   },
   "venue": {
-    "name": "Venue Name Placeholder",
-    "address": "Full venue address placeholder",
-    "mapUrl": "",
+    "name": "Shubh Aangan / शुभ आँगन",
+    "address": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001 / शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001",
+    "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
     },
     "notes": {
       "en": [
-        "[Parking details to be added]",
-        "[Entrance and landmark to be added]"
+        "The wedding and fera will be held at Shubh Aangan.",
+        "Reception: 26 November 2026 from 8:00 PM at Uttam Villa, Khairagarh."
       ],
       "hi": [
-        "[पार्किंग की जानकारी जोड़ी जाएगी]",
-        "[प्रवेश द्वार और पहचान जोड़ी जाएगी]"
+        "विवाह एवं फेरे शुभ आँगन में होंगे।",
+        "स्वागत समारोह: 26 नवम्बर 2026, शाम 8 बजे से उत्तम विला, खैरागढ़ में।"
       ]
-    }
-  },
-  "rsvp": {
-    "enabled": true,
-    "whatsapp": "",
-    "url": "",
-    "deadline": "",
-    "label": {
-      "en": "RSVP",
-      "hi": "अपनी उपस्थिति बताएं"
     },
-    "_note": "whatsapp: the number replies go to, with country code (e.g. 919812345678). Empty = WhatsApp asks the guest which chat to send to. url: optional external form (Google Form etc.) used instead of the WhatsApp form."
+    "locations": [
+      {
+        "id": "wedding",
+        "label": {
+          "en": "Wedding & Fera",
+          "hi": "विवाह एवं फेरे"
+        },
+        "name": {
+          "en": "Shubh Aangan",
+          "hi": "शुभ आँगन"
+        },
+        "address": {
+          "en": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001",
+          "hi": "शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001"
+        },
+        "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
+        "directionsTo": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001",
+        "note": {
+          "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
+          "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
+        }
+      },
+      {
+        "id": "reception",
+        "label": {
+          "en": "Reception",
+          "hi": "स्वागत समारोह"
+        },
+        "name": {
+          "en": "Uttam Villa",
+          "hi": "उत्तम विला"
+        },
+        "address": {
+          "en": "Khairagarh",
+          "hi": "खैरागढ़"
+        },
+        "mapUrl": "https://maps.app.goo.gl/yJk7CSTDmKUtnr9o8",
+        "note": {
+          "en": "Thursday, 26 November 2026 · From 8:00 PM",
+          "hi": "गुरुवार, 26 नवम्बर 2026 · शाम 8 बजे से"
+        }
+      }
+    ]
+  },
+  "blessings": {
+    "whatsapp": "",
+    "_note": "whatsapp: the number a guest's written blessing is sent to ('Send it to the couple'), with country code (e.g. 919812345678). Empty = WhatsApp asks the guest which chat to send to."
   },
   "contacts": [
     {
       "name": {
-        "en": "Family contact one",
-        "hi": "परिवार संपर्क एक"
+        "en": "Ratnesh's family",
+        "hi": "रत्नेश का परिवार"
       },
       "role": {
-        "en": "For travel and stay",
-        "hi": "यात्रा और ठहरने के लिए"
+        "en": "With love and blessings",
+        "hi": "स्नेह एवं आशीर्वाद सहित"
       },
       "phone": "",
       "whatsapp": ""
     },
     {
       "name": {
-        "en": "Family contact two",
-        "hi": "परिवार संपर्क दो"
+        "en": "Pallavi's family",
+        "hi": "पल्लवी का परिवार"
       },
       "role": {
-        "en": "For the celebrations",
-        "hi": "समारोहों के लिए"
+        "en": "With love and blessings",
+        "hi": "स्नेह एवं आशीर्वाद सहित"
       },
       "phone": "",
       "whatsapp": ""
     }
   ],
-  "contacts_note": "Each contact shows Call / WhatsApp buttons once phone or whatsapp has a real number (with country code).",
+  "contacts_note": "Each contact shows Call / WhatsApp buttons on the invitation page once phone or whatsapp has a real number (with country code).",
   "photos": {
     "albumUrl": "",
     "_note": "A shared album link (Google Photos, Drive…). Shows a 'Share your photos' button on the final note once set."
@@ -95,72 +131,99 @@
     },
     "placeholders": {
       "invocation": {
-        "en": "[Invocation line — to be provided by the family]",
-        "hi": "[मंगल वचन — परिवार द्वारा दिया जाएगा]"
+        "en": "॥ Shri Ganeshaya Namah ॥",
+        "hi": "॥ श्री गणेशाय नमः ॥"
       },
       "blessings": {
-        "en": "[With the blessings of — names to be added]",
-        "hi": "[आशीर्वाद — नाम जोड़े जाएँगे]"
+        "en": "With the blessings of Hinglajini Maa and the Supreme Father, we invite you to celebrate our beloved Ratnesh’s wedding.",
+        "hi": "आत्मीय स्वजनों में हिंगलाजिनी एवं परमपिता परमेश्वर के आशीर्वाद से हमारे लाडले रत्नेश के मंगल परिणय के अवसर पर आपको सादर आमंत्रित करते हैं।"
       },
       "familyOne": {
-        "en": "[Family of Partner One — names to be added]",
-        "hi": "[साथी एक का परिवार — नाम जोड़े जाएँगे]"
+        "en": "Ratnesh — grandson of Late Shri Babariya Ram Sahu; son of Late Shri Hariram Sahu, Khairagarh.",
+        "hi": "चि. रत्नेश — सुपोत्र स्व. श्री बबरिया राम साहू एवं सुपुत्र स्व. श्री हरिराम साहू, खैरागढ़।"
       },
       "familyTwo": {
-        "en": "[Family of Partner Two — names to be added]",
-        "hi": "[साथी दो का परिवार — नाम जोड़े जाएँगे]"
+        "en": "Pallavi — granddaughter of Shri Samaylal Sahu; daughter of Shri Vishnu Sahu, Bhilai.",
+        "hi": "सौ. का. पल्लवी — सुपोत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
       },
       "hosts": {
-        "en": "[Hosts and contact details — to be added]",
-        "hi": "[आयोजक एवं संपर्क विवरण — जोड़े जाएँगे]"
+        "en": "With love and blessings from both families. The wedding and fera will be held at Shubh Aangan, near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001. The reception will be at Uttam Villa, Khairagarh.",
+        "hi": "स्नेह एवं आशीर्वाद सहित — दोनों परिवार। विवाह एवं फेरे शुभ आँगन, शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001 में होंगे। स्वागत समारोह उत्तम विला, खैरागढ़ में होगा।"
       }
     }
   },
   "events": [
     {
       "id": "event-one",
-      "date": "YYYY-MM-DD",
+      "date": "2026-11-23",
       "time": "",
       "title": {
-        "en": "The Turmeric Affair",
-        "hi": "हल्दी की सुनहरी महफ़िल"
+        "en": "The Promise Begins",
+        "hi": "वचन की शुरुआत"
       },
       "shortDescription": {
-        "en": "A golden beginning of marigolds, laughter, and blessings.",
-        "hi": "गेंदे, हँसी और आशीषों से सजी सुनहरी शुरुआत।"
+        "en": "A day of promises, family blessings, and the first step toward forever.",
+        "hi": "वचनों, पारिवारिक आशीर्वाद और सदा के साथ की पहली शुरुआत का दिन।"
       },
-      "visualKey": "floral-courtyard",
-      "venueName": "Venue Name Placeholder"
+      "visualKey": "mehndi",
+      "venueName": {
+        "en": "",
+        "hi": ""
+      }
     },
     {
       "id": "event-two",
-      "date": "YYYY-MM-DD",
+      "date": "2026-11-24",
       "time": "",
       "title": {
-        "en": "The Henna & Harmony Soirée",
-        "hi": "मेहंदी और सुरों की शाम"
+        "en": "A Turmeric Affair",
+        "hi": "हल्दी का उत्सव"
       },
       "shortDescription": {
-        "en": "An evening of melody, mischief, and moonlit dancing.",
-        "hi": "सुरों, शरारतों और चाँदनी नृत्य से भरी शाम।"
+        "en": "A golden day of laughter, love, and haldi blessings.",
+        "hi": "हँसी, प्रेम और हल्दी के सुनहरे आशीर्वादों से सजा दिन।"
       },
-      "visualKey": "lantern-garden",
-      "venueName": "Venue Name Placeholder"
+      "visualKey": "haldi",
+      "venueName": {
+        "en": "",
+        "hi": ""
+      }
     },
     {
       "id": "event-three",
-      "date": "YYYY-MM-DD",
-      "time": "",
+      "date": "2026-11-25",
+      "time": "12:00",
       "title": {
         "en": "The Vow & Wonder Chapter",
-        "hi": "सात फेरों का नया अध्याय"
+        "hi": "वचन एवं विस्मय का नया अध्याय"
       },
       "shortDescription": {
-        "en": "The moment two paths become one, before everyone we love.",
-        "hi": "वह पल जब दो राहें एक हो जाती हैं, अपनों की दुआओं के बीच।"
+        "en": "The baraat sets out at noon as two families begin one shared celebration.",
+        "hi": "दोपहर 12 बजे बारात प्रस्थान करेगी और दो परिवार एक साझा उत्सव की शुरुआत करेंगे।"
       },
-      "visualKey": "mandap-courtyard",
-      "venueName": "Venue Name Placeholder"
+      "visualKey": "wedding",
+      "venueName": {
+        "en": "Shubh Aangan",
+        "hi": "शुभ आँगन"
+      }
+    },
+    {
+      "id": "event-four",
+      "date": "2026-11-26",
+      "time": "20:00",
+      "title": {
+        "en": "An Evening to Remember",
+        "hi": "यादगार आशीर्वादों की शाम"
+      },
+      "shortDescription": {
+        "en": "An evening of blessings and lovingly prepared delicacies.",
+        "hi": "आशीर्वाद समारोह एवं व्यंजनों की बगिया।"
+      },
+      "visualKey": "reception",
+      "venueName": {
+        "en": "Uttam Villa",
+        "hi": "उत्तम विला"
+      }
     }
   ],
   "ui": {
@@ -197,23 +260,8 @@
       "envelopeOpened": "The invitation is open. The card is ready to read.",
       "envelopeClosed": "The envelope is closed.",
       "continueJourney": "Continue the journey",
-      "addToCalendar": "Add to calendar",
       "musicOn": "Play music",
       "musicOff": "Mute music",
-      "rsvpTitle": "Will you join us?",
-      "rsvpIntro": "Reply on WhatsApp. We've written the message for you; just press send.",
-      "rsvpBy": "Kindly reply by {date}",
-      "rsvpYes": "Joyfully attending",
-      "rsvpNo": "Can't make it",
-      "rsvpName": "Your name or family",
-      "rsvpGuests": "Guests",
-      "rsvpFewer": "One guest fewer",
-      "rsvpMore": "One guest more",
-      "rsvpEvents": "Joining us for",
-      "rsvpNote": "A note for the couple (optional)",
-      "rsvpSend": "Send on WhatsApp",
-      "rsvpSent": "WhatsApp is open with your reply. Just press send. Thank you!",
-      "rsvpMessageNote": "Note",
       "contactsTitle": "Prefer to talk?",
       "call": "Call",
       "whatsapp": "WhatsApp",
@@ -262,23 +310,8 @@
       "envelopeOpened": "निमंत्रण खुल गया है। अब आप पत्र पढ़ सकते हैं।",
       "envelopeClosed": "लिफाफा बंद है।",
       "continueJourney": "आगे बढ़ें",
-      "addToCalendar": "कैलेंडर में जोड़ें",
       "musicOn": "संगीत चलाएँ",
       "musicOff": "संगीत बंद करें",
-      "rsvpTitle": "क्या आप हमारे साथ होंगे?",
-      "rsvpIntro": "व्हाट्सऐप पर बताइए। संदेश हमने लिख दिया है, बस भेज दीजिए।",
-      "rsvpBy": "कृपया {date} तक बताएं",
-      "rsvpYes": "ज़रूर आएंगे",
-      "rsvpNo": "नहीं आ पाएंगे",
-      "rsvpName": "आपका या परिवार का नाम",
-      "rsvpGuests": "अतिथि",
-      "rsvpFewer": "एक अतिथि कम",
-      "rsvpMore": "एक अतिथि और",
-      "rsvpEvents": "किन समारोहों में",
-      "rsvpNote": "दंपति के लिए संदेश (वैकल्पिक)",
-      "rsvpSend": "व्हाट्सऐप पर भेजें",
-      "rsvpSent": "व्हाट्सऐप में आपका संदेश तैयार है, बस भेज दीजिए। धन्यवाद!",
-      "rsvpMessageNote": "संदेश",
       "contactsTitle": "बात करना चाहें?",
       "call": "कॉल करें",
       "whatsapp": "व्हाट्सऐप",

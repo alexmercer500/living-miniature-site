@@ -45,10 +45,6 @@ export const mapConfigured = () => /^https?:\/\//.test(data.venue.mapUrl);
 export const directionsUrl = () =>
   `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${data.venue.name}, ${data.venue.address}`)}`;
 
-/** RSVP is a WhatsApp message composed on the guest's phone; `rsvp.url` swaps in an external form. */
-export const rsvpConfigured = () => data.rsvp.enabled;
-export const rsvpFormUrl = () => (/^(https?:|mailto:|tel:)/.test(data.rsvp.url) ? data.rsvp.url : undefined);
-
 const digits = (number: string) => number.replace(/\D/g, '');
 /** A wa.me link; with no number, WhatsApp asks the guest which chat to send it to. */
 export const whatsappHref = (number: string, text = '') =>

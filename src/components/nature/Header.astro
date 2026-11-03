@@ -24,7 +24,9 @@ const path = invitation ? '/invitation' : '';
         <a href={`${themeHref(lang, theme)}#invitation`}>{t(lang, 'invitation')}</a>
         <a href={`${themeHref(lang, theme)}#celebrations`}>{t(lang, 'celebrations')}</a>
         <a href={`${themeHref(lang, theme)}#venue`}>{t(lang, 'venue')}</a>
-        <a href={themeHref(lang, theme, '/invitation')}>{t(lang, 'printInvitation')}</a>
+        {invitation
+          ? <a href={themeHref(lang, theme, '/invitation')}>{t(lang, 'printInvitation')}</a>
+          : <a href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={themeHref(lang, theme, '/invitation')}>{t(lang, 'printInvitation')}</a>}
       </nav>
     </details>
   </div>

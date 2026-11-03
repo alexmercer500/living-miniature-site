@@ -9,7 +9,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
 <dialog id="ns-blessing" class="ns-sheet-dialog" aria-labelledby="ns-blessing-title">
-  <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={content.rsvp.whatsapp}
+  <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={content.blessings.whatsapp}
     data-heading={`${t(lang, 'blessingTitle')} · ${loc(content.couple.displayName, lang)}`} data-from={t(lang, 'blessingFrom')}>
     <button class="ns-sheet-close" type="button" data-sheet-close aria-label={t(lang, 'close')}><Icon name="close" /></button>
     <header class="ns-sheet-head">

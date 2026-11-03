@@ -1,9 +1,8 @@
 ---
 import Art from './Art.astro';
 import ScenePlate from './ScenePlate.astro';
-import Icon from '../Icon.astro';
-import { type Lang, content, loc, t, parseDate, rsvpConfigured, rsvpFormUrl, whatsappHref } from '../../lib/content';
-import RsvpDialog from './RsvpDialog.astro';
+import Countdown from './Countdown.astro';
+import { type Lang, content, t, parseDate } from '../../lib/content';
 import BlessingDialog from './BlessingDialog.astro';
 import { themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; theme?: ThemeId }
@@ -11,15 +10,13 @@ const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const landscapes = themeConfig[theme].assets;
 const date = parseDate(content.site.weddingDate);
-const hasRsvp = rsvpConfigured();
-const formUrl = rsvpFormUrl();
 const own = 5; // the last tag is the guest's own blessing
 const wishes = [c.wishOne,c.wishTwo,c.wishThree,c.wishFour,c.wishFive,c.wishSix];
 const drops = [23,56,73,73,56,23];
 const cords = [66,88,40,18,58,46];
 const tilts = [-5,3,-3,5,-4,4];
 ---
-<section id="wishes" class:list={['ns-wishes','ns-scene',{'ns-wishes-with-details':date||hasRsvp}]} aria-labelledby="ns-wishes-title">
+<section id="wishes" class:list={['ns-wishes','ns-scene',{'ns-wishes-with-details':date}]} aria-labelledby="ns-wishes-title">
   <ScenePlate><Art {...landscapes.wishes} /><div class="ns-wishes-shade"></div></ScenePlate>
   <header class="ns-wishes-head">
     <span class="ns-wishes-index" aria-hidden="true">05</span>
@@ -46,17 +43,11 @@ const tilts = [-5,3,-3,5,-4,4];
   </div>
   <footer class="ns-wishes-foot">
     <p class="ns-wish-hint" id="ns-wishes-hint" data-wish-hint hidden>{c.wishHint}</p>
-    {(date || hasRsvp) && <div id="rsvp" class="ns-rsvp">
-      {date && <div class="ns-countdown" data-nature-countdown={date.toISOString()} role="timer" aria-label={t(lang,'countdownHeading')} aria-live="off">{(['days','hours','minutes','seconds'] as const).map(unit=><div><strong data-nature-unit={unit}>–</strong><span>{t(lang,unit)}</span></div>)}</div>}
-      {hasRsvp && (formUrl
-        ? <a class="ns-button ns-button-light" href={formUrl} target="_blank" rel="noopener"><Icon name="heart" />{loc(content.rsvp.label,lang)}</a>
-        : <a class="ns-button ns-button-light" href={whatsappHref(content.rsvp.whatsapp, `${loc(content.rsvp.label,lang)} · ${loc(content.couple.displayName,lang)}`)} target="_blank" rel="noopener" data-rsvp-open aria-haspopup="dialog" aria-controls="ns-rsvp"><Icon name="heart" />{loc(content.rsvp.label,lang)}</a>)}
-    </div>}
+    {date && <Countdown lang={lang} target={date} class="ns-wishes-countdown" />}
   </footer>
   <div class="ns-wish-atmosphere" aria-hidden="true">
     {[8,25,43,62,80,93].map((x,i)=><i class:list={['ns-wish-drift',i%2?'ns-wish-mote':'ns-wish-petal']} style={`--x:${x}%;--drift:${[30,-24,18,-35,27,-20][i]}px;--duration:${[22,27,24,29,26,31][i]}s;--delay:${[-4,-17,-9,-22,-13,-26][i]}s`} />)}
     <span class="ns-wish-lantern-glow"></span>
   </div>
-  {hasRsvp && !formUrl && <RsvpDialog lang={lang} />}
   <BlessingDialog lang={lang} />
 </section>

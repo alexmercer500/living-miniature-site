@@ -12,9 +12,11 @@ import Venue from './Venue.astro';
 import Wishes from './Wishes.astro';
 import FinalNote from './FinalNote.astro';
 import Envelope from './Envelope.astro';
+import InvitationModal from './InvitationModal.astro';
+import Countdown from './Countdown.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, formatDate } from '../../lib/content';
+import { type Lang, content, loc, t, parseDate } from '../../lib/content';
 import { artPreview } from '../../lib/art-preview';
 import { artSources } from '../../lib/art-sources';
 import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
@@ -23,6 +25,7 @@ interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const themeAssets = themeConfig[theme].assets;
+const weddingDay = parseDate(content.site.weddingDate);
 // The couple's names as two names and their joiner, so a phone can set them on their own lines.
 const joiner = lang === 'hi' ? 'एवं' : '&';
 const [nameOne, nameTwo] = loc(content.couple.displayName, lang).split(` ${joiner} `);
@@ -71,13 +74,13 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
         <h1 id="nature-title"><span>{c.heroOne}</span><em>{c.heroTwo}</em></h1>
         <p class="ns-couple">{nameTwo ? <><span>{nameOne}</span> <em>{joiner}</em> <span>{nameTwo}</span></> : nameOne}</p>
         <div class="ornament"><span></span></div>
-        <p class="ns-date">{loc(content.site.weddingDateLabel, lang)}</p>
+        <p class="ns-date">{c.dateLine}</p>
+        {weddingDay && <Countdown lang={lang} target={weddingDay} class="ns-hero-countdown" />}
       </div>
       <button class="ns-lantern-touch" type="button" data-nature-lantern aria-label={c.light} aria-pressed="false" disabled><span class="ns-lantern-swing"><HeroLantern /></span></button>
       <button class="ns-petal-touch" type="button" data-nature-petals aria-label={c.petals} disabled><span aria-hidden="true">✿</span></button>
       <div class="ns-hero-foot">
         <a href="#journey" class="ns-scroll"><span><Icon name="arrow-down" /></span>{t(lang, 'scrollToBegin')}</a>
-        <a href="#celebrations" class="ns-skip">{t(lang, 'jumpToDetails')} ↗</a>
       </div>
       <HeroAtmosphere />
     </section>
@@ -104,8 +107,8 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
 
     <FinalNote lang={lang} theme={theme} />
   </main>
-  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang)}</p></footer>
-  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
+  <InvitationModal lang={lang} />
+  <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>
 <script>
@@ -138,14 +141,6 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
       if (target?.closest('[data-nature-root]')) window.scrollTo({ top: scrollY + target.getBoundingClientRect().top, behavior: 'instant' });
     }
     document.documentElement.dataset.natureReady = '';
-    // The footer rides over the closing painting by its own height, so measure it once the
-    // fonts are in (and again on resize) and hand the value to the stylesheet.
-    const footer = document.querySelector<HTMLElement>('.ns-footer');
-    if (footer) {
-      const lift = () => document.documentElement.style.setProperty('--ns-footer-lift', `${footer.offsetHeight}px`);
-      lift();
-      window.addEventListener('resize', lift);
-    }
     inputEvents.forEach(event => window.removeEventListener(event, interrupt));
   });
 </script>

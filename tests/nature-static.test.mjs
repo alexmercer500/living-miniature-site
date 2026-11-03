@@ -132,7 +132,7 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
   }
 });
 
-test('Nature wishes: six blessings (one the guest writes), RSVP by WhatsApp, nothing sent to a server', () => {
+test('Nature wishes: six blessings (one the guest writes), the countdown, no RSVP, nothing sent to a server', () => {
   for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="wishes"[\s\S]*?<\/section>/)?.[0];
@@ -143,8 +143,9 @@ test('Nature wishes: six blessings (one the guest writes), RSVP by WhatsApp, not
     assert.ok(scene.includes('aria-describedby="ns-wishes-hint"')&&scene.includes('id="ns-wishes-hint"'));
     assert.ok(!scene.includes('not guest submissions')&&!scene.includes('अतिथियों के संदेश नहीं'),'No disclaimer');
     assert.ok(!/<form[^>]*\saction=/.test(scene),'No form posts anywhere');
-    assert.ok(scene.includes('data-rsvp-open')&&scene.includes('href="https://wa.me/'),'RSVP falls back to a WhatsApp link');
-    assert.ok(scene.includes('id="ns-rsvp"')&&scene.includes('id="ns-blessing"'));
+    assert.ok(!scene.includes('data-rsvp-open')&&!scene.includes('id="ns-rsvp"'),'No RSVP button or form');
+    assert.ok(scene.includes('id="ns-blessing"'));
+    assert.ok(scene.includes('data-nature-countdown')&&scene.includes('ns-wishes-countdown'),'The countdown stays in the garden');
     assert.ok(scene.includes('wishes-mobile-v1.')&&scene.includes('wishes-desktop-v1.'));
   }
 });
