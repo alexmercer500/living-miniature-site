@@ -40,7 +40,7 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
   return sources.find(source => source.type === 'image/avif')!;
 }))).filter(p => p.desktop);
 ---
-<Base lang={lang} routePath="/" title={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`}>
+<Base lang={lang} theme={theme} routePath="/" title={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`}>
   <Fragment slot="head">
     {paintingPreloads.map(p => (
       <Fragment>

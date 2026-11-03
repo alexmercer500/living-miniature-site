@@ -179,12 +179,24 @@ export function themeCopy(theme: ThemeId, lang: Lang): ThemeCopy {
 }
 
 export function themeHref(lang: Lang, theme: ThemeId, path = '/') {
-  const route = themeConfig[theme].route === '/' ? '' : themeConfig[theme].route;
+  const route = themeRoute(theme);
+  const prefix = route === '/' ? '' : route;
   const suffix = !path || path === '/' ? '' : `/${path.replace(/^\/+/, '')}`;
-  return href(lang, `${route}${suffix}` || '/');
+  return href(lang, `${prefix}${suffix}` || '/');
 }
 
 export const themeEventFallback = eventFallback;
+
+/** The theme this deployment serves at its own root. One site per domain sets
+ *  SITE_THEME=amber-fort or SITE_THEME=lake-city; unset keeps the nature root. */
+export const siteTheme: ThemeId =
+  process.env.SITE_THEME === 'amber-fort' || process.env.SITE_THEME === 'lake-city' ? process.env.SITE_THEME : 'nature';
+
+/** The path a theme is served at here: the deployment's own theme sits at the root, so every
+ *  link on that site stays on the bare domain. */
+export function themeRoute(theme: ThemeId) {
+  return process.env.SITE_THEME === theme ? '/' : themeConfig[theme].route;
+}
 
 /** The joiner the couple's two names are written with, per language. */
 const coupleJoin = (lang: Lang) => (lang === 'hi' ? ' एवं ' : ' & ');
