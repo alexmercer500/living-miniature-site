@@ -26,8 +26,8 @@
     }
   },
   "venue": {
-    "name": "Shubh Aangan / शुभ आँगन",
-    "address": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001 / शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001",
+    "name": "Dhancha Bhavan",
+    "address": "Sai Mandir, Bhilai",
     "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
     "directionsLabel": {
       "en": "Get directions",
@@ -35,11 +35,11 @@
     },
     "notes": {
       "en": [
-        "The wedding and fera will be held at Shubh Aangan.",
+        "The wedding and fera will be held at Dhancha Bhavan.",
         "Reception: 26 November 2026 from 8:00 PM at Uttam Villa, Khairagarh."
       ],
       "hi": [
-        "विवाह एवं फेरे शुभ आँगन में होंगे।",
+        "विवाह एवं फेरे Dhancha Bhavan में होंगे।",
         "स्वागत समारोह: 26 नवम्बर 2026, शाम 8 बजे से उत्तम विला, खैरागढ़ में।"
       ]
     },
@@ -51,15 +51,15 @@
           "hi": "विवाह एवं फेरे"
         },
         "name": {
-          "en": "Shubh Aangan",
-          "hi": "शुभ आँगन"
+          "en": "Dhancha Bhavan",
+          "hi": "Dhancha Bhavan"
         },
         "address": {
-          "en": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001",
-          "hi": "शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001"
+          "en": "Sai Mandir, Bhilai",
+          "hi": "Sai Mandir, Bhilai"
         },
         "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
-        "directionsTo": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001",
+        "directionsTo": "Dhancha Bhavan, Sai Mandir, Bhilai",
         "note": {
           "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
           "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
@@ -139,16 +139,16 @@
         "hi": "आत्मीय स्वजनों में हिंगलाजिनी एवं परमपिता परमेश्वर के आशीर्वाद से हमारे लाडले रत्नेश के मंगल परिणय के अवसर पर आपको सादर आमंत्रित करते हैं।"
       },
       "familyOne": {
-        "en": "Ratnesh — grandson of Late Shri Babariya Ram Sahu; son of Late Shri Hariram Sahu, Khairagarh.",
-        "hi": "चि. रत्नेश — सुपोत्र स्व. श्री बबरिया राम साहू एवं सुपुत्र स्व. श्री हरिराम साहू, खैरागढ़।"
+        "en": "Ratnesh — grandson of Late Shri Bakhariya Ram Sahu; son of Late Shri Hariram Sahu, Khairagarh.",
+        "hi": "चि. रत्नेश — सुपौत्र स्व. श्री बखरिया राम साहू एवं सुपुत्र स्व. श्री हरिराम साहू, खैरागढ़।"
       },
       "familyTwo": {
         "en": "Pallavi — granddaughter of Shri Samaylal Sahu; daughter of Shri Vishnu Sahu, Bhilai.",
-        "hi": "सौ. का. पल्लवी — सुपोत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
+        "hi": "सौ. का. पल्लवी — सुपौत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
       },
       "hosts": {
-        "en": "With love and blessings from both families. The wedding and fera will be held at Shubh Aangan, near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001. The reception will be at Uttam Villa, Khairagarh.",
-        "hi": "स्नेह एवं आशीर्वाद सहित — दोनों परिवार। विवाह एवं फेरे शुभ आँगन, शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001 में होंगे। स्वागत समारोह उत्तम विला, खैरागढ़ में होगा।"
+        "en": "With love and blessings from both families. The wedding and fera will be held at Dhancha Bhavan, Sai Mandir, Bhilai. The reception will be at Uttam Villa, Khairagarh.",
+        "hi": "स्नेह एवं आशीर्वाद सहित — दोनों परिवार। विवाह एवं फेरे Dhancha Bhavan, Sai Mandir, Bhilai में होंगे। स्वागत समारोह उत्तम विला, खैरागढ़ में होगा।"
       }
     }
   },
@@ -160,6 +160,10 @@
       "title": {
         "en": "The Promise Begins",
         "hi": "वचन की शुरुआत"
+      },
+      "label": {
+        "en": "Engagement",
+        "hi": "सगाई"
       },
       "shortDescription": {
         "en": "A day of promises, family blessings, and the first step toward forever.",
@@ -179,6 +183,10 @@
         "en": "A Turmeric Affair",
         "hi": "हल्दी का उत्सव"
       },
+      "label": {
+        "en": "Haldi",
+        "hi": "हल्दी"
+      },
       "shortDescription": {
         "en": "A golden day of laughter, love, and haldi blessings.",
         "hi": "हँसी, प्रेम और हल्दी के सुनहरे आशीर्वादों से सजा दिन।"
@@ -197,14 +205,18 @@
         "en": "The Vow & Wonder Chapter",
         "hi": "वचन एवं विस्मय का नया अध्याय"
       },
+      "label": {
+        "en": "Wedding",
+        "hi": "विवाह"
+      },
       "shortDescription": {
         "en": "The baraat sets out at noon as two families begin one shared celebration.",
         "hi": "दोपहर 12 बजे बारात प्रस्थान करेगी और दो परिवार एक साझा उत्सव की शुरुआत करेंगे।"
       },
       "visualKey": "wedding",
       "venueName": {
-        "en": "Shubh Aangan",
-        "hi": "शुभ आँगन"
+        "en": "Dhancha Bhavan",
+        "hi": "Dhancha Bhavan"
       }
     },
     {
@@ -214,6 +226,10 @@
       "title": {
         "en": "An Evening to Remember",
         "hi": "यादगार आशीर्वादों की शाम"
+      },
+      "label": {
+        "en": "Reception",
+        "hi": "स्वागत समारोह"
       },
       "shortDescription": {
         "en": "An evening of blessings and lovingly prepared delicacies.",
