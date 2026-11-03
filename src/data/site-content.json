@@ -26,23 +26,65 @@
     }
   },
   "venue": {
-    "name": "Yashoda Sadan / यशोदा सदन",
-    "address": "Itwari Bazaar, Ward No. 9, Khairagarh, District KCG / इतवारी बाजार, वार्ड क्रमांक 9, खैरागढ़, जिला KCG",
-    "mapUrl": "",
+    "name": "Pallavi's Residence / पल्लवी का निवास",
+    "address": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001 / शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001",
+    "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
     },
     "notes": {
       "en": [
-        "Wedding rituals are held at Yashoda Sadan.",
-        "Blessings and delicacies: 26 November 2026 from 8:00 PM."
+        "The wedding and fera will be held at Pallavi's residence.",
+        "Reception: 26 November 2026 from 8:00 PM at Uttam Villa, Khairagarh."
       ],
       "hi": [
-        "विवाह के प्रमुख संस्कार निज निवास यशोदा सदन में होंगे।",
-        "आशीर्वाद समारोह एवं व्यंजनों की बगिया: 26 नवम्बर 2026, शाम 8 बजे से।"
+        "विवाह एवं फेरे पल्लवी के निवास पर होंगे।",
+        "स्वागत समारोह: 26 नवम्बर 2026, शाम 8 बजे से उत्तम विला, खैरागढ़ में।"
       ]
-    }
+    },
+    "locations": [
+      {
+        "id": "wedding",
+        "label": {
+          "en": "Wedding & Fera",
+          "hi": "विवाह एवं फेरे"
+        },
+        "name": {
+          "en": "Pallavi's Residence",
+          "hi": "पल्लवी का निवास"
+        },
+        "address": {
+          "en": "Near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001",
+          "hi": "शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001"
+        },
+        "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
+        "note": {
+          "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
+          "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
+        }
+      },
+      {
+        "id": "reception",
+        "label": {
+          "en": "Reception",
+          "hi": "स्वागत समारोह"
+        },
+        "name": {
+          "en": "Uttam Villa",
+          "hi": "उत्तम विला"
+        },
+        "address": {
+          "en": "Khairagarh",
+          "hi": "खैरागढ़"
+        },
+        "mapUrl": "https://maps.app.goo.gl/yJk7CSTDmKUtnr9o8",
+        "note": {
+          "en": "Thursday, 26 November 2026 · From 8:00 PM",
+          "hi": "गुरुवार, 26 नवम्बर 2026 · शाम 8 बजे से"
+        }
+      }
+    ]
   },
   "rsvp": {
     "enabled": true,
@@ -111,8 +153,8 @@
         "hi": "सौ. का. पल्लवी — सुपोत्री श्री समयलाल साहू एवं सुपुत्री श्री विष्णु साहू, भिलाई।"
       },
       "hosts": {
-        "en": "With love and blessings from both families. Wedding venue: Yashoda Sadan, Itwari Bazaar, Ward No. 9, Khairagarh, District KCG.",
-        "hi": "स्नेह एवं आशीर्वाद सहित — दोनों परिवार। विवाह स्थल: निज निवास यशोदा सदन, इतवारी बाजार, वार्ड क्रमांक 9, खैरागढ़, जिला KCG।"
+        "en": "With love and blessings from both families. The wedding and fera will be held at Pallavi's residence near Government School, Santoshi Para, Milan Chowk, Camp 2, Power House, Bhilai 490001. The reception will be at Uttam Villa, Khairagarh.",
+        "hi": "स्नेह एवं आशीर्वाद सहित — दोनों परिवार। विवाह एवं फेरे पल्लवी के निवास, शासकीय विद्यालय के पास, संतोषी पारा, मिलन चौक, कैंप 2, पावर हाउस, भिलाई 490001 में होंगे। स्वागत समारोह उत्तम विला, खैरागढ़ में होगा।"
       }
     }
   },
@@ -130,7 +172,7 @@
         "hi": "वचनों, पारिवारिक आशीर्वाद और सदा के साथ की पहली शुरुआत का दिन।"
       },
       "visualKey": "mehndi",
-      "venueName": "Yashoda Sadan / यशोदा सदन"
+      "venueName": ""
     },
     {
       "id": "event-two",
@@ -145,7 +187,7 @@
         "hi": "हँसी, प्रेम और हल्दी के सुनहरे आशीर्वादों से सजा दिन।"
       },
       "visualKey": "haldi",
-      "venueName": "Yashoda Sadan / यशोदा सदन"
+      "venueName": ""
     },
     {
       "id": "event-three",
@@ -160,7 +202,7 @@
         "hi": "दोपहर 12 बजे बारात प्रस्थान करेगी और दो परिवार एक साझा उत्सव की शुरुआत करेंगे।"
       },
       "visualKey": "wedding",
-      "venueName": "Yashoda Sadan / यशोदा सदन"
+      "venueName": "Pallavi's Residence / पल्लवी का निवास"
     },
     {
       "id": "event-four",
@@ -175,7 +217,7 @@
         "hi": "आशीर्वाद समारोह एवं व्यंजनों की बगिया।"
       },
       "visualKey": "reception",
-      "venueName": "Yashoda Sadan / यशोदा सदन"
+      "venueName": "Uttam Villa / उत्तम विला"
     }
   ],
   "ui": {

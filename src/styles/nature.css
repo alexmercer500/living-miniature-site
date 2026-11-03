@@ -263,18 +263,6 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-countdown { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; }
 .ns-countdown > div { display: grid; min-width: 60px; padding: .7rem; border: 1px solid #efd2a055; }
 .ns-countdown strong { font: 500 2rem var(--font-display); } .ns-countdown span { font-size: .75rem; }
-.ns-footer { padding: 2rem 1rem 7rem; color: #d5d8c6; background: #172e28; text-align: center; font-size: .85rem; display: grid; gap: .5rem; }
-/* The home page ends on the closing painting, not a flat colour slab: the footer turns
-   transparent and is lifted by its own measured height, so the scene's own artwork shows
-   behind the names. --ns-footer-lift is set once the footer has been measured. */
-html[data-theme]:has(.ns-home) .ns-footer {
-  position: relative; z-index: 1;
-  background: transparent;
-  margin-top: calc(-1 * var(--ns-footer-lift, 0px));
-  /* Match the chapters' own bottom clearance so the end-card text clears the dock. */
-  padding-bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 4.75rem));
-}
-html[data-theme]:has(.ns-home) .ns-footer p { text-shadow: 0 1px 10px #08140f, 0 1px 2px #08140f; }
 .ns-dock { position: fixed; z-index: 45; bottom: max(.8rem,env(safe-area-inset-bottom)); left: 50%; translate: -50% 0; display: flex; align-items: center; max-width: calc(100% - 1.5rem); padding: .3rem .55rem; gap: .2rem; border: 1px solid #efd2a066; border-radius: 40px; background: #172e28f0; box-shadow: 0 8px 30px #0003; }
 .ns-dock a { display: flex; gap: .4rem; align-items: center; justify-content: center; min-height: 44px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; text-decoration: none; }
 .ns-dock a:hover { color: #efd2a0; }
@@ -676,6 +664,21 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 .ns-venue-close { position: absolute; z-index: 2; top: 23px; right: 23px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: #172e28ee; border: 1px solid #efd2a0; color: #fff3e4; cursor: pointer; }
 .ns-venue-close svg { width: 20px; height: 20px; }
 .ns-venue-close:focus-visible { outline: 2px solid #fff3e4; outline-offset: 3px; }
+
+/* Confirmed destination cards keep the venue section practical and bilingual. */
+.ns-venue-stage { display: block; }
+.ns-venue-locations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2.8rem); width: 100%; max-width: 1180px; margin-inline: auto; }
+.ns-location-card { display: grid; justify-items: center; gap: .55rem; min-width: 0; padding: clamp(1.2rem, 3vw, 2rem); color: #42513d; text-align: center; text-shadow: none; background: #f3dfbeed; border: 1px solid #d1a96b; box-shadow: inset 0 0 0 5px #fff4db88, 0 18px 45px #081d1860; }
+.ns-location-card .ns-lotus { width: 32px; color: #9a6d2f; }
+.ns-location-card .ns-kicker { margin: 0; color: #76552b; }
+.ns-location-card h3 { margin: 0; font: 500 clamp(1.65rem, 3vw, 2.65rem)/1.08 var(--font-display); text-wrap: balance; }
+.ns-location-card address { max-width: 42ch; margin: 0; font-style: normal; font-size: clamp(.9rem, 1.4vw, 1.05rem); line-height: 1.5; }
+.ns-location-note { max-width: 42ch; margin: 0; font-size: .95rem; line-height: 1.45; }
+.ns-location-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; width: 100%; margin-top: .35rem; }
+.ns-location-actions .ns-wood-sign { min-height: 56px; padding: .55rem .75rem; gap: .55rem; justify-content: center; font-size: .9rem; text-transform: none; letter-spacing: .01em; clip-path: none; border: 1px solid #9e7438; border-radius: 999px; background: linear-gradient(#f9e9c6, #dfb777); }
+.ns-location-actions .ns-wood-sign::before, .ns-location-actions .ns-wood-sign::after { display: none; }
+.ns-location-actions .ns-sign-icon { flex-basis: 30px; width: 30px; height: 30px; box-shadow: inset 0 0 0 2px #efd09d, inset 0 0 0 3px #805d3580; }
+.ns-location-actions .ns-sign-icon svg { width: 16px; height: 16px; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .ns-wood-sign:not(:disabled):hover { translate: 5px -3px; filter: brightness(1.07); }
 }
@@ -699,6 +702,11 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-venue-map-note { font-size: .67rem; }
   .ns-venue-preview-art { height: 47dvh; }
   .ns-venue-preview-copy { padding: .8rem .5rem .5rem; }
+  .ns-venue-locations { grid-template-columns: 1fr; gap: 1rem; }
+  .ns-location-card { padding: 1rem; }
+  .ns-location-card .ns-lotus { display: none; }
+  .ns-location-actions { gap: .5rem; }
+  .ns-location-actions .ns-wood-sign { min-height: 50px; padding-inline: .5rem; font-size: .78rem; }
 }
 @media (max-height: 650px) {
   .ns-venue { padding-top: calc(var(--ns-top) + 2px); gap: .5rem; }

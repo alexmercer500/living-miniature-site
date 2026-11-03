@@ -15,7 +15,7 @@ import Envelope from './Envelope.astro';
 import InvitationModal from './InvitationModal.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, formatDate } from '../../lib/content';
+import { type Lang, content, loc, t } from '../../lib/content';
 import { artPreview } from '../../lib/art-preview';
 import { artSources } from '../../lib/art-sources';
 import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
@@ -105,7 +105,6 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
     <FinalNote lang={lang} theme={theme} />
   </main>
   <InvitationModal lang={lang} />
-  <footer class="ns-footer"><p>{loc(content.couple.displayName, lang)}</p><p>{formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang)}</p></footer>
   <nav class="ns-dock" aria-label={t(lang, 'jumpToDetails')}><a href="#journey">{c.story}</a><a href="#venue"><Icon name="pin" />{t(lang, 'venue')}</a><a href="#invitation-modal" data-invitation-modal-open data-invitation-modal-url={themeHref(lang, theme, '/invitation')}><Icon name="calendar" />{t(lang, 'invitation')}</a></nav>
   <div class="ns-progress" aria-hidden="true"><span data-nature-progress></span></div>
 </Base>
@@ -139,14 +138,6 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
       if (target?.closest('[data-nature-root]')) window.scrollTo({ top: scrollY + target.getBoundingClientRect().top, behavior: 'instant' });
     }
     document.documentElement.dataset.natureReady = '';
-    // The footer rides over the closing painting by its own height, so measure it once the
-    // fonts are in (and again on resize) and hand the value to the stylesheet.
-    const footer = document.querySelector<HTMLElement>('.ns-footer');
-    if (footer) {
-      const lift = () => document.documentElement.style.setProperty('--ns-footer-lift', `${footer.offsetHeight}px`);
-      lift();
-      window.addEventListener('resize', lift);
-    }
     inputEvents.forEach(event => window.removeEventListener(event, interrupt));
   });
 </script>

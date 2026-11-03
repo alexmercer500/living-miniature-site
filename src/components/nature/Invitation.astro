@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Header from './Header.astro';
 import LotusMark from '../LotusMark.astro';
 import Contacts from './Contacts.astro';
-import { type Lang, content, loc, t, formatDate, formatTime, mapConfigured } from '../../lib/content';
+import { type Lang, content, loc, t, formatDate, formatTime } from '../../lib/content';
 import { themeCopy, type ThemeId } from '../../lib/theme';
 import '../../styles/nature.css';
 interface Props { lang: Lang; theme?: ThemeId }
@@ -23,8 +23,8 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
         <h1 id="ns-invite-title">{loc(content.couple.displayName, lang)}</h1><p class="ns-invite-tagline">{loc(content.couple.tagline, lang)}</p>
         <div class="ornament"><span></span></div>
         <section aria-labelledby="ns-invite-family"><h2 id="ns-invite-family">{t(lang, 'fromFamilies')}</h2><p class="ns-invite-copy">{loc(p.familyOne, lang)}</p><p class="ns-invite-copy">{loc(p.familyTwo, lang)}</p></section>
-        <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{content.events.map(event => <li><h3>{loc(event.title, lang)}</h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p><p>{event.venueName}</p></li>)}</ol></section>
-        <section aria-labelledby="ns-invite-venue"><h2 id="ns-invite-venue">{t(lang, 'venueHeading')}</h2><h3>{content.venue.name}</h3><address>{content.venue.address}</address>{mapConfigured() && <a href={content.venue.mapUrl} target="_blank" rel="noopener">{loc(content.venue.directionsLabel, lang)}</a>}</section>
+        <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{content.events.map(event => <li><h3>{loc(event.title, lang)}</h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p>{event.venueName && <p>{event.venueName}</p>}</li>)}</ol></section>
+        <section aria-labelledby="ns-invite-venue"><h2 id="ns-invite-venue">{t(lang, 'venueHeading')}</h2><ol class="ns-invite-locations">{(content.venue.locations ?? []).map(location => <li><h3>{loc(location.label, lang)}</h3><p>{loc(location.name, lang)}</p><address>{loc(location.address, lang)}</address><p>{loc(location.note, lang)}</p><a href={location.mapUrl} target="_blank" rel="noopener">{loc(content.venue.directionsLabel, lang)}</a></li>)}</ol></section>
         <p class="ns-invite-copy">{loc(p.hosts, lang)}</p><Contacts lang={lang} class="ns-invite-contacts" /><LotusMark class="ns-lotus" />
       </div>
     </article>
@@ -44,6 +44,9 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
   section { width: 100%; display: grid; justify-items: center; gap: .8rem; padding-block: 1rem; border-top: 1px solid #b08a5233; }
   h2 { font-size: 1.8rem; } h3 { font-size: 1.4rem; }
   ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.2rem; }
+  .ns-invite-locations { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .ns-invite-locations li { display: grid; gap: .45rem; justify-items: center; padding: 1rem; border: 1px solid #b08a5266; background: #fffaf2aa; }
+  .ns-invite-locations h3, .ns-invite-locations p { margin: 0; }
   address { font-style: normal; }
   :global(html[data-modal-invitation]) .ns-header { display: none; }
   :global(html[data-modal-invitation]) .ns-invite-page { padding-top: 2rem; }
@@ -54,5 +57,8 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
     .ns-invite-card { box-shadow: none; max-width: none; }
     .ns-invite-border { padding: 1.5rem; gap: .8rem; }
     section, li { break-inside: avoid; }
+  }
+  @media (max-width: 620px) {
+    .ns-invite-locations { grid-template-columns: 1fr; }
   }
 </style>
