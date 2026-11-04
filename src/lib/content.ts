@@ -37,9 +37,6 @@ export function formatDate(iso: string, lang: Lang, withWeekday = false) {
   }).format(d);
 }
 
-export const initials = () =>
-  [data.couple.partnerOne, data.couple.partnerTwo].map((n) => n.trim().charAt(0).toUpperCase());
-
 export const mapConfigured = () => /^https?:\/\//.test(data.venue.mapUrl);
 /** Directions to the one venue, from its name and address (Google Maps works on every phone). */
 export const directionsUrl = () =>

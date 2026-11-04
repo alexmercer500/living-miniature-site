@@ -1,5 +1,5 @@
 import type { ImageMetadata } from 'astro';
-import { href, type Lang } from './content';
+import { content, href, loc, type Lang, type Localized } from './content';
 import { natureCopy } from './nature-content';
 import { landscapes, natureEvents, eventFallback } from './nature-assets';
 import amberHeroMobile from '../assets/rajasthan/amber-fort/hero-mobile.png';
@@ -41,8 +41,15 @@ import lakeMehndi from '../assets/rajasthan/lake-city/events/mehndi.png';
 import lakeSangeet from '../assets/rajasthan/lake-city/events/sangeet.png';
 import lakeWedding from '../assets/rajasthan/lake-city/events/wedding.png';
 import lakeReception from '../assets/rajasthan/lake-city/events/reception.png';
+// The printed invitation cards, one per themed site (the nature root keeps the HTML invitation).
+import royalRatneshInvitation from '../assets/royal-ratnesh-pallavi-invitation.png';
+import royalWeddingByTheLake from '../assets/royal-wedding-by-the-lake.png';
 
 export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
+/** Which of the two names is written first on this site (the bride's side puts her first). */
+export type CoupleFirst = 'one' | 'two';
+/** A per-theme change to one celebration, keyed by its id in site-content.json. */
+export type EventOverride = { date?: string; venueName?: Localized };
 
 /** The invitation keepsake a theme opens in place of the paper envelope: its 3D model's parts,
  *  rendered as layers (scripts/render-keepsake-standins.mjs), and their geometry in layer pixels. */
@@ -113,6 +120,10 @@ export const themeConfig = {
     assets: landscapes,
     invitationModel: null as InvitationModel | null,
     eventAssets: natureEvents,
+    coupleFirst: 'one' as CoupleFirst,
+    invitationCard: null as ImageMetadata | null,
+    events: {} as Record<string, EventOverride>,
+    venueLocationIds: undefined as readonly string[] | undefined,
   },
   'amber-fort': {
     route: '/amber-fort',
@@ -122,6 +133,10 @@ export const themeConfig = {
     assets: amberAssets,
     invitationModel: { kind: 'envelope', geometry: amberGeometry, layers: { flap: amberFlap, body: amberBody, seal: amberSeal }, model3d: { geometry: amberModelGeometry, textures: amberModelTextures } } as InvitationModel,
     eventAssets: amberEventAssets,
+    coupleFirst: 'one' as CoupleFirst,
+    invitationCard: royalRatneshInvitation as ImageMetadata | null,
+    events: {} as Record<string, EventOverride>,
+    venueLocationIds: undefined as readonly string[] | undefined,
   },
   'lake-city': {
     route: '/lake-city',
@@ -131,6 +146,12 @@ export const themeConfig = {
     assets: lakeAssets,
     invitationModel: { kind: 'scroll', geometry: lakeGeometry, layers: { roll: lakeRoll, ribbon: lakeRibbon }, model3d: { geometry: lakeModelGeometry, textures: lakeModelTextures } } as InvitationModel,
     eventAssets: lakeEventAssets,
+    // The bride's side: Pallavi first, her celebrations end on the 25th (the reception moves from
+    // the 26th to the wedding day, with no venue of its own), and only the wedding venue is shown.
+    coupleFirst: 'two' as CoupleFirst,
+    invitationCard: royalWeddingByTheLake as ImageMetadata | null,
+    events: { 'event-four': { date: '2026-11-25', venueName: { en: '', hi: '' } } } as Record<string, EventOverride>,
+    venueLocationIds: ['wedding'] as readonly string[],
   },
 } as const;
 
@@ -148,8 +169,8 @@ const overrides: Record<Exclude<ThemeId, 'nature'>, Record<Lang, Partial<ThemeCo
     },
   },
   'lake-city': {
-    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 November 2026' },
-    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–26 नवम्बर 2026' },
+    en: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–25 November 2026', venueLine: 'One location. One beautiful celebration.', venuePreviewNote: 'Wedding and fera at Dhancha Bhavan.' },
+    hi: { chapter: 'Lake City Elegance', heroOne: 'Serene waters.', heroTwo: 'A timeless journey.', dateLine: '23–25 नवम्बर 2026', venueLine: 'एक स्थल। एक सुंदर उत्सव।', venuePreviewNote: 'विवाह एवं फेरे Dhancha Bhavan में।' },
   },
 };
 
@@ -158,9 +179,53 @@ export function themeCopy(theme: ThemeId, lang: Lang): ThemeCopy {
 }
 
 export function themeHref(lang: Lang, theme: ThemeId, path = '/') {
-  const route = themeConfig[theme].route === '/' ? '' : themeConfig[theme].route;
+  const route = themeRoute(theme);
+  const prefix = route === '/' ? '' : route;
   const suffix = !path || path === '/' ? '' : `/${path.replace(/^\/+/, '')}`;
-  return href(lang, `${route}${suffix}` || '/');
+  return href(lang, `${prefix}${suffix}` || '/');
 }
 
 export const themeEventFallback = eventFallback;
+
+/** The theme this deployment serves at its own root. One site per domain sets
+ *  SITE_THEME=amber-fort or SITE_THEME=lake-city; unset keeps the nature root. */
+export const siteTheme: ThemeId =
+  process.env.SITE_THEME === 'amber-fort' || process.env.SITE_THEME === 'lake-city' ? process.env.SITE_THEME : 'nature';
+
+/** The path a theme is served at here: the deployment's own theme sits at the root, so every
+ *  link on that site stays on the bare domain. */
+export function themeRoute(theme: ThemeId) {
+  return process.env.SITE_THEME === theme ? '/' : themeConfig[theme].route;
+}
+
+/** The joiner the couple's two names are written with, per language. */
+const coupleJoin = (lang: Lang) => (lang === 'hi' ? ' एवं ' : ' & ');
+
+/** The couple's two names, in this site's order (the bride's side writes her name first). */
+export function coupleNames(lang: Lang, theme: ThemeId): [string, string] {
+  const [one, two] = loc(content.couple.displayName, lang).split(coupleJoin(lang)) as [string, string];
+  return themeConfig[theme].coupleFirst === 'two' && two ? [two, one] : [one, two];
+}
+
+/** The couple, written as one line in this site's name order. */
+export function coupleDisplay(lang: Lang, theme: ThemeId) {
+  return coupleNames(lang, theme).join(coupleJoin(lang));
+}
+
+/** The two initials of the monogram, in this site's name order. */
+export function coupleInitials(theme: ThemeId): [string, string] {
+  return coupleNames('en', theme).map(name => name.trim().charAt(0).toUpperCase()) as [string, string];
+}
+
+/** The celebrations as this site shows them (a theme may move or re-place an event). */
+export function eventsFor(theme: ThemeId) {
+  const changes = themeConfig[theme].events;
+  return content.events.map(event => (changes[event.id] ? { ...event, ...changes[event.id] } : event));
+}
+
+/** The venues as this site shows them (a theme may keep only some of them). */
+export function locationsFor(theme: ThemeId) {
+  const locations = content.venue.locations ?? [];
+  const ids = themeConfig[theme].venueLocationIds;
+  return ids ? locations.filter(location => ids.includes(location.id)) : locations;
+}

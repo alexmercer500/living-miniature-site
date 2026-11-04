@@ -4,13 +4,14 @@
  * device (localStorage), and optionally sent to the couple on WhatsApp (scripts/blessing.ts).
  */
 import Icon from '../Icon.astro';
-import { type Lang, content, loc, t } from '../../lib/content';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+import { type Lang, content, t } from '../../lib/content';
+import { coupleDisplay, type ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; theme?: ThemeId }
+const { lang, theme = 'nature' } = Astro.props;
 ---
 <dialog id="ns-blessing" class="ns-sheet-dialog" aria-labelledby="ns-blessing-title">
   <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={content.blessings.whatsapp}
-    data-heading={`${t(lang, 'blessingTitle')} · ${loc(content.couple.displayName, lang)}`} data-from={t(lang, 'blessingFrom')}>
+    data-heading={`${t(lang, 'blessingTitle')} · ${coupleDisplay(lang, theme)}`} data-from={t(lang, 'blessingFrom')}>
     <button class="ns-sheet-close" type="button" data-sheet-close aria-label={t(lang, 'close')}><Icon name="close" /></button>
     <header class="ns-sheet-head">
       <h2 id="ns-blessing-title">{t(lang, 'blessingTitle')}</h2>

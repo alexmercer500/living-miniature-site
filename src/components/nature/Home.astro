@@ -16,10 +16,10 @@ import InvitationModal from './InvitationModal.astro';
 import Countdown from './Countdown.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, loc, t, parseDate } from '../../lib/content';
+import { type Lang, content, t, parseDate } from '../../lib/content';
 import { artPreview } from '../../lib/art-preview';
 import { artSources } from '../../lib/art-sources';
-import { themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
+import { coupleDisplay, coupleNames, themeConfig, themeCopy, themeHref, type ThemeId } from '../../lib/theme';
 import '../../styles/nature.css';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
@@ -28,7 +28,7 @@ const themeAssets = themeConfig[theme].assets;
 const weddingDay = parseDate(content.site.weddingDate);
 // The couple's names as two names and their joiner, so a phone can set them on their own lines.
 const joiner = lang === 'hi' ? 'एवं' : '&';
-const [nameOne, nameTwo] = loc(content.couple.displayName, lang).split(` ${joiner} `);
+const [nameOne, nameTwo] = coupleNames(lang, theme);
 const [veilScene, veilSceneWide] = await Promise.all([artPreview(themeAssets.hero.mobile), artPreview(themeAssets.hero.desktop)]);
 // Ask for every chapter painting with the HTML, before anything has to be laid out: the scene you
 // scroll into then never shows its soft inline placeholder, and each camera handoff has its art
@@ -40,7 +40,7 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
   return sources.find(source => source.type === 'image/avif')!;
 }))).filter(p => p.desktop);
 ---
-<Base lang={lang} routePath="/" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
+<Base lang={lang} theme={theme} routePath="/" title={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`}>
   <Fragment slot="head">
     {paintingPreloads.map(p => (
       <Fragment>
@@ -62,7 +62,7 @@ const paintingPreloads = (await Promise.all([...new Map(Object.values(themeAsset
       window.nsGreet = el => { if (name && el) { el.textContent = el.dataset.template.replace('{name}', name); el.hidden = false; } };
     })();
   </script>
-  <OpeningVeil scene={veilScene} sceneWide={veilSceneWide} greeting={t(lang, 'guestGreeting')} />
+  <OpeningVeil theme={theme} scene={veilScene} sceneWide={veilSceneWide} greeting={t(lang, 'guestGreeting')} />
   <Header lang={lang} theme={theme} />
   <main id="main" class="ns-home" data-nature-root>
     <section id="welcome" class="ns-hero ns-scene" aria-labelledby="nature-title">

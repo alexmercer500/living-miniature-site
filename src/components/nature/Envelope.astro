@@ -5,7 +5,7 @@ import LotusMark from '../LotusMark.astro';
 import Icon from '../Icon.astro';
 import ScenePlate from './ScenePlate.astro';
 import paper from '../../assets/nature-stories/ivory-floral-paper-v1.png';
-import { themeConfig, type ThemeId } from '../../lib/theme';
+import { themeConfig, coupleNames, type ThemeId } from '../../lib/theme';
 
 /** The letter chapter: an envelope on the garden table that opens as the guest scrolls. The backdrop slot holds the scene art. */
 interface Props { lang: Lang; id?: string; invitationHref?: string; continueHref?: string; theme?: ThemeId }
@@ -63,7 +63,7 @@ const model3d = model?.model3d ? JSON.stringify({
 const layer = (name: string, cls: string) => ({ class: `obj-layer ${cls}`, src: layers[name].src, srcset: layers[name].srcset, sizes: 'min(87vw, 35rem)', width: layers[name].width, height: layers[name].height, alt: '', decoding: 'async' as const, fetchpriority: 'low' as const });
 const paperMaterial = await getImage({ src: paper, width: 1024, format: 'webp', quality: 80 });
 const date = formatDate(content.site.weddingDate, lang, true) ?? loc(content.site.weddingDateLabel, lang);
-const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? ' एवं ' : ' & ');
+const [one, two] = coupleNames(lang, theme);
 ---
 <section id={id} class="envelope-scene" data-envelope aria-labelledby="envelope-title"
   style={`--paper-material: url('${paperMaterial.src}')`}>
@@ -348,7 +348,11 @@ const [one, two] = loc(content.couple.displayName, lang).split(lang === 'hi' ? '
     display: block; position: absolute; z-index: 3; left: 50%; top: calc(var(--obj-card) * 100%);
     width: var(--roll-width); aspect-ratio: var(--layer-ratio); translate: calc(-1 * var(--axis-x)) calc(-1 * var(--axis-y));
     transform-origin: var(--axis-x) var(--axis-y); rotate: calc(var(--level) * var(--obj-swing));
+    /* The frame is mostly empty space around the roll image, and it is taller than the paper, so
+       it must not swallow clicks meant for the card link or the footer links under it. */
+    pointer-events: none;
   }
+  .object-scroll .seal-control { pointer-events: auto; }
   .obj-ribbon {
     transform-origin: var(--knot-x) var(--knot-y); opacity: calc(1 - var(--obj-seal));
     transform: translateY(calc(var(--obj-seal) * 16%)) rotate(calc(var(--obj-seal) * -12deg)) scale(calc(1 - var(--obj-seal) * .1));

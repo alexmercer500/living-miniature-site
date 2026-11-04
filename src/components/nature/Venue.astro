@@ -4,12 +4,12 @@ import ScenePlate from './ScenePlate.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
 import { type Lang, content, loc, t } from '../../lib/content';
-import { themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
+import { locationsFor, themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang);
 const landscapes = themeConfig[theme].assets;
-const locations = content.venue.locations ?? [];
+const locations = locationsFor(theme);
 // A venue whose name is not a mapped place (`directionsTo`) is found by its street address.
 const directionsFor = (location: (typeof locations)[number]) =>
   `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('directionsTo' in location ? location.directionsTo : `${loc(location.name, 'en')}, ${loc(location.address, 'en')}`)}`;
@@ -21,7 +21,7 @@ const directionsFor = (location: (typeof locations)[number]) =>
     <div><p class="ns-kicker">{c.venueKicker}</p><h2 id="ns-venue-title">{c.venueExperience}</h2><p class="ns-venue-intro">{c.venueLine}</p></div>
   </header>
   <div class="ns-venue-stage">
-    <div class="ns-venue-locations" data-venue-reveal>
+    <div class:list={['ns-venue-locations', locations.length === 1 && 'ns-venue-locations-single']} data-venue-reveal>
       {locations.map(location => <article class="ns-location-card">
         <LotusMark class="ns-lotus" />
         <p class="ns-kicker">{loc(location.label, lang)}</p>

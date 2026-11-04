@@ -3,14 +3,19 @@ import Base from '../../layouts/Base.astro';
 import Header from './Header.astro';
 import LotusMark from '../LotusMark.astro';
 import Contacts from './Contacts.astro';
+import { Image } from 'astro:assets';
 import { type Lang, content, loc, t, formatDate, formatTime } from '../../lib/content';
-import { themeCopy, type ThemeId } from '../../lib/theme';
+import { coupleDisplay, eventsFor, locationsFor, themeConfig, themeCopy, type ThemeId } from '../../lib/theme';
 import '../../styles/nature.css';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
 const c = themeCopy(theme, lang), p = content.invitation.placeholders;
+// A themed site's invitation is its printed card; the nature root keeps the written page.
+const card = themeConfig[theme].invitationCard;
+const events = eventsFor(theme);
+const locations = locationsFor(theme);
 ---
-<Base lang={lang} routePath="/invitation" page="invitation" title={`${loc(content.couple.displayName, lang)} — ${t(lang, 'weddingInvitation')}`}>
+<Base lang={lang} theme={theme} routePath="/invitation" page="invitation" title={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`}>
   <Fragment slot="head">
     <!-- Opened inside the home page's invitation modal: no header, and Escape closes the modal
          even once the guest has scrolled (focus is in here then, not on the home page). -->
@@ -20,23 +25,30 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
     }</script>
   </Fragment>
   <Header lang={lang} theme={theme} invitation />
-  <main id="main" class="ns-invite-page">
+  {card && <main id="main" class="ns-card-page">
+    <Image class="ns-card-page-image" src={card} widths={[900, 1400, 2000]} sizes="100vw" alt={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`} />
+  </main>}
+  {!card && <main id="main" class="ns-invite-page">
     <article class="ns-invite-card" aria-labelledby="ns-invite-title">
       <div class="ns-invite-border">
         <LotusMark class="ns-lotus" /><p class="ns-kicker">{c.chapter}</p>
         <p class="ns-invite-copy">{loc(p.invocation, lang)}</p><p class="ns-invite-copy">{loc(p.blessings, lang)}</p>
-        <h1 id="ns-invite-title">{loc(content.couple.displayName, lang)}</h1><p class="ns-invite-tagline">{loc(content.couple.tagline, lang)}</p>
+        <h1 id="ns-invite-title">{coupleDisplay(lang, theme)}</h1><p class="ns-invite-tagline">{loc(content.couple.tagline, lang)}</p>
         <div class="ornament"><span></span></div>
-        <section aria-labelledby="ns-invite-family"><h2 id="ns-invite-family">{t(lang, 'fromFamilies')}</h2><p class="ns-invite-copy">{loc(p.familyOne, lang)}</p><p class="ns-invite-copy">{loc(p.familyTwo, lang)}</p></section>
-        <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{content.events.map(event => <li><h3>{loc(event.title, lang)}</h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p>{loc(event.venueName, lang) && <p>{loc(event.venueName, lang)}</p>}</li>)}</ol></section>
-        <section aria-labelledby="ns-invite-venue"><h2 id="ns-invite-venue">{t(lang, 'venueHeading')}</h2><ol class="ns-invite-locations">{(content.venue.locations ?? []).map(location => <li><h3>{loc(location.label, lang)}</h3><p>{loc(location.name, lang)}</p><address>{loc(location.address, lang)}</address><p>{loc(location.note, lang)}</p><a href={location.mapUrl} target="_blank" rel="noopener">{loc(content.venue.directionsLabel, lang)}</a></li>)}</ol></section>
+        <section aria-labelledby="ns-invite-family"><h2 id="ns-invite-family">{t(lang, 'fromFamilies')}</h2><div class="ns-invite-family"><div class="ns-family-member"><span class="ns-family-name">{loc(p.familyOne.name, lang)}</span><p class="ns-invite-copy">{loc(p.familyOne.line, lang)}</p></div><div class="ns-family-member"><span class="ns-family-name">{loc(p.familyTwo.name, lang)}</span><p class="ns-invite-copy">{loc(p.familyTwo.line, lang)}</p></div></div></section>
+        <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{events.map(event => <li><h3>{loc(event.title, lang)} <span class="ns-invite-label">({loc(event.label, lang)})</span></h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p>{loc(event.venueName, lang) && <p>{loc(event.venueName, lang)}</p>}</li>)}</ol></section>
+        <section aria-labelledby="ns-invite-venue"><h2 id="ns-invite-venue">{t(lang, 'venueHeading')}</h2><ol class:list={['ns-invite-locations', locations.length === 1 && 'ns-invite-locations-single']}>{locations.map(location => <li><h3>{loc(location.label, lang)}</h3><p>{loc(location.name, lang)}</p><address>{loc(location.address, lang)}</address><p>{loc(location.note, lang)}</p><a href={location.mapUrl} target="_blank" rel="noopener">{loc(content.venue.directionsLabel, lang)}</a></li>)}</ol></section>
         <p class="ns-invite-copy">{loc(p.hosts, lang)}</p><Contacts lang={lang} class="ns-invite-contacts" /><LotusMark class="ns-lotus" />
       </div>
     </article>
-  </main>
+  </main>}
 </Base>
 <style>
   .ns-invite-page { min-height: 100svh; padding: 110px var(--gutter) 70px; background: radial-gradient(at 15% 0,#516c50,transparent 60%), #213b32; display: grid; justify-items: center; gap: 2rem; }
+  /* A themed site's invitation is its printed card, shown at full size. */
+  .ns-card-page { min-height: 100svh; padding: 110px var(--gutter) 70px; background: radial-gradient(at 15% 0,#516c50,transparent 60%), #213b32; display: grid; justify-items: center; }
+  .ns-card-page-image { display: block; width: min(100%, 62rem); height: auto; box-shadow: 0 30px 90px #0006; }
+  .ns-invite-locations-single { grid-template-columns: minmax(0, 1fr); max-width: 32rem; }
   /* Morph targets for the page transition from the home page (scripts/invitation-morph.ts). */
   .ns-invite-card { view-transition-name: ns-invitation; }
   #ns-invite-title { view-transition-name: ns-invitation-names; }
@@ -46,8 +58,16 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
   :lang(en) h1 { font: 400 clamp(3rem,8vw,5.2rem)/1.1 var(--font-script); }
   .ns-invite-copy { max-width: 38rem; margin: 0; line-height: 1.55; }
   .ns-invite-tagline { font-family: var(--font-display); font-size: 1.4rem; font-style: italic; }
+  /* The two families sit side by side, like the two columns of the printed card. */
+  .ns-invite-family { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .ns-family-member { display: grid; gap: .3rem; justify-items: center; align-content: start; }
+  .ns-family-member .ns-family-name { font-family: var(--font-display); font-size: 1.25rem; color: #425d43; }
+  .ns-family-member .ns-invite-copy { max-width: none; }
+  .ns-family-member:first-child { padding-right: clamp(1rem, 4vw, 2.2rem); border-right: 1px solid #b08a5240; }
+  .ns-family-member:last-child { padding-left: clamp(1rem, 4vw, 2.2rem); }
   section { width: 100%; display: grid; justify-items: center; gap: .8rem; padding-block: 1rem; border-top: 1px solid #b08a5233; }
   h2 { font-size: 1.8rem; } h3 { font-size: 1.4rem; }
+  h3 .ns-invite-label { display: block; font-size: .68em; font-weight: 400; letter-spacing: .02em; color: #78846a; }
   ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.2rem; }
   .ns-invite-locations { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
   .ns-invite-locations li { display: grid; gap: .45rem; justify-items: center; padding: 1rem; border: 1px solid #b08a5266; background: #fffaf2aa; }
@@ -57,15 +77,21 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
   /* The header is another component's markup, so the whole selector is global. */
   :global(html[data-modal-invitation] .ns-header) { display: none; }
   :global(html[data-modal-invitation]) .ns-invite-page { padding-top: 2rem; }
+  :global(html[data-modal-invitation]) .ns-card-page { padding-top: 1.5rem; }
   @media print {
     :global(.ns-header), :global(.skip-link) { display: none !important; }
     :global(html), :global(body) { color: #213b32 !important; background: #fff !important; }
     .ns-invite-page { padding: 0; background: #fff; min-height: 0; }
+    .ns-card-page { padding: 0; background: #fff; min-height: 0; }
+    .ns-card-page-image { width: 100%; box-shadow: none; }
     .ns-invite-card { box-shadow: none; max-width: none; }
     .ns-invite-border { padding: 1.5rem; gap: .8rem; }
     section, li { break-inside: avoid; }
   }
   @media (max-width: 620px) {
     .ns-invite-locations { grid-template-columns: 1fr; }
+    .ns-invite-family { grid-template-columns: 1fr; }
+    .ns-family-member:first-child { padding: 0 0 1rem; border-right: 0; border-bottom: 1px solid #b08a5240; }
+    .ns-family-member:last-child { padding: 1rem 0 0; }
   }
 </style>
