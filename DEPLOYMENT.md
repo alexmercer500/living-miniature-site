@@ -27,7 +27,17 @@ Vercel will use the checked-in `vercel.json` and run `npm run build`, publishing
 
 ## Social preview behavior
 
-Each theme now has its own title, description, and hero-based 1200×630 Open Graph image. The canonical and alternate-language URLs are route-aware, so these links preview as the correct theme:
+Each theme and language has its own preview. The bride's site (`/lake-view`) writes Pallavi's name first.
+
+- **Title:** for example, "Ratnesh & Pallavi — Wedding Invitation".
+- **Description:** "You are cordially invited to celebrate the wedding of … · dates".
+- **Image:** a 1200×630 invitation card, the welcome painting with the names and dates on an arched panel.
+
+The cards are pre-rendered into `src/assets/og/<theme>-<lang>.jpg` by `node scripts/render-og-cards.mjs`, which needs headless Chrome on port 9333. Re-run the script whenever the names or dates change.
+
+Pages carry `noindex,nofollow`, so search engines leave out the family's addresses and names. Link previews are unaffected. Do not add a `robots.txt` that disallows crawling: WhatsApp's and Facebook's crawlers honour it and would stop showing the preview.
+
+The canonical and alternate-language URLs follow each theme's route, so these links preview as the correct theme:
 
 ```text
 https://YOUR_DOMAIN/amber-fort/

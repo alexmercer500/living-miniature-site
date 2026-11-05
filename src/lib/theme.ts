@@ -118,12 +118,12 @@ export const themeConfig = {
     description: 'A living miniature wedding invitation.',
     meta: {
       en: {
-        title: 'Ratnesh & Pallavi — A Royal Wedding Story',
-        description: 'Join Ratnesh and Pallavi as two families come together in a beautiful wedding celebration.',
+        title: 'Ratnesh & Pallavi — Wedding Invitation',
+        description: 'You are cordially invited to celebrate the wedding of Ratnesh & Pallavi.',
       },
       hi: {
-        title: 'रत्नेश एवं पल्लवी — विवाह निमंत्रण',
-        description: 'रत्नेश और पल्लवी के विवाह उत्सव में दोनों परिवारों के साथ शामिल हों।',
+        title: 'रत्नेश एवं पल्लवी — शुभ विवाह निमंत्रण',
+        description: 'आप सादर आमंत्रित हैं — रत्नेश एवं पल्लवी के शुभ विवाह में।',
       },
     },
     themeColor: '#213B32',
@@ -141,12 +141,12 @@ export const themeConfig = {
     description: 'Love stories against timeless forts.',
     meta: {
       en: {
-        title: 'Ratnesh & Pallavi — Amber Fort Wedding Invitation',
-        description: 'A royal Amber Fort wedding invitation for Ratnesh and Pallavi, with celebrations, venue details and the full invitation.',
+        title: 'Ratnesh & Pallavi — Wedding Invitation',
+        description: 'You are cordially invited to celebrate the wedding of Ratnesh & Pallavi · 23–26 November 2026',
       },
       hi: {
-        title: 'रत्नेश एवं पल्लवी — आमेर किला विवाह निमंत्रण',
-        description: 'रत्नेश एवं पल्लवी के आमेर किला विवाह उत्सव का शाही निमंत्रण, कार्यक्रम और स्थल विवरण।',
+        title: 'रत्नेश एवं पल्लवी — शुभ विवाह निमंत्रण',
+        description: 'आप सादर आमंत्रित हैं — रत्नेश एवं पल्लवी के शुभ विवाह में · 23–26 नवम्बर 2026',
       },
     },
     themeColor: '#6C2632',
@@ -164,12 +164,12 @@ export const themeConfig = {
     description: 'Serene waters, palaces and a timeless journey.',
     meta: {
       en: {
-        title: 'Ratnesh & Pallavi — Lake View Wedding Invitation',
-        description: 'A serene lake-view wedding invitation for Ratnesh and Pallavi, with celebrations, venue details and the full invitation.',
+        title: 'Pallavi & Ratnesh — Wedding Invitation',
+        description: 'You are cordially invited to celebrate the wedding of Pallavi & Ratnesh · 23–25 November 2026',
       },
       hi: {
-        title: 'रत्नेश एवं पल्लवी — झील किनारे विवाह निमंत्रण',
-        description: 'रत्नेश एवं पल्लवी के झील किनारे विवाह उत्सव का निमंत्रण, कार्यक्रम और स्थल विवरण।',
+        title: 'पल्लवी एवं रत्नेश — शुभ विवाह निमंत्रण',
+        description: 'आप सादर आमंत्रित हैं — पल्लवी एवं रत्नेश के शुभ विवाह में · 23–25 नवम्बर 2026',
       },
     },
     themeColor: '#17364A',

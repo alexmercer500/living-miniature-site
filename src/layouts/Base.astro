@@ -38,8 +38,11 @@ const path = suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' &&
   ? suppliedPath
   : (page === 'invitation' ? invitationPath : route);
 const canonical = new URL(href(lang, path), Astro.site);
-// Link preview (WhatsApp, Messages, social): the welcome painting at the 1.91:1 size they expect.
-const preview = await getImage({ src: themeMeta.assets.hero.desktop, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
+// Link preview (WhatsApp, Messages, social): the theme's invitation card at the 1.91:1 size they
+// expect (scripts/render-og-cards.mjs), falling back to the welcome painting alone.
+const cards = import.meta.glob<ImageMetadata>('../assets/og/*.jpg', { eager: true, import: 'default' });
+const card = cards[`../assets/og/${theme}-${lang}.jpg`] ?? themeMeta.assets.hero.desktop;
+const preview = await getImage({ src: card, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 84 });
 const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, greatVibes];
 ---
 <!doctype html>
@@ -49,7 +52,9 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow" />
+    <!-- Guests get the link directly; the pages carry home addresses and family names, so search
+         engines are asked to leave them out. Link previews are unaffected. -->
+    <meta name="robots" content="noindex,nofollow" />
     <meta name="theme-color" content={themeMeta.themeColor} />
     {preloads.map(font => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
