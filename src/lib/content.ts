@@ -47,8 +47,10 @@ const digits = (number: string) => number.replace(/\D/g, '');
 export const whatsappHref = (number: string, text = '') =>
   `https://wa.me/${digits(number)}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 export const telHref = (number: string) => `tel:+${digits(number)}`;
-/** Contacts with a real number (at least 8 digits); placeholders stay hidden. */
-export const contacts = () => data.contacts.filter(c => digits(c.phone).length >= 8 || digits(c.whatsapp).length >= 8);
+/** Contacts with a real number (at least 8 digits); placeholders stay hidden. A side's own site
+ *  (`site`) lists only its family; with no site given, everyone is listed. */
+export const contacts = (site?: string) => data.contacts.filter(c =>
+  (!site || !c.site || c.site === site) && (digits(c.phone).length >= 8 || digits(c.whatsapp).length >= 8));
 export const photosConfigured = () => /^https?:\/\//.test(data.photos.albumUrl);
 
 /** `HH:MM` as a local time (7:00 pm / शाम 7:00); anything else is shown as written. */
