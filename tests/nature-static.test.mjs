@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const routes = ['/', '/hi/', '/invitation/', '/hi/invitation/'];
+const routes = ['/garden/', '/hi/garden/', '/garden/invitation/', '/hi/garden/invitation/'];
 for (const route of routes) test(`built route ${route} is Nature with local assets`, () => {
   const file = `dist${route}index.html`;
   const html = fs.readFileSync(file, 'utf8');
@@ -13,7 +13,7 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
     const path=match[1];
     assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/,'')}/index.html`), `Broken internal route ${path} from ${route}`);
   }
-  if (route === '/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
+  if (route === '/garden/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
   assert.ok(!/Royal Heritage/i.test(html), 'No retired Royal Heritage links or assets remain');
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const names=route.startsWith('/hi/')?data.couple.displayName.hi.split(' एवं '):[data.couple.partnerOne,data.couple.partnerTwo];
@@ -25,7 +25,7 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
   for (const m of html.matchAll(/(\/_astro\/[^\s,"()]+\.(?:avif|webp))/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing image ${m[1]}`);
 });
 test('first paint shows each painting as its own blurred preview, under the opening veil', () => {
-  for (const route of ['/', '/hi/']) {
+  for (const route of ['/garden/', '/hi/garden/']) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(!html.includes('ns-fallback'), 'The old flat SVG placeholder is gone');
     const art = [...html.matchAll(/<div class="ns-art[^"]*"[^>]*>/g)].map(m => m[0]);
@@ -33,13 +33,13 @@ test('first paint shows each painting as its own blurred preview, under the open
     assert.ok(scenes.length >= 10, `Visible scenes carry an inline preview (${scenes.length}/${art.length})`);
     assert.equal([...html.matchAll(/class="ns-veil"/g)].length, 1);
     assert.ok(html.indexOf('class="ns-veil"') < html.indexOf('id="welcome"'), 'Veil paints before the hero');
-    for (const font of route === '/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
+    for (const font of route === '/garden/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
       assert.match(html, new RegExp(`rel="preload" href="/_astro/${font}\.[^"]+\.woff2" as="font"`));
   }
   assert.ok(!fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-veil'), 'Only the home page has a veil');
 });
 test('retired theme URLs forward to the Nature pages, keeping the hash', () => {
-  for (const [from, to] of [['/royal/', '/'], ['/nature/', '/'], ['/royal/invitation/', '/invitation'], ['/hi/royal/', '/hi/'], ['/hi/nature/invitation/', '/hi/invitation']]) {
+  for (const [from, to] of [['/royal/', '/'], ['/nature/', '/garden'], ['/royal/invitation/', '/invitation'], ['/hi/royal/', '/hi/'], ['/hi/nature/invitation/', '/hi/garden/invitation']]) {
     const html = fs.readFileSync(`dist${from}index.html`, 'utf8');
     assert.ok(html.includes(`content="0;url=${to}"`), `${from} refreshes to ${to}`);
     assert.ok(html.includes('location.hash'), `${from} keeps the section hash`);
@@ -104,7 +104,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     }
   }
   // three.js stays in its own lazily loaded chunk: no page loads it up front.
-  for (const route of ['/', '/amber-fort/', '/lake-view/']) {
+  for (const route of ['/', '/garden/', '/amber-fort/', '/lake-view/']) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     for (const [, src] of html.matchAll(/<script[^>]+src="([^"]+)"/g)) assert.ok(!fs.readFileSync(`dist${src}`, 'utf8').includes('WebGLRenderer'), `${route}: ${src} does not bundle three.js`);
     assert.ok(!html.includes('envelope-model.'), `${route} does not preload the 3D model`);
@@ -155,7 +155,7 @@ test('a themed invitation is its printed card', () => {
 test('Nature venue has three semantic signs, gated maps and a printable fallback', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const hasMap=/^https?:\/\//.test(data.venue.mapUrl);
-  for(const route of ['/','/hi/']) {
+  for(const route of ['/garden/','/hi/garden/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="venue"[\s\S]*?(?=<section id="wishes")/)?.[0];
     assert.ok(scene);
@@ -164,7 +164,7 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
     assert.equal([...scene.matchAll(/<button[^>]*\sdisabled(?=[\s=>])/g)].length,hasMap?0:2);
     assert.ok(scene.includes('id="ns-venue-preview"'));
     const print=scene.match(/data-venue-explore href="([^"]+)"/)[1];
-    assert.equal(print,`${route.startsWith('/hi/')?'/hi':''}/invitation#ns-invite-venue`);
+    assert.equal(print,`${route.startsWith('/hi/')?'/hi':''}/garden/invitation#ns-invite-venue`);
     for(const match of scene.matchAll(/(?:url\(#([^)]*)\)|href="#([^"]+)")/g)) {
       assert.ok(html.includes(`id="${match[1]??match[2]}"`),'Local SVG/anchor target exists');
     }
@@ -172,7 +172,7 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
 });
 
 test('Nature wishes: six blessings (one the guest writes), the countdown, no RSVP, nothing sent to a server', () => {
-  for(const route of ['/','/hi/']) {
+  for(const route of ['/garden/','/hi/garden/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="wishes"[\s\S]*?<\/section>/)?.[0];
     assert.ok(scene);
@@ -191,7 +191,7 @@ test('Nature wishes: six blessings (one the guest writes), the countdown, no RSV
 
 test('personal links, contacts, directions and link previews', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  for(const route of ['/','/hi/']) {
+  for(const route of ['/garden/','/hi/garden/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     assert.ok(html.includes("get('to')")&&html.includes('class="ns-greeting"'),'Greeting reads ?to= before paint');
     assert.match(html,/property="og:image" content="https:\/\/[^"]+\.jpg"/);
@@ -201,12 +201,12 @@ test('personal links, contacts, directions and link previews', () => {
   }
   const links=fs.readFileSync('dist/invite-links/index.html','utf8');
   assert.ok(links.includes('noindex'));
-  for(const route of ['/','/hi/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
+  for(const route of ['/','/hi/','/garden/','/hi/garden/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
 });
 
 test('Nature final note retains its landscape, real names, message and locale links', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  for(const route of ['/','/hi/']) {
+  for(const route of ['/garden/','/hi/garden/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="closing"[\s\S]*?<\/section>/)?.[0];
     const lang=route.startsWith('/hi/')?'hi':'en';
@@ -226,7 +226,7 @@ test('Nature final note retains its landscape, real names, message and locale li
 
 test('every chapter carries one decorative scene plate; the sections stay semantic',()=>{
   const ids=['welcome','journey','invitation','celebrations','venue','wishes','closing'];
-  for(const route of ['/','/hi/']){
+  for(const route of ['/garden/','/hi/garden/']){
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const plates=[...html.matchAll(/<div class="ns-plate"[^>]*>/g)].map(m=>m[0]);
     assert.equal(plates.length,ids.length);
@@ -249,4 +249,14 @@ test('scroll-driven animations survive minification',()=>{
   assert.ok(css.includes('view-timeline:--scene'),'Chapters name their view timeline');
   for(const decl of css.match(/(?<![\w-])animation:[^;}]*/g)??[])assert.ok(!/--scene|scroll\(/.test(decl),`Timeline inside the animation shorthand: ${decl}`);
   assert.ok(/animation-timeline:--scene/.test(css));
+});
+
+test('the bare domain opens on a door into each side\'s invitation', () => {
+  for (const [route, base] of [['/', ''], ['/hi/', '/hi']]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    assert.ok(html.includes('data-landing') && !html.includes('data-nature-root'), `${route} is the landing, not a story`);
+    assert.deepEqual([...html.matchAll(/<a class="ns-landing-door"[^>]*href="([^"]+)"/g)].map(m => m[1]), [`${base}/amber-fort`, `${base}/lake-view`]);
+    assert.match(html, new RegExp(`rel="canonical" href="[^"]+${base}/"`));
+    assert.match(html, /property="og:image" content="https:\/\/[^"]+\.jpg"/);
+  }
 });

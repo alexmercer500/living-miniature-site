@@ -22,7 +22,7 @@ import { getImage } from 'astro:assets';
 import { type Lang, content, loc, t, href } from '../lib/content';
 import { coupleDisplay, themeConfig, themeRoute, type ThemeId } from '../lib/theme';
 
-interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: ThemeId }
+interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation' | 'landing'; routePath?: string; theme?: ThemeId }
 const requestedTheme = Astro.props.theme as ThemeId | undefined;
 const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : (Astro.url.pathname.includes('/lake-city') || Astro.url.pathname.includes('/lake-view')) ? 'lake-city' : 'nature');
 const { lang, page = 'home' } = Astro.props;
@@ -34,7 +34,8 @@ const invitationPath = route === '/' ? '/invitation' : `${route}/invitation`;
 const title = Astro.props.title ?? (page === 'invitation' ? `${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}` : socialMeta.title);
 const description = Astro.props.description ?? socialMeta.description;
 const suppliedPath = Astro.props.routePath as string | undefined;
-const path = suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' && theme !== 'nature' && suppliedPath === '/invitation'))
+// The landing page (both sides' doors) is the bare domain itself; every theme page lives on its route.
+const path = page === 'landing' ? '/' : suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' && suppliedPath === '/invitation'))
   ? suppliedPath
   : (page === 'invitation' ? invitationPath : route);
 const canonical = new URL(href(lang, path), Astro.site);

@@ -22,7 +22,7 @@ try {
     await command('Emulation.setDeviceMetricsOverride',{width:view.width,height:view.height,deviceScaleFactor:1,mobile:false});
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
     await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
-    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}`});await wait(1700);
+    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}garden/`});await wait(1700);
     if(!view.reduced&&!view.noJs)assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('[data-venue-sign]')).opacity)<.2"),'Waits for scroll entry');
     await evaluate("window.scrollTo({top:document.getElementById('venue').offsetTop-innerHeight*.65,behavior:'instant'});true");await wait(1200);
     if(!view.reduced&&!view.noJs){

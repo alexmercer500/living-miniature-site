@@ -113,17 +113,17 @@ const lakeEventAssets = {
 /** Theme registry for the original nature story and the two Rajasthan variants. */
 export const themeConfig = {
   nature: {
-    route: '/',
+    route: '/garden',
     label: 'Nature & Stories',
     description: 'A living miniature wedding invitation.',
     meta: {
       en: {
         title: 'Ratnesh & Pallavi — Wedding Invitation',
-        description: 'You are cordially invited to celebrate the wedding of Ratnesh & Pallavi.',
+        description: 'You are cordially invited to celebrate the wedding of Ratnesh & Pallavi · 23–26 November 2026',
       },
       hi: {
         title: 'रत्नेश एवं पल्लवी — शुभ विवाह निमंत्रण',
-        description: 'आप सादर आमंत्रित हैं — रत्नेश एवं पल्लवी के शुभ विवाह में।',
+        description: 'आप सादर आमंत्रित हैं — रत्नेश एवं पल्लवी के शुभ विवाह में · 23–26 नवम्बर 2026',
       },
     },
     themeColor: '#213B32',

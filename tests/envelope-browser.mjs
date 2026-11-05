@@ -45,11 +45,11 @@ await command('Page.bringToFront');
 const records = [];
 try {
   for (const view of [
-    { name: 'desktop', width: 1440, height: 900, path: '/' },
-    { name: 'mobile', width: 390, height: 844, path: '/' },
-    { name: 'small-hindi', width: 320, height: 568, path: '/hi/' },
-    { name: 'reduced-hindi', width: 320, height: 568, path: '/hi/', reduced: true },
-    { name: 'no-js-mobile', width: 390, height: 844, path: '/', noJs: true },
+    { name: 'desktop', width: 1440, height: 900, path: '/garden/' },
+    { name: 'mobile', width: 390, height: 844, path: '/garden/' },
+    { name: 'small-hindi', width: 320, height: 568, path: '/hi/garden/' },
+    { name: 'reduced-hindi', width: 320, height: 568, path: '/hi/garden/', reduced: true },
+    { name: 'no-js-mobile', width: 390, height: 844, path: '/garden/', noJs: true },
   ]) {
     if (process.argv[2] && view.name !== process.argv[2]) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: false });

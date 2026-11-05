@@ -593,6 +593,7 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 }
 @media (max-width: 767px) and (max-height: 600px) {
   .ns-celebrations-intro { display: none; }
+  .ns-event-copy .ns-event-label { display: inline; letter-spacing: .04em; } /* runs on after the title, a line back for the photo */
   .ns-event-mark { width: 18px; height: 18px; top: -12px; }
 }
 /* Tablets: two rows of two upright, all four in a row when held sideways. */

@@ -21,7 +21,7 @@ try {
     await command('Emulation.setDeviceMetricsOverride',{width:view.width,height:view.height,deviceScaleFactor:1,mobile:false});
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
     await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
-    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}`});await wait(1700);
+    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}garden/`});await wait(1700);
     if(!view.reduced&&!view.noJs) assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('.ns-event')).opacity)<.2"),'Cards wait for scroll entry');
     await evaluate("document.querySelector('.ns-events').scrollIntoView({block:'center',behavior:'instant'});true");
     if(!view.reduced&&!view.noJs) {

@@ -9,6 +9,10 @@ Use one Vercel project and one custom domain. The two public invitation experien
 
 Hindi versions are available at `/hi/amber-fort/` and `/hi/lake-view/`. The old `/lake-city/` paths permanently redirect to `/lake-view/`.
 
+The bare domain (`https://YOUR_DOMAIN/`, and `/hi/`) is a landing page for both sides. It shows the welcome painting, the couple and the countdown, then two doors: "Groom's side · Ratnesh's family" leads to `/amber-fort`, and "Bride's side · Pallavi's family" leads to `/lake-view`. A `?to=` personal link carries through either door.
+
+The full garden story is kept at `/garden/` (and `/hi/garden/`). The old `/nature/` links forward there.
+
 This is the most reliable way to use path routes on Vercel. Two separate Vercel projects should use two subdomains instead, such as `amber.YOUR_DOMAIN` and `lake.YOUR_DOMAIN`.
 
 ## Vercel project settings

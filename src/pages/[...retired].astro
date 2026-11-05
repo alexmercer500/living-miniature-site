@@ -1,13 +1,13 @@
 ---
 /**
- * Retired theme URLs (Royal Heritage, and Nature's old /nature/ preview path) forward
+ * Retired theme URLs (Royal Heritage, and Nature's old /nature/ preview path, now /garden/) forward
  * to the live pages, keeping any #section, so links that were already shared still work.
  */
 import { href } from '../lib/content';
 export function getStaticPaths() {
   return ['', 'hi/'].flatMap(prefix => ['royal', 'nature'].flatMap(theme => [
-    { params: { retired: `${prefix}${theme}` }, props: { to: href(prefix ? 'hi' : 'en', '/') } },
-    { params: { retired: `${prefix}${theme}/invitation` }, props: { to: href(prefix ? 'hi' : 'en', '/invitation') } },
+    { params: { retired: `${prefix}${theme}` }, props: { to: href(prefix ? 'hi' : 'en', theme === 'nature' ? '/garden' : '/') } },
+    { params: { retired: `${prefix}${theme}/invitation` }, props: { to: href(prefix ? 'hi' : 'en', theme === 'nature' ? '/garden/invitation' : '/invitation') } },
   ]));
 }
 const { to } = Astro.props;

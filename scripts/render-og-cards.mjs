@@ -15,10 +15,10 @@ const fonts = 'node_modules/@fontsource';
 const content = JSON.parse(await fs.readFile('src/data/site-content.json', 'utf8'));
 const join = { en: ' & ', hi: ' एवं ' };
 
-// Painting, panel tint and the date line each site shows (theme.ts dateLine). The nature root has
-// no confirmed dates, so its card simply says it is a wedding invitation.
+// Painting, panel tint and the date line each site shows (theme.ts dateLine). The nature root is
+// the landing page for both sides, so it carries both sides' dates together.
 const THEMES = {
-  nature: { painting: 'src/assets/nature-stories/hero-desktop.png', tint: '#213b32', date: null, brideFirst: false },
+  nature: { painting: 'src/assets/nature-stories/hero-desktop.png', tint: '#213b32', date: { en: '23–26 November 2026', hi: '23–26 नवम्बर 2026' }, brideFirst: false },
   'amber-fort': { painting: 'src/assets/rajasthan/amber-fort/hero-desktop.png', tint: '#5a1f2a', date: { en: '23–26 November 2026', hi: '23–26 नवम्बर 2026' }, brideFirst: false },
   'lake-city': { painting: 'src/assets/rajasthan/lake-city/hero-desktop.png', tint: '#142f40', date: { en: '23–25 November 2026', hi: '23–25 नवम्बर 2026' }, brideFirst: true },
 };

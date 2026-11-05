@@ -27,7 +27,7 @@ try {
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
     await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
     await command('Network.setBlockedURLs',{urls:view.failed?['*closing-*.avif','*closing-*.webp']:[]});
-    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}`});await wait(1700);
+    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}garden/`});await wait(1700);
     if(!view.noJs&&!view.reduced)assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('[data-note-arrival]')).opacity)<.2"),'Note waits for section entry');
     await evaluate("document.querySelector('.ns-note-arrival').scrollIntoView({block:'center',behavior:'instant'});true");await wait(600);
     const early=await evaluate("(()=>{const n=document.getElementById('ns-note-names');return {opacity:getComputedStyle(n).opacity,animations:n.getAnimations().length,text:n.textContent,parent:Number(getComputedStyle(document.querySelector('[data-note-arrival]')).opacity)};})()");
