@@ -24,14 +24,15 @@ import { coupleDisplay, themeConfig, themeRoute, type ThemeId } from '../lib/the
 
 interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation'; routePath?: string; theme?: ThemeId }
 const requestedTheme = Astro.props.theme as ThemeId | undefined;
-const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : Astro.url.pathname.includes('/lake-city') ? 'lake-city' : 'nature');
+const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : (Astro.url.pathname.includes('/lake-city') || Astro.url.pathname.includes('/lake-view')) ? 'lake-city' : 'nature');
 const { lang, page = 'home' } = Astro.props;
 const themeMeta = themeConfig[theme];
+const socialMeta = themeMeta.meta[lang];
 // The deployment's own theme is served at the root, so its canonical link is the bare domain.
 const route = themeRoute(theme);
 const invitationPath = route === '/' ? '/invitation' : `${route}/invitation`;
-const title = Astro.props.title ?? (lang === 'hi' ? `${coupleDisplay('hi', theme)} — विवाह उत्सव` : content.site.title);
-const description = Astro.props.description ?? (lang === 'hi' ? loc(content.couple.tagline, 'hi') : content.site.description);
+const title = Astro.props.title ?? (page === 'invitation' ? `${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}` : socialMeta.title);
+const description = Astro.props.description ?? socialMeta.description;
 const suppliedPath = Astro.props.routePath as string | undefined;
 const path = suppliedPath && (suppliedPath !== '/' && !(page === 'invitation' && theme !== 'nature' && suppliedPath === '/invitation'))
   ? suppliedPath
@@ -48,22 +49,29 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index,follow" />
     <meta name="theme-color" content={themeMeta.themeColor} />
     {preloads.map(font => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={new URL(href('en', path), Astro.site)} />
     <link rel="alternate" hreflang="hi" href={new URL(href('hi', path), Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(href('en', path), Astro.site)} />
+    <meta property="og:site_name" content={socialMeta.title} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={lang === 'hi' ? 'hi_IN' : 'en_IN'} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(preview.src, Astro.site)} />
+    <meta property="og:image:url" content={new URL(preview.src, Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:alt" content={coupleDisplay(lang, theme)} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
     <slot name="head" />
   </head>

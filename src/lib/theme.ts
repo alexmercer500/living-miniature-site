@@ -116,6 +116,16 @@ export const themeConfig = {
     route: '/',
     label: 'Nature & Stories',
     description: 'A living miniature wedding invitation.',
+    meta: {
+      en: {
+        title: 'Ratnesh & Pallavi — A Royal Wedding Story',
+        description: 'Join Ratnesh and Pallavi as two families come together in a beautiful wedding celebration.',
+      },
+      hi: {
+        title: 'रत्नेश एवं पल्लवी — विवाह निमंत्रण',
+        description: 'रत्नेश और पल्लवी के विवाह उत्सव में दोनों परिवारों के साथ शामिल हों।',
+      },
+    },
     themeColor: '#213B32',
     assets: landscapes,
     invitationModel: null as InvitationModel | null,
@@ -129,6 +139,16 @@ export const themeConfig = {
     route: '/amber-fort',
     label: 'Amber Fort Romance',
     description: 'Love stories against timeless forts.',
+    meta: {
+      en: {
+        title: 'Ratnesh & Pallavi — Amber Fort Wedding Invitation',
+        description: 'A royal Amber Fort wedding invitation for Ratnesh and Pallavi, with celebrations, venue details and the full invitation.',
+      },
+      hi: {
+        title: 'रत्नेश एवं पल्लवी — आमेर किला विवाह निमंत्रण',
+        description: 'रत्नेश एवं पल्लवी के आमेर किला विवाह उत्सव का शाही निमंत्रण, कार्यक्रम और स्थल विवरण।',
+      },
+    },
     themeColor: '#6C2632',
     assets: amberAssets,
     invitationModel: { kind: 'envelope', geometry: amberGeometry, layers: { flap: amberFlap, body: amberBody, seal: amberSeal }, model3d: { geometry: amberModelGeometry, textures: amberModelTextures } } as InvitationModel,
@@ -139,9 +159,19 @@ export const themeConfig = {
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'lake-city': {
-    route: '/lake-city',
+    route: '/lake-view',
     label: 'Lake City Elegance',
     description: 'Serene waters, palaces and a timeless journey.',
+    meta: {
+      en: {
+        title: 'Ratnesh & Pallavi — Lake View Wedding Invitation',
+        description: 'A serene lake-view wedding invitation for Ratnesh and Pallavi, with celebrations, venue details and the full invitation.',
+      },
+      hi: {
+        title: 'रत्नेश एवं पल्लवी — झील किनारे विवाह निमंत्रण',
+        description: 'रत्नेश एवं पल्लवी के झील किनारे विवाह उत्सव का निमंत्रण, कार्यक्रम और स्थल विवरण।',
+      },
+    },
     themeColor: '#17364A',
     assets: lakeAssets,
     invitationModel: { kind: 'scroll', geometry: lakeGeometry, layers: { roll: lakeRoll, ribbon: lakeRibbon }, model3d: { geometry: lakeModelGeometry, textures: lakeModelTextures } } as InvitationModel,
@@ -188,12 +218,12 @@ export function themeHref(lang: Lang, theme: ThemeId, path = '/') {
 export const themeEventFallback = eventFallback;
 
 /** The theme this deployment serves at its own root. One site per domain sets
- *  SITE_THEME=amber-fort or SITE_THEME=lake-city; unset keeps the nature root. */
+ *  SITE_THEME=amber-fort or SITE_THEME=lake-city; unset keeps the multi-route build. */
 export const siteTheme: ThemeId =
   process.env.SITE_THEME === 'amber-fort' || process.env.SITE_THEME === 'lake-city' ? process.env.SITE_THEME : 'nature';
 
-/** The path a theme is served at here: the deployment's own theme sits at the root, so every
- *  link on that site stays on the bare domain. */
+/** The path a theme is served at here: the deployment's own theme sits at the root, while the
+ *  unified build keeps each theme on its public route. */
 export function themeRoute(theme: ThemeId) {
   return process.env.SITE_THEME === theme ? '/' : themeConfig[theme].route;
 }

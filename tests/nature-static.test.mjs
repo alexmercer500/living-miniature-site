@@ -14,7 +14,7 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
     assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/,'')}/index.html`), `Broken internal route ${path} from ${route}`);
   }
   if (route === '/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
-  assert.ok(!/royal/i.test(html), 'No Royal Heritage links or assets remain');
+  assert.ok(!/Royal Heritage/i.test(html), 'No retired Royal Heritage links or assets remain');
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const names=route.startsWith('/hi/')?data.couple.displayName.hi.split(' एवं '):[data.couple.partnerOne,data.couple.partnerTwo];
   for (const name of names) assert.ok(html.includes(name), `${name} (from site-content.json) appears on ${route}`);
@@ -67,8 +67,8 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
   for (const { route, theme, lang } of [
     { route: '/amber-fort/', theme: 'amber-fort', lang: 'en' },
     { route: '/hi/amber-fort/', theme: 'amber-fort', lang: 'hi' },
-    { route: '/lake-city/', theme: 'lake-city', lang: 'en' },
-    { route: '/hi/lake-city/', theme: 'lake-city', lang: 'hi' },
+    { route: '/lake-view/', theme: 'lake-city', lang: 'en' },
+    { route: '/hi/lake-view/', theme: 'lake-city', lang: 'hi' },
   ]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(html.includes(`data-theme="${theme}"`), `${route} carries its theme`);
@@ -104,7 +104,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     }
   }
   // three.js stays in its own lazily loaded chunk: no page loads it up front.
-  for (const route of ['/', '/amber-fort/', '/lake-city/']) {
+  for (const route of ['/', '/amber-fort/', '/lake-view/']) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     for (const [, src] of html.matchAll(/<script[^>]+src="([^"]+)"/g)) assert.ok(!fs.readFileSync(`dist${src}`, 'utf8').includes('WebGLRenderer'), `${route}: ${src} does not bundle three.js`);
     assert.ok(!html.includes('envelope-model.'), `${route} does not preload the 3D model`);
@@ -116,7 +116,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
 });
 
 test('the bride\'s side (lake-city) puts Pallavi first, ends on the 25th and shows one venue', () => {
-  for (const [route, lang] of [['/lake-city/', 'en'], ['/hi/lake-city/', 'hi']]) {
+  for (const [route, lang] of [['/lake-view/', 'en'], ['/hi/lake-view/', 'hi']]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     const couple = html.match(/<p class="ns-couple">([\s\S]*?)<\/p>/)[1];
     const [her, him] = lang === 'hi' ? ['पल्लवी', 'रत्नेश'] : ['Pallavi', 'Ratnesh'];
@@ -139,8 +139,8 @@ test('the bride\'s side (lake-city) puts Pallavi first, ends on the 25th and sho
 test('a themed invitation is its printed card', () => {
   for (const [route, image] of [
     ['/amber-fort/invitation/', 'royal-ratnesh-pallavi-invitation'],
-    ['/lake-city/invitation/', 'royal-wedding-by-the-lake'],
-    ['/hi/lake-city/invitation/', 'royal-wedding-by-the-lake'],
+    ['/lake-view/invitation/', 'royal-wedding-by-the-lake'],
+    ['/hi/lake-view/invitation/', 'royal-wedding-by-the-lake'],
   ]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(html.includes('ns-card-page'), `${route} shows the printed card`);
@@ -157,7 +157,7 @@ test('Nature venue has three semantic signs, gated maps and a printable fallback
   const hasMap=/^https?:\/\//.test(data.venue.mapUrl);
   for(const route of ['/','/hi/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
-    const scene=html.match(/<section id="venue"[\s\S]*?<\/section>/)?.[0];
+    const scene=html.match(/<section id="venue"[\s\S]*?(?=<section id="wishes")/)?.[0];
     assert.ok(scene);
     assert.equal([...scene.matchAll(/data-venue-sign(?=[\s=>])/g)].length,3);
     assert.equal([...scene.matchAll(/target="_blank"/g)].length,hasMap?2:0);
@@ -215,7 +215,7 @@ test('Nature final note retains its landscape, real names, message and locale li
     assert.ok(scene.includes('ivory-floral-paper-v1.'));
     assert.ok(scene.includes(data.couple.displayName[lang].replaceAll('&','&amp;')));
     assert.ok(scene.includes(data.closing.line[lang]));
-    assert.ok(scene.includes(`href="${lang==='hi'?'/hi':''}/invitation"`));
+    assert.ok(scene.includes('href="#invitation-modal"'));
     assert.ok(scene.includes('href="#welcome"'));
     assert.equal([...scene.matchAll(/data-note-arrival(?=[\s=>])/g)].length,1);
     assert.equal([...scene.matchAll(/class="ns-note-floral [ab]"/g)].length,2);

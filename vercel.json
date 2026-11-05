@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/lake-city", "destination": "/lake-view", "permanent": true },
+    { "source": "/lake-city/:path*", "destination": "/lake-view/:path*", "permanent": true },
+    { "source": "/hi/lake-city", "destination": "/hi/lake-view", "permanent": true },
+    { "source": "/hi/lake-city/:path*", "destination": "/hi/lake-view/:path*", "permanent": true }
+  ]
+}

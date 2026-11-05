@@ -15,7 +15,7 @@ const card = themeConfig[theme].invitationCard;
 const events = eventsFor(theme);
 const locations = locationsFor(theme);
 ---
-<Base lang={lang} theme={theme} routePath="/invitation" page="invitation" title={`${coupleDisplay(lang, theme)} — ${t(lang, 'weddingInvitation')}`}>
+<Base lang={lang} theme={theme} routePath="/invitation" page="invitation">
   <Fragment slot="head">
     <!-- Opened inside the home page's invitation modal: no header, and Escape closes the modal
          even once the guest has scrolled (focus is in here then, not on the home page). -->
