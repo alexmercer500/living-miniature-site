@@ -23,8 +23,8 @@ try {
     const height=width===390?844:900;
     await command('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
     for(const view of [
-      ...['/#venue','/hi/#journey','/#closing','/hi/#celebrations'].map(path=>({path})),
-      {path:'/#venue',noJs:true}, {path:'/hi/#venue',reduced:true},
+      ...['/amber-fort/#venue','/hi/amber-fort/#journey','/lake-city/#closing','/hi/lake-city/#celebrations'].map(path=>({path})),
+      {path:'/amber-fort/#venue',noJs:true}, {path:'/hi/lake-city/#venue',reduced:true},
     ]) {
       const {path}=view;
       await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
@@ -33,21 +33,13 @@ try {
       await wait(1600);
       await evaluate('document.fonts.ready.then(()=>true)');await wait(600);
       const state=await evaluate(`(()=>{const r=document.querySelector(location.hash).getBoundingClientRect();return {top:r.top,bottom:r.bottom,theme:document.documentElement.dataset.theme,royal:document.querySelectorAll('a[href*="royal"]').length,locale:document.querySelector('.ns-locales a[lang="hi"]').getAttribute('href')}})()`);
-      assert.equal(state.theme,'nature');
+      assert.equal(state.theme,path.includes('lake-city')?'lake-city':'amber-fort');
       assert.ok(Math.abs(state.top)<2&&Math.abs(state.bottom-height)<2,`${width}/${path}: direct hash fills viewport ${JSON.stringify(state)}`);
       assert.equal(state.royal,0,'No links to the retired Royal theme');
-      assert.equal(state.locale,'/hi/');
+      assert.equal(state.locale,`/hi/${path.includes('lake-city')?'lake-city':'amber-fort'}`);
       count++;
     }
   }
   await command('Emulation.setScriptExecutionDisabled',{value:false});
-  // Retired theme URLs land on the live Nature page, section hash included.
-  for(const [from,to] of [['/royal/','/'],['/hi/royal/#venue','/hi/#venue'],['/royal/invitation/','/invitation'],['/nature/#closing','/#closing'],['/hi/nature/invitation/','/hi/invitation']]) {
-    await command('Page.navigate',{url:`http://127.0.0.1:4321${from}`});await wait(1500);
-    const state=await evaluate("({theme:document.documentElement.dataset.theme,path:location.pathname,hash:location.hash})");
-    assert.equal(state.theme,'nature');
-    assert.equal(state.path+state.hash,to,`${from} forwards to ${to}`);
-    count++;
-  }
-  console.log(`PASS: ${count} deep-link, locale and retired-URL checks.`);
+  console.log(`PASS: ${count} deep-link and locale checks.`);
 } finally {socket.close();await fetch(`http://127.0.0.1:9333/json/close/${target.id}`);}

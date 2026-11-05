@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const routes = ['/garden/', '/hi/garden/', '/garden/invitation/', '/hi/garden/invitation/'];
-for (const route of routes) test(`built route ${route} is Nature with local assets`, () => {
+const routes = ['/amber-fort/', '/hi/amber-fort/', '/amber-fort/invitation/', '/hi/amber-fort/invitation/'];
+for (const route of routes) test(`built route ${route} is the Amber Fort site with local assets`, () => {
   const file = `dist${route}index.html`;
   const html = fs.readFileSync(file, 'utf8');
-  assert.ok(html.includes('data-theme="nature"'));
+  assert.ok(html.includes('data-theme="amber-fort"'));
   const canonical=html.match(/<link rel="canonical" href="([^"]+)"/);
   assert.ok(canonical, 'Canonical URL exists');
   assert.equal(new URL(canonical[1]).pathname.replace(/\/$/, ''), route.replace(/\/$/, ''));
@@ -13,7 +13,7 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
     const path=match[1];
     assert.ok(fs.existsSync(`dist${path}`) || fs.existsSync(`dist${path.replace(/\/$/,'')}/index.html`), `Broken internal route ${path} from ${route}`);
   }
-  if (route === '/garden/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
+  if (route === '/amber-fort/') { assert.ok(html.includes('data-envelope')); assert.ok(html.includes('data-nature-root')); }
   assert.ok(!/Royal Heritage/i.test(html), 'No retired Royal Heritage links or assets remain');
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
   const names=route.startsWith('/hi/')?data.couple.displayName.hi.split(' एवं '):[data.couple.partnerOne,data.couple.partnerTwo];
@@ -25,7 +25,7 @@ for (const route of routes) test(`built route ${route} is Nature with local asse
   for (const m of html.matchAll(/(\/_astro\/[^\s,"()]+\.(?:avif|webp))/g)) assert.ok(fs.existsSync(`dist${m[1]}`), `Missing image ${m[1]}`);
 });
 test('first paint shows each painting as its own blurred preview, under the opening veil', () => {
-  for (const route of ['/garden/', '/hi/garden/']) {
+  for (const route of ['/amber-fort/', '/hi/amber-fort/']) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(!html.includes('ns-fallback'), 'The old flat SVG placeholder is gone');
     const art = [...html.matchAll(/<div class="ns-art[^"]*"[^>]*>/g)].map(m => m[0]);
@@ -33,18 +33,10 @@ test('first paint shows each painting as its own blurred preview, under the open
     assert.ok(scenes.length >= 10, `Visible scenes carry an inline preview (${scenes.length}/${art.length})`);
     assert.equal([...html.matchAll(/class="ns-veil"/g)].length, 1);
     assert.ok(html.indexOf('class="ns-veil"') < html.indexOf('id="welcome"'), 'Veil paints before the hero');
-    for (const font of route === '/garden/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
+    for (const font of route === '/amber-fort/' ? ['fraunces-latin-soft-normal', 'jost-latin-wght-normal', 'great-vibes-latin-400-normal'] : ['tiro-devanagari-hindi-devanagari-400-normal'])
       assert.match(html, new RegExp(`rel="preload" href="/_astro/${font}\.[^"]+\.woff2" as="font"`));
   }
   assert.ok(!fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-veil'), 'Only the home page has a veil');
-});
-test('retired theme URLs forward to the Nature pages, keeping the hash', () => {
-  for (const [from, to] of [['/royal/', '/'], ['/nature/', '/garden'], ['/royal/invitation/', '/invitation'], ['/hi/royal/', '/hi/'], ['/hi/nature/invitation/', '/hi/garden/invitation']]) {
-    const html = fs.readFileSync(`dist${from}index.html`, 'utf8');
-    assert.ok(html.includes(`content="0;url=${to}"`), `${from} refreshes to ${to}`);
-    assert.ok(html.includes('location.hash'), `${from} keeps the section hash`);
-    assert.ok(html.includes('noindex'));
-  }
 });
 test('Nature assets and entrypoints exist', () => {
   const sources = fs.readdirSync('src/assets/nature-stories').filter(n => n.endsWith('.png'));
@@ -67,8 +59,8 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
   for (const { route, theme, lang } of [
     { route: '/amber-fort/', theme: 'amber-fort', lang: 'en' },
     { route: '/hi/amber-fort/', theme: 'amber-fort', lang: 'hi' },
-    { route: '/lake-view/', theme: 'lake-city', lang: 'en' },
-    { route: '/hi/lake-view/', theme: 'lake-city', lang: 'hi' },
+    { route: '/lake-city/', theme: 'lake-city', lang: 'en' },
+    { route: '/hi/lake-city/', theme: 'lake-city', lang: 'hi' },
   ]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(html.includes(`data-theme="${theme}"`), `${route} carries its theme`);
@@ -104,7 +96,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
     }
   }
   // three.js stays in its own lazily loaded chunk: no page loads it up front.
-  for (const route of ['/', '/garden/', '/amber-fort/', '/lake-view/']) {
+  for (const route of ['/', '/amber-fort/', '/amber-fort/', '/lake-city/']) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     for (const [, src] of html.matchAll(/<script[^>]+src="([^"]+)"/g)) assert.ok(!fs.readFileSync(`dist${src}`, 'utf8').includes('WebGLRenderer'), `${route}: ${src} does not bundle three.js`);
     assert.ok(!html.includes('envelope-model.'), `${route} does not preload the 3D model`);
@@ -116,7 +108,7 @@ test('Rajasthan theme routes keep bilingual routing and theme-specific scene ass
 });
 
 test('the bride\'s side (lake-city) puts Pallavi first, ends on the 25th and shows one venue', () => {
-  for (const [route, lang] of [['/lake-view/', 'en'], ['/hi/lake-view/', 'hi']]) {
+  for (const [route, lang] of [['/lake-city/', 'en'], ['/hi/lake-city/', 'hi']]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     const couple = html.match(/<p class="ns-couple">([\s\S]*?)<\/p>/)[1];
     const [her, him] = lang === 'hi' ? ['पल्लवी', 'रत्नेश'] : ['Pallavi', 'Ratnesh'];
@@ -139,40 +131,31 @@ test('the bride\'s side (lake-city) puts Pallavi first, ends on the 25th and sho
 test('a themed invitation is its printed card', () => {
   for (const [route, image] of [
     ['/amber-fort/invitation/', 'royal-ratnesh-pallavi-invitation'],
-    ['/lake-view/invitation/', 'royal-wedding-by-the-lake'],
-    ['/hi/lake-view/invitation/', 'royal-wedding-by-the-lake'],
+    ['/lake-city/invitation/', 'royal-wedding-by-the-lake'],
+    ['/hi/lake-city/invitation/', 'royal-wedding-by-the-lake'],
   ]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(html.includes('ns-card-page'), `${route} shows the printed card`);
     assert.ok(html.includes(image), `${route} shows its own card, not the other`);
     assert.ok(!html.includes('class="ns-event"'), `${route} drops the written schedule`);
   }
-  // The nature root has no card, so it keeps the written invitation.
-  assert.ok(fs.readFileSync('dist/invitation/index.html', 'utf8').includes('ns-invite-page'));
-  assert.ok(fs.readFileSync('dist/hi/invitation/index.html', 'utf8').includes('ns-invite-page'));
+  // The shared domain has no invitation of its own: the old root address goes back to the doors.
+  for (const [route, to] of [['/invitation/', '/'], ['/hi/invitation/', '/hi/']]) assert.ok(fs.readFileSync(`dist${route}index.html`, 'utf8').includes(`url=${to}"`), `${route} forwards to ${to}`);
 });
 
-test('Nature venue has three semantic signs, gated maps and a printable fallback', () => {
-  const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  const hasMap=/^https?:\/\//.test(data.venue.mapUrl);
-  for(const route of ['/garden/','/hi/garden/']) {
-    const html=fs.readFileSync(`dist${route}index.html`,'utf8');
-    const scene=html.match(/<section id="venue"[\s\S]*?(?=<section id="wishes")/)?.[0];
+test('each side lists its own venues, each with a map and exact directions', () => {
+  for (const [route, venues] of [['/amber-fort/', 2], ['/hi/amber-fort/', 2], ['/lake-city/', 1], ['/hi/lake-city/', 1]]) {
+    const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
+    const scene = html.match(/<section id="venue"[\s\S]*?(?=<section id="wishes")/)?.[0];
     assert.ok(scene);
-    assert.equal([...scene.matchAll(/data-venue-sign(?=[\s=>])/g)].length,3);
-    assert.equal([...scene.matchAll(/target="_blank"/g)].length,hasMap?2:0);
-    assert.equal([...scene.matchAll(/<button[^>]*\sdisabled(?=[\s=>])/g)].length,hasMap?0:2);
-    assert.ok(scene.includes('id="ns-venue-preview"'));
-    const print=scene.match(/data-venue-explore href="([^"]+)"/)[1];
-    assert.equal(print,`${route.startsWith('/hi/')?'/hi':''}/garden/invitation#ns-invite-venue`);
-    for(const match of scene.matchAll(/(?:url\(#([^)]*)\)|href="#([^"]+)")/g)) {
-      assert.ok(html.includes(`id="${match[1]??match[2]}"`),'Local SVG/anchor target exists');
-    }
+    assert.equal([...scene.matchAll(/class="ns-location-card"/g)].length, venues, `${route} venue count`);
+    assert.equal([...scene.matchAll(/target="_blank"/g)].length, venues * 2, `${route}: a map and directions per venue`);
+    assert.ok(scene.includes('google.com/maps/dir/?api=1&amp;destination=21.238759%2C81.35969'), `${route}: directions go to the Dhancha Bhavan pin`);
+    for (const match of scene.matchAll(/(?:url\(#([^)]*)\)|href="#([^"]+)")/g)) assert.ok(html.includes(`id="${match[1] ?? match[2]}"`), 'Local SVG/anchor target exists');
   }
 });
-
-test('Nature wishes: six blessings (one the guest writes), the countdown, no RSVP, nothing sent to a server', () => {
-  for(const route of ['/garden/','/hi/garden/']) {
+test('Wishes: six blessings (one the guest writes), the countdown, no RSVP, nothing sent to a server', () => {
+  for(const route of ['/amber-fort/','/hi/amber-fort/','/lake-city/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="wishes"[\s\S]*?<\/section>/)?.[0];
     assert.ok(scene);
@@ -184,14 +167,13 @@ test('Nature wishes: six blessings (one the guest writes), the countdown, no RSV
     assert.ok(!/<form[^>]*\saction=/.test(scene),'No form posts anywhere');
     assert.ok(!scene.includes('data-rsvp-open')&&!scene.includes('id="ns-rsvp"'),'No RSVP button or form');
     assert.ok(scene.includes('id="ns-blessing"'));
-    assert.ok(scene.includes('data-nature-countdown')&&scene.includes('ns-wishes-countdown'),'The countdown stays in the garden');
-    assert.ok(scene.includes('wishes-mobile-v1.')&&scene.includes('wishes-desktop-v1.'));
+    assert.ok(scene.includes('data-nature-countdown')&&scene.includes('ns-wishes-countdown'),'The countdown stays in the wishes chapter');
   }
 });
 
 test('personal links, contacts, directions and link previews', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  for(const route of ['/garden/','/hi/garden/']) {
+  for(const route of ['/amber-fort/','/hi/amber-fort/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     assert.ok(html.includes("get('to')")&&html.includes('class="ns-greeting"'),'Greeting reads ?to= before paint');
     assert.match(html,/property="og:image" content="https:\/\/[^"]+\.jpg"/);
@@ -201,12 +183,12 @@ test('personal links, contacts, directions and link previews', () => {
   }
   const links=fs.readFileSync('dist/invite-links/index.html','utf8');
   assert.ok(links.includes('noindex'));
-  for(const route of ['/','/hi/','/garden/','/hi/garden/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
+  for(const route of ['/','/hi/','/amber-fort/','/hi/amber-fort/','/invitation/','/hi/invitation/']) assert.ok(!fs.readFileSync(`dist${route}index.html`,'utf8').includes('invite-links'),'Link maker is not linked from guest pages');
 });
 
 test('Nature final note retains its landscape, real names, message and locale links', () => {
   const data=JSON.parse(fs.readFileSync('src/data/site-content.json','utf8'));
-  for(const route of ['/garden/','/hi/garden/']) {
+  for(const route of ['/amber-fort/','/hi/amber-fort/']) {
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const scene=html.match(/<section id="closing"[\s\S]*?<\/section>/)?.[0];
     const lang=route.startsWith('/hi/')?'hi':'en';
@@ -226,7 +208,7 @@ test('Nature final note retains its landscape, real names, message and locale li
 
 test('every chapter carries one decorative scene plate; the sections stay semantic',()=>{
   const ids=['welcome','journey','invitation','celebrations','venue','wishes','closing'];
-  for(const route of ['/garden/','/hi/garden/']){
+  for(const route of ['/amber-fort/','/hi/amber-fort/']){
     const html=fs.readFileSync(`dist${route}index.html`,'utf8');
     const plates=[...html.matchAll(/<div class="ns-plate"[^>]*>/g)].map(m=>m[0]);
     assert.equal(plates.length,ids.length);
@@ -255,7 +237,7 @@ test('the bare domain opens on a door into each side\'s invitation', () => {
   for (const [route, base] of [['/', ''], ['/hi/', '/hi']]) {
     const html = fs.readFileSync(`dist${route}index.html`, 'utf8');
     assert.ok(html.includes('data-landing') && !html.includes('data-nature-root'), `${route} is the landing, not a story`);
-    assert.deepEqual([...html.matchAll(/<a class="ns-landing-door"[^>]*href="([^"]+)"/g)].map(m => m[1]), [`${base}/amber-fort`, `${base}/lake-view`]);
+    assert.deepEqual([...html.matchAll(/<a class="ns-landing-door"[^>]*href="([^"]+)"/g)].map(m => m[1]), [`${base}/amber-fort`, `${base}/lake-city`]);
     assert.match(html, new RegExp(`rel="canonical" href="[^"]+${base}/"`));
     assert.match(html, /property="og:image" content="https:\/\/[^"]+\.jpg"/);
   }

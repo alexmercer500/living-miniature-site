@@ -113,7 +113,7 @@ const lakeEventAssets = {
 /** Theme registry for the original nature story and the two Rajasthan variants. */
 export const themeConfig = {
   nature: {
-    route: '/garden',
+    route: '/',
     label: 'Nature & Stories',
     description: 'A living miniature wedding invitation.',
     meta: {
@@ -159,7 +159,7 @@ export const themeConfig = {
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'lake-city': {
-    route: '/lake-view',
+    route: '/lake-city',
     label: 'Lake City Elegance',
     description: 'Serene waters, palaces and a timeless journey.',
     meta: {

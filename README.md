@@ -17,10 +17,10 @@ Requires Node 22.23+.
 ## Routes
 | Path | Content |
 |---|---|
-| `/`, `/hi/` | Nature & Stories: the scroll journey (EN / HI) |
-| `/invitation`, `/hi/invitation` | Full printable invitation (family names, schedule, hosts) |
+| `/`, `/hi/` | Landing page: a door into each side's invitation |
+| `/amber-fort`, `/lake-city` (+ `/hi/…`) | Ratnesh's side and Pallavi's side: the scroll journey and the printed card (`…/invitation`) |
 | `/invite-links` | For you: make personal links (`/?to=Sharma Parivar`) that greet each family by name |
-| `/royal`, `/nature` (+ `/invitation`, `/hi/…`) | Old preview links; they forward to the pages above |
+| `/garden`, `/nature`, `/royal`, `/invitation`, `/lake-view` | Retired; old links forward to the landing page (or `/lake-city`) |
 
 ## Replacing placeholder data
 **Step-by-step list of everything left to fill in: [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)**

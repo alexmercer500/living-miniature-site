@@ -4,9 +4,85 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "redirects": [
-    { "source": "/lake-city", "destination": "/lake-view", "permanent": true },
-    { "source": "/lake-city/:path*", "destination": "/lake-view/:path*", "permanent": true },
-    { "source": "/hi/lake-city", "destination": "/hi/lake-view", "permanent": true },
-    { "source": "/hi/lake-city/:path*", "destination": "/hi/lake-view/:path*", "permanent": true }
+    {
+      "source": "/lake-view",
+      "destination": "/lake-city",
+      "permanent": true
+    },
+    {
+      "source": "/lake-view/:path*",
+      "destination": "/lake-city/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/hi/lake-view",
+      "destination": "/hi/lake-city",
+      "permanent": true
+    },
+    {
+      "source": "/hi/lake-view/:path*",
+      "destination": "/hi/lake-city/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/garden",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/garden/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/nature",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/nature/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/royal",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/royal/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/garden",
+      "destination": "/hi/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/garden/:path*",
+      "destination": "/hi/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/nature",
+      "destination": "/hi/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/nature/:path*",
+      "destination": "/hi/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/royal",
+      "destination": "/hi/",
+      "permanent": true
+    },
+    {
+      "source": "/hi/royal/:path*",
+      "destination": "/hi/",
+      "permanent": true
+    }
   ]
 }

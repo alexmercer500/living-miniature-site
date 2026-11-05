@@ -25,7 +25,7 @@ try {
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
     await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
     await command('Network.setBlockedURLs',{urls:view.failed?['*wishes-*.avif','*wishes-*.webp']:[]});
-    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}garden/`});await wait(1700);
+    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}amber-fort/`});await wait(1700);
     if(!view.noJs&&!view.reduced)assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('[data-wish-arrival]')).opacity)<.2"),'Tags wait for arrival');
     await evaluate("document.querySelector('.ns-wish-garland').scrollIntoView({block:'center',behavior:'instant'});true");await wait(600);
     if(!view.noJs&&!view.reduced){

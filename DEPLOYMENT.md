@@ -5,13 +5,13 @@
 Use one Vercel project and one custom domain. The two public invitation experiences are:
 
 - `https://YOUR_DOMAIN/amber-fort/`
-- `https://YOUR_DOMAIN/lake-view/`
+- `https://YOUR_DOMAIN/lake-city/`
 
-Hindi versions are available at `/hi/amber-fort/` and `/hi/lake-view/`. The old `/lake-city/` paths permanently redirect to `/lake-view/`.
+Hindi versions are available at `/hi/amber-fort/` and `/hi/lake-city/`. Links using the interim `/lake-view/` address permanently redirect to `/lake-city/`.
 
-The bare domain (`https://YOUR_DOMAIN/`, and `/hi/`) is a landing page for both sides. It shows the welcome painting, the couple and the countdown, then two doors: "Groom's side · Ratnesh's family" leads to `/amber-fort`, and "Bride's side · Pallavi's family" leads to `/lake-view`. A `?to=` personal link carries through either door.
+The bare domain (`https://YOUR_DOMAIN/`, and `/hi/`) is a landing page for both sides. It shows the welcome painting, the couple and the countdown, then two doors: "Groom's side · Ratnesh's family" leads to `/amber-fort`, and "Bride's side · Pallavi's family" leads to `/lake-city`. A `?to=` personal link carries through either door.
 
-The full garden story is kept at `/garden/` (and `/hi/garden/`). The old `/nature/` links forward there.
+These are the only guest pages. The earlier garden story (`/garden`, `/nature`, `/royal`) is retired: `vercel.json` sends those old links to the landing page. The old root `/invitation` does the same.
 
 This is the most reliable way to use path routes on Vercel. Two separate Vercel projects should use two subdomains instead, such as `amber.YOUR_DOMAIN` and `lake.YOUR_DOMAIN`.
 
@@ -31,7 +31,7 @@ Vercel will use the checked-in `vercel.json` and run `npm run build`, publishing
 
 ## Social preview behavior
 
-Each theme and language has its own preview. The bride's site (`/lake-view`) writes Pallavi's name first.
+Each theme and language has its own preview. The bride's site (`/lake-city`) writes Pallavi's name first.
 
 - **Title:** for example, "Ratnesh & Pallavi — Wedding Invitation".
 - **Description:** "You are cordially invited to celebrate the wedding of … · dates".
@@ -45,11 +45,11 @@ The canonical and alternate-language URLs follow each theme's route, so these li
 
 ```text
 https://YOUR_DOMAIN/amber-fort/
-https://YOUR_DOMAIN/lake-view/
+https://YOUR_DOMAIN/lake-city/
 ```
 
 After changing metadata or the image, send a new URL when testing. WhatsApp, Gmail, Facebook, and similar crawlers may cache an older preview for a while.
 
 ## Optional separate-root deployment
 
-The code still supports deploying each theme as its own Vercel project or subdomain. Set `SITE_THEME=amber-fort` or `SITE_THEME=lake-city`; that theme then renders at `/` and `/invitation`. Set a different `SITE_URL` for each project. Use this only if you want separate roots rather than `/amber-fort` and `/lake-view` paths.
+The code still supports deploying each theme as its own Vercel project or subdomain. Set `SITE_THEME=amber-fort` or `SITE_THEME=lake-city`; that theme then renders at `/` and `/invitation`. Set a different `SITE_URL` for each project. Use this only if you want separate roots rather than `/amber-fort` and `/lake-city` paths.
