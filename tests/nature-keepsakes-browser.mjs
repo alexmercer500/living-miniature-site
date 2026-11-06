@@ -16,11 +16,11 @@ let count=0;
 try {
   await command('Page.enable');await command('Runtime.enable');await command('Page.bringToFront');
   for(const view of [
-    {name:'desktop',width:1440,height:900,path:'/'},
-    {name:'mobile',width:390,height:844,path:'/'},
-    {name:'short-hindi',width:320,height:568,path:'/hi/'},
-    {name:'reduced',width:390,height:844,path:'/hi/',reduced:true},
-    {name:'no-js',width:390,height:844,path:'/',noJs:true},
+    {name:'desktop',width:1440,height:900,path:'/amber-fort/'},
+    {name:'mobile',width:390,height:844,path:'/amber-fort/'},
+    {name:'short-hindi',width:320,height:568,path:'/hi/amber-fort/'},
+    {name:'reduced',width:390,height:844,path:'/hi/amber-fort/',reduced:true},
+    {name:'no-js',width:390,height:844,path:'/amber-fort/',noJs:true},
   ]) {
     await command('Emulation.setDeviceMetricsOverride',{width:view.width,height:view.height,deviceScaleFactor:1,mobile:false});
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
@@ -40,8 +40,9 @@ try {
     await shot(`${view.name}-journey`);
     if(view.name==='desktop') {
       await evaluate("document.documentElement.style.scrollSnapType='none';window.scrollTo({top:innerHeight*.2,behavior:'instant'});true");await wait(1500);
+      // The keepsakes have already risen in once; scrolling back up never hides or replays them.
       const partial=await evaluate("Number(getComputedStyle(document.querySelector('[data-memory-hanger]')).opacity)");
-      assert.ok(partial>.12&&partial<.99,'Scroll position drives an intermediate reveal, not just autoplay');
+      assert.equal(partial,1,'Revealed keepsakes stay revealed when the guest scrolls back');
       await shot('desktop-scroll-reveal');
       await evaluate("window.scrollTo({top:innerHeight,behavior:'instant'});true");await wait(1500);
       assert.equal(await evaluate("getComputedStyle(document.querySelector('[data-memory-hanger]')).opacity"),'1');

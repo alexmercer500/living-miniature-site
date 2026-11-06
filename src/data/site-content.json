@@ -28,7 +28,7 @@
   "venue": {
     "name": "Dhancha Bhavan",
     "address": "Sai Mandir, Bhilai",
-    "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
+    "mapUrl": "https://maps.app.goo.gl/pkGwVhJyaBzrNaZy5",
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
@@ -58,8 +58,8 @@
           "en": "Sai Mandir, Bhilai",
           "hi": "Sai Mandir, Bhilai"
         },
-        "mapUrl": "https://maps.app.goo.gl/84qcKcVihBnW3b9v7",
-        "directionsTo": "Dhancha Bhavan, Sai Mandir, Bhilai",
+        "mapUrl": "https://maps.app.goo.gl/pkGwVhJyaBzrNaZy5",
+        "directionsTo": "21.238759,81.35969",
         "note": {
           "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
           "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
@@ -89,10 +89,15 @@
   },
   "blessings": {
     "whatsapp": "",
-    "_note": "whatsapp: the number a guest's written blessing is sent to ('Send it to the couple'), with country code (e.g. 919812345678). Empty = WhatsApp asks the guest which chat to send to."
+    "sites": {
+      "amber-fort": "+91 86022 74234",
+      "lake-city": ""
+    },
+    "_note": "whatsapp: the number a guest's written blessing is sent to ('Send it to the couple'), with country code (e.g. 919812345678). sites: a number per site, used before whatsapp (amber-fort is Ratnesh's side, lake-city Pallavi's). Empty = WhatsApp asks the guest which chat to send to."
   },
   "contacts": [
     {
+      "site": "amber-fort",
       "name": {
         "en": "Ratnesh's family",
         "hi": "रत्नेश का परिवार"
@@ -101,10 +106,11 @@
         "en": "With love and blessings",
         "hi": "स्नेह एवं आशीर्वाद सहित"
       },
-      "phone": "",
-      "whatsapp": ""
+      "phone": "+91 86022 74234",
+      "whatsapp": "+91 86022 74234"
     },
     {
+      "site": "lake-city",
       "name": {
         "en": "Pallavi's family",
         "hi": "पल्लवी का परिवार"
@@ -117,7 +123,7 @@
       "whatsapp": ""
     }
   ],
-  "contacts_note": "Each contact shows Call / WhatsApp buttons on the invitation page once phone or whatsapp has a real number (with country code).",
+  "contacts_note": "Each contact shows Call / WhatsApp buttons on the invitation page once phone or whatsapp has a real number (with country code). site: a side's own site shows only its family (amber-fort is Ratnesh's side, lake-city Pallavi's); the nature root shows everyone.",
   "photos": {
     "albumUrl": "",
     "_note": "A shared album link (Google Photos, Drive…). Shows a 'Share your photos' button on the final note once set."

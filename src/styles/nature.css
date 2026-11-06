@@ -593,6 +593,7 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 }
 @media (max-width: 767px) and (max-height: 600px) {
   .ns-celebrations-intro { display: none; }
+  .ns-event-copy .ns-event-label { display: inline; letter-spacing: .04em; } /* runs on after the title, a line back for the photo */
   .ns-event-mark { width: 18px; height: 18px; top: -12px; }
 }
 /* Tablets: two rows of two upright, all four in a row when held sideways. */
@@ -706,11 +707,29 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-venue-map-note { font-size: .67rem; }
   .ns-venue-preview-art { height: 47dvh; }
   .ns-venue-preview-copy { padding: .8rem .5rem .5rem; }
-  .ns-venue-locations { grid-template-columns: 1fr; gap: 1rem; }
-  .ns-location-card { padding: 1rem; }
+  .ns-venue-locations { grid-template-columns: 1fr; gap: .75rem; }
+  /* Two venues still share one phone screen: each card keeps its name, place, time and both
+     buttons, just set tighter. */
+  .ns-location-card { gap: .3rem; padding: .8rem .9rem .9rem; }
   .ns-location-card .ns-lotus { display: none; }
-  .ns-location-actions { gap: .5rem; }
-  .ns-location-actions .ns-wood-sign { min-height: 50px; padding-inline: .5rem; font-size: .78rem; }
+  .ns-location-card .ns-kicker { font-size: .6rem; }
+  .ns-location-card h3 { font-size: 1.45rem; }
+  .ns-location-card address { font-size: .85rem; line-height: 1.35; }
+  .ns-location-note { font-size: .8rem; line-height: 1.35; }
+  .ns-location-actions { gap: .5rem; margin-top: .2rem; }
+  .ns-location-actions .ns-wood-sign { min-height: 44px; padding: .35rem .5rem; font-size: .78rem; }
+  .ns-location-actions .ns-sign-icon { flex-basis: 26px; width: 26px; height: 26px; }
+}
+@media (max-width: 767px) and (max-height: 760px) {
+  .ns-venue-intro { display: none; }
+  .ns-location-card h3 { font-size: 1.3rem; }
+}
+@media (max-width: 767px) and (max-height: 600px) {
+  .ns-venue-index { display: none; }
+  .ns-home .ns-venue-head h2 { font-size: 1.55rem; }
+  .ns-location-card { gap: .15rem; padding: .55rem .75rem .65rem; }
+  .ns-location-card h3 { font-size: 1.2rem; }
+  .ns-location-actions { margin-top: .15rem; }
 }
 @media (max-height: 650px) {
   .ns-venue { padding-top: calc(var(--ns-top) + 2px); gap: .5rem; }

@@ -21,13 +21,13 @@ try {
     await command('Emulation.setDeviceMetricsOverride',{width:view.width,height:view.height,deviceScaleFactor:1,mobile:false});
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});
     await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});
-    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}`});await wait(1700);
+    await command('Page.navigate',{url:`http://127.0.0.1:4321/${view.hi?'hi/':''}amber-fort/?qa=${view.name}`});await wait(1700);
     if(!view.reduced&&!view.noJs) assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('.ns-event')).opacity)<.2"),'Cards wait for scroll entry');
     await evaluate("document.querySelector('.ns-events').scrollIntoView({block:'center',behavior:'instant'});true");
     if(!view.reduced&&!view.noJs) {
       await wait(600);
       const opacities=await evaluate("[...document.querySelectorAll('.ns-event')].map(e=>Number(getComputedStyle(e).opacity))");
-      assert.ok(opacities.some(v=>v>.08&&v<1),'Cards rise in as a short entrance');
+      assert.ok(opacities.some(v=>v>.08&&v<1),`${view.name}: cards rise in as a short entrance ${JSON.stringify(opacities)}`);
       if(view.width>=768) assert.ok(opacities[0]>opacities[2]+.01,'Desktop entrances are staggered');
       await shot(`${view.name}-entering`);
       await wait(1600);await evaluate("scrollTo({top:0,behavior:'instant'});true");await wait(300);await evaluate("document.querySelector('.ns-events').scrollIntoView({block:'center',behavior:'instant'});true");await wait(50);
