@@ -2,9 +2,10 @@
 /** Call / WhatsApp buttons for the family contacts; renders nothing until a real number is set. */
 import Icon from '../Icon.astro';
 import { type Lang, contacts, loc, t, telHref, whatsappHref } from '../../lib/content';
-interface Props { lang: Lang; class?: string }
-const { lang, class: cls } = Astro.props;
-const people = contacts();
+import type { ThemeId } from '../../lib/theme';
+interface Props { lang: Lang; class?: string; theme?: ThemeId }
+const { lang, class: cls, theme = 'nature' } = Astro.props;
+const people = contacts(theme === 'nature' ? undefined : theme);
 ---
 {people.length > 0 && (
   <div class:list={['ns-contacts', cls]}>

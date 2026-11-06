@@ -49,10 +49,10 @@ const sample = `async y => {
 
 try {
   for (const view of [
-    { name: 'mobile', width: 390, height: 844, mobile: true, path: '/' },
-    { name: 'desktop', width: 1440, height: 900, mobile: false, path: '/' },
-    { name: 'small-hindi', width: 320, height: 568, mobile: true, path: '/hi/' },
-    { name: 'reduced', width: 390, height: 844, mobile: true, path: '/', reduced: true },
+    { name: 'mobile', width: 390, height: 844, mobile: true, path: '/amber-fort/' },
+    { name: 'desktop', width: 1440, height: 900, mobile: false, path: '/amber-fort/' },
+    { name: 'small-hindi', width: 320, height: 568, mobile: true, path: '/hi/amber-fort/' },
+    { name: 'reduced', width: 390, height: 844, mobile: true, path: '/amber-fort/', reduced: true },
     // The Rajasthan themes reuse every handoff with their own paintings.
     { name: 'amber-mobile', width: 390, height: 844, mobile: true, path: '/amber-fort/' },
     { name: 'amber-desktop', width: 1440, height: 900, mobile: false, path: '/amber-fort/' },

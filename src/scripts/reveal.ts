@@ -12,7 +12,7 @@ const GROUPS: [container: string, items: string][] = [
   ['.ns-note-actions', ':scope > *'],
   ['.ns-path,.ns-keepsake-hint,.ns-note-arrival,.ns-wishes-foot', ':scope'],
 ];
-const STEP = .09, MAX_DELAY = .8, SETTLE_MS = 2600;
+const STEP = .09, GROUP_STEP = .15, MAX_DELAY = .8, SETTLE_MS = 2600;
 
 export function setupReveal(root: HTMLElement, motion: MediaQueryList) {
   if (motion.matches) return () => {};
@@ -37,14 +37,15 @@ export function setupReveal(root: HTMLElement, motion: MediaQueryList) {
     const t = window.setTimeout(() => { timers.delete(t); el.removeAttribute('data-revealed'); el.style.removeProperty('--reveal-delay'); }, SETTLE_MS + delay * 1000);
     timers.add(t);
   };
-  // Whatever arrives together (a heading and its cards on a quick scroll) staggers in reading order.
+  // Whatever arrives together (a heading and its cards on a quick scroll or a menu jump) staggers in
+  // reading order: each group a beat after the one before, its own pieces a beat apart, so the
+  // cards never queue behind every line of the heading.
   const io = new IntersectionObserver(entries => {
-    let delay = 0;
     entries.filter(e => e.isIntersecting)
       .sort((a, b) => a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1)
-      .forEach(({ target }) => {
+      .forEach(({ target }, group) => {
         io.unobserve(target);
-        items.get(target)?.forEach(el => { reveal(el, Math.min(delay, MAX_DELAY)); delay += STEP; });
+        items.get(target)?.forEach((el, i) => reveal(el, Math.min(group * GROUP_STEP + i * STEP, MAX_DELAY)));
         items.delete(target);
       });
   }, { rootMargin: '0px 0px -10% 0px' });

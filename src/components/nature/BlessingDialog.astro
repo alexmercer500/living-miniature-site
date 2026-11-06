@@ -8,9 +8,11 @@ import { type Lang, content, t } from '../../lib/content';
 import { coupleDisplay, type ThemeId } from '../../lib/theme';
 interface Props { lang: Lang; theme?: ThemeId }
 const { lang, theme = 'nature' } = Astro.props;
+// Each side's site sends a blessing to its own family's WhatsApp.
+const whatsapp = (content.blessings.sites as Partial<Record<ThemeId, string>>)[theme] || content.blessings.whatsapp;
 ---
 <dialog id="ns-blessing" class="ns-sheet-dialog" aria-labelledby="ns-blessing-title">
-  <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={content.blessings.whatsapp}
+  <form class="ns-sheet ns-blessing-sheet" data-blessing-form data-whatsapp={whatsapp}
     data-heading={`${t(lang, 'blessingTitle')} · ${coupleDisplay(lang, theme)}`} data-from={t(lang, 'blessingFrom')}>
     <button class="ns-sheet-close" type="button" data-sheet-close aria-label={t(lang, 'close')}><Icon name="close" /></button>
     <header class="ns-sheet-head">

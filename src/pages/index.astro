@@ -1,5 +1,8 @@
 ---
 import Home from '../components/nature/Home.astro';
+import Landing from '../components/nature/Landing.astro';
 import { siteTheme } from '../lib/theme';
+// One domain for both sides: the bare link opens on a door into each invitation. A single-theme
+// deployment (SITE_THEME) serves its own invitation here instead.
 ---
-<Home lang="en" theme={siteTheme} />
+{siteTheme === 'nature' ? <Landing lang="en" /> : <Home lang="en" theme={siteTheme} />}

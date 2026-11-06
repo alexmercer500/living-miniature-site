@@ -45,10 +45,10 @@ try {
     await command('Emulation.setScriptExecutionDisabled', { value: Boolean(view.noJs) });
     await command('Network.setBlockedURLs', { urls: view.failed ? ['*hero-mobile.*','*hero-desktop.*','*journey-mobile.*','*journey-desktop.*','*letter-mobile.*','*letter-desktop.*','*venue-mobile.*','*venue-desktop.*','*closing-mobile.*','*closing-desktop.*','*event-haldi.*','*event-evening.*','*event-wedding.*'] : [] });
     const base = view.lang === 'hi' ? '/hi' : '';
-    await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/` }); await wait(1500);
+    await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/amber-fort/` }); await wait(1500);
     await evaluate('document.fonts.ready.then(()=>true)');
-    assert.equal(await evaluate("document.documentElement.dataset.theme"), 'nature');
-    assert.equal(new URL(await evaluate("document.querySelector('link[rel=canonical]').href")).pathname, `${base}/`);
+    assert.equal(await evaluate("document.documentElement.dataset.theme"), 'amber-fort');
+    assert.equal(new URL(await evaluate("document.querySelector('link[rel=canonical]').href")).pathname, `${base}/amber-fort`);
     assert.equal(await evaluate("document.querySelector('[data-nature-sound]')?.getAttribute('aria-pressed')"), 'false');
     assert.equal(await evaluate("getComputedStyle(document.documentElement).scrollPaddingTop"), '0px', 'No inherited header offset');
     for (const section of ['welcome','journey','invitation','celebrations','venue','wishes','closing']) {
@@ -101,7 +101,8 @@ try {
       if ([390,1440].includes(view.width) || view.lang === 'hi' && view.width === 320) await shot(`${view.name}-${section}`);
     }
     const details = await evaluate("({titles:[...document.querySelectorAll('.ns-event-copy h3')].map(e=>e.textContent),address:document.querySelector('.ns-location-card address').textContent,calendar:document.querySelectorAll('[data-ics]').length,maps:document.querySelectorAll('.ns-venue-signs a[target=\"_blank\"]').length,rsvp:!!document.getElementById('rsvp'),countdowns:document.querySelectorAll('[data-nature-countdown]').length})");
-    assert.deepEqual(details.titles, data.events.map(e => e.title[view.lang])); assert.equal(details.address, data.venue.locations[0].address[view.lang]);
+    // Each card names the ceremony plainly after its poetic title, as on the printed card.
+    assert.deepEqual(details.titles, data.events.map(e => e.label?.[view.lang] ? `${e.title[view.lang]} (${e.label[view.lang]})` : e.title[view.lang])); assert.equal(details.address, data.venue.locations[0].address[view.lang]);
     assert.equal(details.calendar, 0); assert.equal(details.maps, 0); assert.equal(details.rsvp, false); assert.equal(details.countdowns, 2, 'Countdown on the welcome screen and in the wishes garden');
     if (view.reduced || view.noJs) assert.equal(await evaluate("document.querySelector('[data-envelope]').hasAttribute('data-enhanced')"), false);
     if (view.name === 'width-390' || view.name === 'width-1440') {
@@ -160,10 +161,11 @@ try {
         await command('Emulation.setTouchEmulationEnabled', { enabled: false });
       }
     }
-    await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/invitation/` }); await wait(900);
-    assert.ok((await evaluate("document.querySelector('link[rel=canonical]').href")).endsWith(`${base}/invitation`));
-    assert.equal(await evaluate("document.querySelector('h1').textContent"), data.couple.displayName[view.lang]);
-    assert.ok(await evaluate(`document.querySelector('.ns-invite-actions a:last-child').getAttribute('href') === '${base}/'`));
+    await command('Page.navigate', { url: `http://127.0.0.1:4321${base}/amber-fort/invitation/` }); await wait(900);
+    assert.ok((await evaluate("document.querySelector('link[rel=canonical]').href")).endsWith(`${base}/amber-fort/invitation`));
+    // A side's invitation is its printed card, named for the couple, with that side's family contact under it.
+    assert.ok(await evaluate(`document.querySelector('.ns-card-page-image')?.alt.startsWith(${JSON.stringify(data.couple.displayName[view.lang])})`), 'The invitation is the printed card');
+    assert.ok(await evaluate(`!!document.querySelector('.ns-card-contacts a[href^="tel:"]')`), "Ratnesh's family can be called from the invitation");
     if (view.width === 390 && !view.failed && !view.noJs) { await command('Emulation.setEmulatedMedia', { media: 'print' }); assert.equal(await evaluate("getComputedStyle(document.querySelector('.ns-header')).display"), 'none'); await shot(`${view.name}-print`); await command('Emulation.setEmulatedMedia', { media: '' }); }
   }
   assert.deepEqual(errors, [], 'No runtime exceptions');

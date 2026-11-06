@@ -1,5 +1,9 @@
 ---
 import Invitation from '../components/nature/Invitation.astro';
+import { href } from '../lib/content';
 import { siteTheme } from '../lib/theme';
+// Only a single-theme deployment (SITE_THEME) has an invitation at the root; on the shared domain
+// each side's invitation lives under its own site, so this address goes back to the landing page.
+if (siteTheme === 'nature') return Astro.redirect(href('en', '/'));
 ---
 <Invitation lang="en" theme={siteTheme} />
