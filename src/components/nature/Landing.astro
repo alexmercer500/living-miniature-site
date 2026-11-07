@@ -9,14 +9,14 @@ import Art from './Art.astro';
 import Countdown from './Countdown.astro';
 import Icon from '../Icon.astro';
 import LotusMark from '../LotusMark.astro';
-import { type Lang, content, href, loc, parseDate } from '../../lib/content';
+import { type Lang, content, href, parseDate } from '../../lib/content';
 import { coupleNames, themeConfig, themeCopy, themeHref } from '../../lib/theme';
 import '../../styles/nature.css';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const copy = {
-  en: { kicker: 'You are cordially invited', lead: 'to celebrate the wedding of', choose: 'Open your invitation', open: 'Open invitation', sides: { 'amber-fort': "Groom's side", 'lake-city': "Bride's side" } },
-  hi: { kicker: 'आप सादर आमंत्रित हैं', lead: 'शुभ विवाह', choose: 'अपना निमंत्रण खोलें', open: 'निमंत्रण खोलें', sides: { 'amber-fort': 'वर पक्ष', 'lake-city': 'वधू पक्ष' } },
+  en: { kicker: 'You are cordially invited', lead: 'to celebrate the wedding of', choose: 'Open your invitation', open: 'Open invitation', sides: { 'amber-fort': "Groom's side", 'lake-city': "Bride's side" }, invitations: { 'amber-fort': "Ratnesh's invitation", 'lake-city': "Pallavi's invitation" } },
+  hi: { kicker: 'आप सादर आमंत्रित हैं', lead: 'शुभ विवाह', choose: 'अपना निमंत्रण खोलें', open: 'निमंत्रण खोलें', sides: { 'amber-fort': 'वर पक्ष', 'lake-city': 'वधू पक्ष' }, invitations: { 'amber-fort': 'रत्नेश का निमंत्रण', 'lake-city': 'पल्लवी का निमंत्रण' } },
 }[lang];
 const [nameOne, nameTwo] = coupleNames(lang, 'nature');
 const weddingDay = parseDate(content.site.weddingDate);
@@ -26,7 +26,7 @@ const doors = (['amber-fort', 'lake-city'] as const).map(theme => ({
   theme,
   href: themeHref(lang, theme),
   side: copy.sides[theme],
-  family: loc(content.contacts.find(c => c.site === theme)!.name, lang),
+  invitation: copy.invitations[theme],
   date: themeCopy(theme, lang).dateLine,
   painting: themeConfig[theme].assets.hero.mobile,
   tint: themeConfig[theme].themeColor,
@@ -56,7 +56,7 @@ const doors = (['amber-fort', 'lake-city'] as const).map(theme => ({
           <a class="ns-landing-door" href={door.href} style={`--tint: ${door.tint}`} data-landing-door>
             <Art mobile={door.painting} sizes="(min-width: 700px) 18rem, 90vw" class="ns-landing-door-art" />
             <span class="ns-landing-side">{door.side}</span>
-            <span class="ns-landing-family">{door.family}</span>
+            <span class="ns-landing-invitation">{door.invitation}</span>
             <span class="ns-landing-door-date">{door.date}</span>
             <span class="ns-landing-open">{copy.open}<Icon name="arrow-right" /></span>
           </a>
@@ -111,7 +111,7 @@ const doors = (['amber-fort', 'lake-city'] as const).map(theme => ({
   .ns-landing-door:focus-visible { outline: 2px solid #fff0c9; outline-offset: 4px; }
   .ns-landing-side { font: 600 .68rem/1.3 var(--font-ui); letter-spacing: .26em; text-transform: uppercase; color: #e9c987; }
   :lang(hi) .ns-landing-side { font-size: .95rem; letter-spacing: .02em; }
-  .ns-landing-family { font: 400 clamp(1.4rem, 2.6vw, 1.7rem)/1.2 var(--font-display); }
+  .ns-landing-invitation { font: 400 clamp(1.4rem, 2.6vw, 1.7rem)/1.2 var(--font-display); }
   .ns-landing-door-date { font: 400 .92rem/1.3 var(--font-display); color: #f3dcae; }
   .ns-landing-open { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; margin-top: .45rem; padding: .4rem 1.1rem; border: 1px solid #e9c98799; border-radius: 30px; font: 500 .82rem/1 var(--font-ui); letter-spacing: .04em; background: #fff4e014; }
   .ns-landing-open :global(svg) { width: 15px; height: 15px; }
@@ -123,7 +123,7 @@ const doors = (['amber-fort', 'lake-city'] as const).map(theme => ({
     .ns-landing-door::after { inset: 5px; border-radius: 999px 999px 10px 10px / 4.6rem 4.6rem 10px 10px; }
     .ns-landing-side { font-size: .58rem; letter-spacing: .18em; }
     :lang(hi) .ns-landing-side { font-size: .85rem; }
-    .ns-landing-family { font-size: 1.12rem; }
+    .ns-landing-invitation { font-size: 1.12rem; }
     .ns-landing-door-date { font-size: .76rem; }
     .ns-landing-open { margin-top: .3rem; padding-inline: .8rem; font-size: .74rem; gap: .3rem; }
   }
