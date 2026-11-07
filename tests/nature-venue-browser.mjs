@@ -42,7 +42,7 @@ try {
     for(const card of layout.cards){assert.equal(card.opacity,'1');assert.ok(card.left>=0&&card.right<=view.width,`${view.name}: card fits ${JSON.stringify(card)}`);}
     assert.equal(layout.buttons.length,view.venues*2,`${view.name}: a map and directions per venue`);
     for(const button of layout.buttons){assert.ok(button.blank&&button.height>=44,`${view.name}: button ${JSON.stringify(button)}`);assert.ok(button.bottom<=view.height-65,`${view.name}: buttons stay above the dock ${JSON.stringify(button)}`);}
-    assert.equal(layout.buttons[0].href,'https://maps.app.goo.gl/pkGwVhJyaBzrNaZy5','View map opens Dhancha Bhavan');
+    assert.equal(layout.buttons[0].href,'https://maps.app.goo.gl/2QZYwJohbQDnDA8a6','View map opens Dhancha Bhavan');
     assert.ok(layout.buttons[1].href.endsWith(pin),'Directions go to the Dhancha Bhavan pin');
     await shot(`${view.name}-settled`);count++;
   }
