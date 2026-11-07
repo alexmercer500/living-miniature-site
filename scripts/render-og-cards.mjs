@@ -62,6 +62,45 @@ body::before { content: ''; position: absolute; inset: 0; background: radial-gra
 <p class="names">${names}</p><p class="rule"><i></i></p><p class="foot">${foot}</p>
 </div></body></html>`;
 
+const landingPage = (lang, names) => `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><style>
+@font-face { font-family: 'Great Vibes'; src: url(${file(`${fonts}/great-vibes/files/great-vibes-latin-400-normal.woff2`)}); }
+@font-face { font-family: Fraunces; font-style: italic; src: url(${file(`${fonts}-variable/fraunces/files/fraunces-latin-soft-italic.woff2`)}); }
+@font-face { font-family: Fraunces; src: url(${file(`${fonts}-variable/fraunces/files/fraunces-latin-soft-normal.woff2`)}); }
+@font-face { font-family: Jost; font-weight: 100 900; src: url(${file(`${fonts}-variable/jost/files/jost-latin-wght-normal.woff2`)}); }
+@font-face { font-family: Tiro; src: url(${file(`${fonts}/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-normal.woff2`)}); }
+@font-face { font-family: Mukta; font-weight: 500; src: url(${file(`${fonts}/mukta/files/mukta-devanagari-500-normal.woff2`)}); }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1200px; height: 630px; overflow: hidden; }
+body { position: relative; padding: 38px 84px 34px; color: #fff4e0; text-align: center; background: #213b32 url(${file('src/assets/nature-stories/hero-desktop.png')}) center / cover; }
+body::before { content: ''; position: absolute; inset: 0; background: linear-gradient(#10201a99, #10201a4d 35%, #10201acc), radial-gradient(ellipse 60% 80% at 50% 48%, #0000, #0007); }
+.panel { position: relative; height: 558px; padding: 25px 33px 28px; border: 1.5px solid #d6b06a; border-radius: 42px 42px 18px 18px; background: #18352de6; box-shadow: 0 24px 70px #0009; }
+.panel::after { content: ''; position: absolute; inset: 9px; border: 1px solid #e9c98766; border-radius: 34px 34px 11px 11px; pointer-events: none; }
+.kicker { position: relative; z-index: 1; font: 600 16px/1.2 Jost; letter-spacing: .27em; text-transform: uppercase; color: #e9c987; }
+.names { position: relative; z-index: 1; margin-top: 4px; font: 400 54px/1 'Great Vibes'; color: #fff6e4; text-shadow: 0 2px 12px #0008; }
+.prompt { position: relative; z-index: 1; margin-top: 8px; font: italic 300 22px/1.2 Fraunces; color: #f6e6c8; }
+.doors { position: relative; z-index: 1; display: flex; justify-content: center; gap: 25px; margin-top: 19px; }
+.door { position: relative; width: 430px; height: 364px; overflow: hidden; padding: 0 20px 21px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border: 1.5px solid #d6b06a; border-radius: 215px 215px 15px 15px / 110px 110px 15px 15px; background-position: center; background-size: cover; box-shadow: 0 16px 35px #0008; }
+.door::before { content: ''; position: absolute; inset: 0; background: linear-gradient(#0000 18%, #10201a33 40%, #10201ad9 100%); }
+.door::after { content: ''; position: absolute; inset: 7px; border: 1px solid #e9c98777; border-radius: 208px 208px 10px 10px / 104px 104px 10px 10px; }
+.door > * { position: relative; z-index: 1; }
+.side { font: 600 15px/1.2 Jost; letter-spacing: .2em; text-transform: uppercase; color: #e9c987; }
+.invite { margin-top: 5px; font: 400 28px/1.1 Fraunces; color: #fff6e4; }
+.route { margin-top: 6px; font: 400 17px/1.2 Fraunces; color: #f3dcae; }
+:lang(hi) .kicker { font: 500 23px/1.2 Mukta; letter-spacing: .02em; text-transform: none; }
+:lang(hi) .names { font: 400 47px/1.25 Tiro; }
+:lang(hi) .prompt { font: 400 25px/1.25 Tiro; font-style: normal; }
+:lang(hi) .side { font: 500 22px/1.2 Mukta; letter-spacing: .02em; text-transform: none; }
+:lang(hi) .invite { font: 500 27px/1.2 Mukta; }
+:lang(hi) .route { font: 500 20px/1.2 Mukta; }
+</style></head><body><div class="panel">
+<p class="kicker">${lang === 'hi' ? '\u0906\u092a \u0938\u093e\u0926\u0930 \u0906\u092e\u0902\u0924\u094d\u0930\u093f\u0924 \u0939\u0948\u0902' : 'You are cordially invited'}</p>
+<p class="names">${names}</p>
+<p class="prompt">${lang === 'hi' ? '\u0905\u092a\u0928\u093e \u0928\u093f\u092e\u0902\u0924\u094d\u0930\u0923 \u091a\u0941\u0928\u0947\u0902' : 'Choose your invitation'}</p>
+<div class="doors">
+  <div class="door" style="background-image:url(${file('src/assets/rajasthan/amber-fort/hero-desktop.png')})"><p class="side">${lang === 'hi' ? '\u0935\u0930 \u092a\u0915\u094d\u0937' : "Groom's side"}</p><p class="invite">${lang === 'hi' ? '\u0930\u0924\u094d\u0928\u0947\u0936 \u0915\u093e \u0928\u093f\u092e\u0902\u0924\u094d\u0930\u0923' : "Ratnesh's invitation"}</p><p class="route">Amber Fort</p></div>
+  <div class="door" style="background-image:url(${file('src/assets/rajasthan/lake-city/hero-desktop.png')})"><p class="side">${lang === 'hi' ? '\u0935\u0927\u0942 \u092a\u0915\u094d\u0937' : "Bride's side"}</p><p class="invite">${lang === 'hi' ? '\u092a\u0932\u094d\u0932\u0935\u0940 \u0915\u093e \u0928\u093f\u092e\u0902\u0924\u094d\u0930\u0923' : "Pallavi's invitation"}</p><p class="route">Lake City</p></div>
+</div></div></body></html>`;
+
 const target = await (await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' })).json();
 const socket = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise(r => socket.addEventListener('open', r, { once: true }));
@@ -86,6 +125,19 @@ try {
     await evaluate(`document.fonts.ready.then(() => { const n = document.querySelector('.names'); let size = parseFloat(getComputedStyle(n).fontSize); while (n.scrollWidth > 540 && size > 40) n.style.fontSize = (size -= 2) + 'px'; return true; })`);
     const { data } = await command('Page.captureScreenshot', { format: 'png' });
     const out = `src/assets/og/${theme}-${lang}.jpg`;
+    await sharp(Buffer.from(data, 'base64')).jpeg({ quality: 90, mozjpeg: true }).toFile(out);
+    console.log(out);
+  }
+  for (const lang of ['en', 'hi']) {
+    const [one, two] = content.couple.displayName[lang].split(join[lang]);
+    const names = [one, two].join(join[lang]);
+    const html = `.astro/og-cards/landing-${lang}.html`;
+    await fs.writeFile(html, landingPage(lang, names));
+    const load = new Promise(r => { loaded = r; });
+    await command('Page.navigate', { url: file(html) }); await load;
+    await evaluate('document.fonts.ready');
+    const { data } = await command('Page.captureScreenshot', { format: 'png' });
+    const out = `src/assets/og/landing-${lang}.jpg`;
     await sharp(Buffer.from(data, 'base64')).jpeg({ quality: 90, mozjpeg: true }).toFile(out);
     console.log(out);
   }
