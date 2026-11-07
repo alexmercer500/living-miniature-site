@@ -23,8 +23,8 @@ try {
     const height=width===390?844:900;
     await command('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
     for(const view of [
-      ...['/amber-fort/#venue','/hi/amber-fort/#journey','/lake-city/#closing','/hi/lake-city/#celebrations'].map(path=>({path})),
-      {path:'/amber-fort/#venue',noJs:true}, {path:'/hi/lake-city/#venue',reduced:true},
+      ...['/ratnesh-invitation/#venue','/hi/ratnesh-invitation/#journey','/pallavi-invitation/#closing','/hi/pallavi-invitation/#celebrations'].map(path=>({path})),
+      {path:'/ratnesh-invitation/#venue',noJs:true}, {path:'/hi/pallavi-invitation/#venue',reduced:true},
     ]) {
       const {path}=view;
       await command('Emulation.setScriptExecutionDisabled',{value:Boolean(view.noJs)});

@@ -24,7 +24,7 @@ import { coupleDisplay, themeConfig, themeRoute, type ThemeId } from '../lib/the
 
 interface Props { lang: Lang; title?: string; description?: string; page?: 'home' | 'invitation' | 'landing'; routePath?: string; theme?: ThemeId }
 const requestedTheme = Astro.props.theme as ThemeId | undefined;
-const theme = requestedTheme ?? (Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : (Astro.url.pathname.includes('/lake-city') || Astro.url.pathname.includes('/lake-view')) ? 'lake-city' : 'nature');
+const theme = requestedTheme ?? (Astro.url.pathname.includes('/ratnesh-invitation') || Astro.url.pathname.includes('/amber-fort') ? 'amber-fort' : (Astro.url.pathname.includes('/pallavi-invitation') || Astro.url.pathname.includes('/lake-city') || Astro.url.pathname.includes('/lake-view')) ? 'lake-city' : 'nature');
 const { lang, page = 'home' } = Astro.props;
 const themeMeta = themeConfig[theme];
 const socialMeta = themeMeta.meta[lang];

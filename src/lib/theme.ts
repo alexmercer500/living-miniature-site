@@ -136,7 +136,7 @@ export const themeConfig = {
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'amber-fort': {
-    route: '/amber-fort',
+    route: '/ratnesh-invitation',
     label: 'Amber Fort Romance',
     description: 'Love stories against timeless forts.',
     meta: {
@@ -159,7 +159,7 @@ export const themeConfig = {
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'lake-city': {
-    route: '/lake-city',
+    route: '/pallavi-invitation',
     label: 'Lake City Elegance',
     description: 'Serene waters, palaces and a timeless journey.',
     meta: {

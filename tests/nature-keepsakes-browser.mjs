@@ -16,11 +16,11 @@ let count=0;
 try {
   await command('Page.enable');await command('Runtime.enable');await command('Page.bringToFront');
   for(const view of [
-    {name:'desktop',width:1440,height:900,path:'/amber-fort/'},
-    {name:'mobile',width:390,height:844,path:'/amber-fort/'},
-    {name:'short-hindi',width:320,height:568,path:'/hi/amber-fort/'},
-    {name:'reduced',width:390,height:844,path:'/hi/amber-fort/',reduced:true},
-    {name:'no-js',width:390,height:844,path:'/amber-fort/',noJs:true},
+    {name:'desktop',width:1440,height:900,path:'/ratnesh-invitation/'},
+    {name:'mobile',width:390,height:844,path:'/ratnesh-invitation/'},
+    {name:'short-hindi',width:320,height:568,path:'/hi/ratnesh-invitation/'},
+    {name:'reduced',width:390,height:844,path:'/hi/ratnesh-invitation/',reduced:true},
+    {name:'no-js',width:390,height:844,path:'/ratnesh-invitation/',noJs:true},
   ]) {
     await command('Emulation.setDeviceMetricsOverride',{width:view.width,height:view.height,deviceScaleFactor:1,mobile:false});
     await command('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:view.reduced?'reduce':'no-preference'}]});

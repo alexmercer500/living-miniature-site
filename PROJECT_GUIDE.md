@@ -55,11 +55,11 @@ To see the site on your phone over Wi-Fi: `npm run dev -- --host`, then open the
 | URL | Page |
 |---|---|
 | `/` · `/hi/` | The landing page: the couple, the dates and the countdown, then a door into each side's invitation |
-| `/amber-fort` · `/hi/amber-fort` | Ratnesh's side (groom): the cinematic journey, Amber Fort design |
-| `/lake-city` · `/hi/lake-city` | Pallavi's side (bride): the cinematic journey, Lake View design |
-| `/amber-fort/invitation` · `/lake-city/invitation` (and `/hi/…`) | That side's printed invitation card, with its family's contact underneath |
+| `/ratnesh-invitation` · `/hi/ratnesh-invitation` | Ratnesh's side (groom): the cinematic journey, Amber Fort design |
+| `/pallavi-invitation` · `/hi/pallavi-invitation` | Pallavi's side (bride): the cinematic journey, Lake View design |
+| `/ratnesh-invitation/invitation` · `/pallavi-invitation/invitation` (and `/hi/…`) | That side's printed invitation card, with its family's contact underneath |
 | `/invite-links` | **For you only** (not linked, not indexed). Paste family names, get a personal link for each, ready to copy or send on WhatsApp. |
-| `/garden`, `/nature`, `/royal`, `/invitation`, `/lake-view` | Retired addresses. Old links forward to the landing page (or `/lake-city`). |
+| `/garden`, `/nature`, `/royal`, `/invitation`, `/amber-fort`, `/lake-city`, `/lake-view` | Retired addresses. Old links forward to the landing page or the renamed invitation routes. |
 
 The **EN | हिंदी** toggle switches routes and keeps your place (it carries the current section as `#hash`).
 

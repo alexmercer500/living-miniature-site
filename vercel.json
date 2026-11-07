@@ -5,23 +5,63 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/amber-fort",
+      "destination": "/ratnesh-invitation",
+      "permanent": true
+    },
+    {
+      "source": "/amber-fort/:path*",
+      "destination": "/ratnesh-invitation/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/hi/amber-fort",
+      "destination": "/hi/ratnesh-invitation",
+      "permanent": true
+    },
+    {
+      "source": "/hi/amber-fort/:path*",
+      "destination": "/hi/ratnesh-invitation/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/lake-city",
+      "destination": "/pallavi-invitation",
+      "permanent": true
+    },
+    {
+      "source": "/lake-city/:path*",
+      "destination": "/pallavi-invitation/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/hi/lake-city",
+      "destination": "/hi/pallavi-invitation",
+      "permanent": true
+    },
+    {
+      "source": "/hi/lake-city/:path*",
+      "destination": "/hi/pallavi-invitation/:path*",
+      "permanent": true
+    },
+    {
       "source": "/lake-view",
-      "destination": "/lake-city",
+      "destination": "/pallavi-invitation",
       "permanent": true
     },
     {
       "source": "/lake-view/:path*",
-      "destination": "/lake-city/:path*",
+      "destination": "/pallavi-invitation/:path*",
       "permanent": true
     },
     {
       "source": "/hi/lake-view",
-      "destination": "/hi/lake-city",
+      "destination": "/hi/pallavi-invitation",
       "permanent": true
     },
     {
       "source": "/hi/lake-view/:path*",
-      "destination": "/hi/lake-city/:path*",
+      "destination": "/hi/pallavi-invitation/:path*",
       "permanent": true
     },
     {

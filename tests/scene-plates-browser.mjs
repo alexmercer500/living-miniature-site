@@ -49,16 +49,16 @@ const sample = `async y => {
 
 try {
   for (const view of [
-    { name: 'mobile', width: 390, height: 844, mobile: true, path: '/amber-fort/' },
-    { name: 'desktop', width: 1440, height: 900, mobile: false, path: '/amber-fort/' },
-    { name: 'small-hindi', width: 320, height: 568, mobile: true, path: '/hi/amber-fort/' },
-    { name: 'reduced', width: 390, height: 844, mobile: true, path: '/amber-fort/', reduced: true },
+    { name: 'mobile', width: 390, height: 844, mobile: true, path: '/ratnesh-invitation/' },
+    { name: 'desktop', width: 1440, height: 900, mobile: false, path: '/ratnesh-invitation/' },
+    { name: 'small-hindi', width: 320, height: 568, mobile: true, path: '/hi/ratnesh-invitation/' },
+    { name: 'reduced', width: 390, height: 844, mobile: true, path: '/ratnesh-invitation/', reduced: true },
     // The Rajasthan themes reuse every handoff with their own paintings.
-    { name: 'amber-mobile', width: 390, height: 844, mobile: true, path: '/amber-fort/' },
-    { name: 'amber-desktop', width: 1440, height: 900, mobile: false, path: '/amber-fort/' },
-    { name: 'lake-mobile', width: 390, height: 844, mobile: true, path: '/lake-city/' },
-    { name: 'lake-small-hindi', width: 320, height: 568, mobile: true, path: '/hi/lake-city/' },
-    { name: 'lake-reduced', width: 390, height: 844, mobile: true, path: '/lake-city/', reduced: true },
+    { name: 'amber-mobile', width: 390, height: 844, mobile: true, path: '/ratnesh-invitation/' },
+    { name: 'amber-desktop', width: 1440, height: 900, mobile: false, path: '/ratnesh-invitation/' },
+    { name: 'lake-mobile', width: 390, height: 844, mobile: true, path: '/pallavi-invitation/' },
+    { name: 'lake-small-hindi', width: 320, height: 568, mobile: true, path: '/hi/pallavi-invitation/' },
+    { name: 'lake-reduced', width: 390, height: 844, mobile: true, path: '/pallavi-invitation/', reduced: true },
   ]) {
     if (process.argv[2] && view.name !== process.argv[2]) continue;
     await command('Emulation.setDeviceMetricsOverride', { width: view.width, height: view.height, deviceScaleFactor: 1, mobile: view.mobile });

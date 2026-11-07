@@ -4,12 +4,12 @@
 
 Use one Vercel project and one custom domain. The two public invitation experiences are:
 
-- `https://YOUR_DOMAIN/amber-fort/`
-- `https://YOUR_DOMAIN/lake-city/`
+- `https://YOUR_DOMAIN/ratnesh-invitation/`
+- `https://YOUR_DOMAIN/pallavi-invitation/`
 
-Hindi versions are available at `/hi/amber-fort/` and `/hi/lake-city/`. Links using the interim `/lake-view/` address permanently redirect to `/lake-city/`.
+Hindi versions are available at `/hi/ratnesh-invitation/` and `/hi/pallavi-invitation/`. Older `/amber-fort/`, `/lake-city/`, and interim `/lake-view/` links permanently redirect to the renamed routes.
 
-The bare domain (`https://YOUR_DOMAIN/`, and `/hi/`) is a landing page for both sides. It shows the welcome painting, the couple and the countdown, then two doors: "Groom's side · Ratnesh's family" leads to `/amber-fort`, and "Bride's side · Pallavi's family" leads to `/lake-city`. A `?to=` personal link carries through either door.
+The bare domain (`https://YOUR_DOMAIN/`, and `/hi/`) is a landing page for both sides. It shows the welcome painting, the couple and the countdown, then two doors: "Groom's side · Ratnesh's family" leads to `/ratnesh-invitation`, and "Bride's side · Pallavi's family" leads to `/pallavi-invitation`. A `?to=` personal link carries through either door.
 
 These are the only guest pages. The earlier garden story (`/garden`, `/nature`, `/royal`) is retired: `vercel.json` sends those old links to the landing page. The old root `/invitation` does the same.
 
@@ -31,7 +31,7 @@ Vercel will use the checked-in `vercel.json` and run `npm run build`, publishing
 
 ## Social preview behavior
 
-Each theme and language has its own preview. The bride's site (`/lake-city`) writes Pallavi's name first.
+Each theme and language has its own preview. The bride's site (`/pallavi-invitation`) writes Pallavi's name first.
 
 - **Title:** for example, "Ratnesh & Pallavi — Wedding Invitation".
 - **Description:** "You are cordially invited to celebrate the wedding of … · dates".
@@ -44,12 +44,12 @@ Pages carry `noindex,nofollow`, so search engines leave out the family's address
 The canonical and alternate-language URLs follow each theme's route, so these links preview as the correct theme:
 
 ```text
-https://YOUR_DOMAIN/amber-fort/
-https://YOUR_DOMAIN/lake-city/
+https://YOUR_DOMAIN/ratnesh-invitation/
+https://YOUR_DOMAIN/pallavi-invitation/
 ```
 
 After changing metadata or the image, send a new URL when testing. WhatsApp, Gmail, Facebook, and similar crawlers may cache an older preview for a while.
 
 ## Optional separate-root deployment
 
-The code still supports deploying each theme as its own Vercel project or subdomain. Set `SITE_THEME=amber-fort` or `SITE_THEME=lake-city`; that theme then renders at `/` and `/invitation`. Set a different `SITE_URL` for each project. Use this only if you want separate roots rather than `/amber-fort` and `/lake-city` paths.
+The code still supports deploying each theme as its own Vercel project or subdomain. Set `SITE_THEME=amber-fort` or `SITE_THEME=lake-city`; that theme then renders at `/` and `/invitation`. Set a different `SITE_URL` for each project. Use this only if you want separate roots rather than `/ratnesh-invitation` and `/pallavi-invitation` paths.
