@@ -225,7 +225,7 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-keepsakes { position: relative; z-index: 2; max-width: 1120px; margin: -8rem auto 0; padding: 0 1.5rem; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; }
 .ns-keepsake { appearance: none; display: grid; align-content: start; gap: .8rem; padding: .7rem .7rem 1.3rem; border: 0; color: #334537; background: #fff7eb; box-shadow: 0 14px 35px #172e2833; rotate: var(--tilt); cursor: pointer; transition: rotate .65s, scale .65s, box-shadow .65s; font-family: var(--font-ui); }
 .ns-keepsake[data-selected], .ns-keepsake:focus-visible { scale: 1.025; box-shadow: 0 18px 45px #172e2855; }
-.ns-photo { position: relative; display: block; aspect-ratio: 4/3; overflow: hidden; }
+.ns-photo { position: relative; display: block; width: 100%; aspect-ratio: 4/3; overflow: hidden; }
 .ns-keepsake-title { font-family: var(--font-display); font-size: 1.75rem; }
 .ns-keepsake-body { font-size: .9rem; padding: 0 .6rem; }
 .ns-keepsake-hint { text-align: center; margin: 2.5rem 1.5rem 0; font-size: .85rem; color: #686d5b; }
@@ -352,6 +352,11 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   .ns-keepsake-title { font-size: 1.4rem; }
   .ns-keepsake-body { font-size: .82rem; }
   .ns-photo { height: clamp(65px,17svh,180px); }
+  .ns-photo > .ns-art { position: absolute; inset: 0; width: 100%; height: 100%; background-position: top center; }
+  .ns-photo > .ns-art > picture,
+  .ns-photo > .ns-art > picture > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; }
+  .ns-photo > .ns-art > picture > img { object-fit: cover; object-position: top center; }
+  .ns-photo > .ns-art .ns-static { background-position: top center; background-size: cover; }
   .ns-celebrations { padding-inline: 0; }
   .ns-celebrations .ns-section-head { padding-inline: 1rem; }
   .ns-event { scroll-snap-align: center; border-radius: 65px 65px 5px 5px; }
@@ -694,6 +699,9 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
 .ns-location-actions .ns-wood-sign::before, .ns-location-actions .ns-wood-sign::after { display: none; }
 .ns-location-actions .ns-sign-icon { flex-basis: 30px; width: 30px; height: 30px; box-shadow: inset 0 0 0 2px #efd09d, inset 0 0 0 3px #805d3580; }
 .ns-location-actions .ns-sign-icon svg { width: 16px; height: 16px; }
+@media (max-width: 900px) {
+  .ns-location-actions { grid-template-columns: minmax(0, 1fr); }
+}
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .ns-wood-sign:not(:disabled):hover { translate: 5px -3px; filter: brightness(1.07); }
 }
@@ -768,6 +776,26 @@ html[data-theme][data-venue-open]:has(.ns-home) { overflow: hidden; scroll-snap-
   .ns-venue-card { grid-column: 1; grid-row: 2; align-self: end; }
   .ns-wayfinding { grid-column: 2; grid-row: 1 / span 2; align-self: end; width: 100%; }
   .ns-venue-map-note { font-size: .65rem; }
+}
+
+/* Tall tablet portrait screens sit between phone carousels and wide desktop scenes. Keep the
+   Journey and Venue content grouped around the visual centre instead of pinning headings to
+   the top and cards to the bottom of a tall chapter. */
+@media (min-width: 768px) and (max-width: 1199px) and (orientation: portrait) and (min-height: 800px) {
+  .ns-story { display: grid; grid-template-rows: auto auto auto; align-content: center; justify-items: center; gap: clamp(1.5rem, 5vh, 4rem); padding: 0 1rem; }
+  .ns-story-copy { position: relative; inset: auto; width: min(67%, 600px); margin: 0; }
+  .ns-keepsakes { position: relative; inset: auto; width: calc(100% - clamp(3rem, 8vw, 10rem)); margin: 0; }
+  .ns-keepsake-hint { position: relative; inset: auto; margin: 0; }
+  .ns-venue { justify-content: center; gap: clamp(2rem, 6vh, 5rem); }
+}
+@media (max-width: 767px) and (min-height: 800px) {
+  /* Use the same centred composition on tall phones while retaining the narrower,
+     photo-sized horizontal keepsake cards. */
+  .ns-story { display: grid; grid-template-rows: auto auto auto; align-content: center; justify-items: center; gap: clamp(1rem, 4vh, 3rem); padding: 0 .6rem; }
+  .ns-story-copy { position: relative; inset: auto; width: 80%; margin: 0; }
+  .ns-keepsakes { position: relative; inset: auto; width: 100%; margin: 0; }
+  .ns-keepsake-hint { position: relative; inset: auto; margin: 0; }
+  .ns-venue { justify-content: center; gap: clamp(1.5rem, 5vh, 3rem); }
 }
 
 /* Wishes: independent paper, cord and wind pivots over a text-free garden. */

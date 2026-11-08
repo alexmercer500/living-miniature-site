@@ -28,7 +28,7 @@
   "venue": {
     "name": "Dhancha Bhavan",
     "address": "Sai Mandir, Bhilai",
-    "mapUrl": "https://maps.app.goo.gl/2QZYwJohbQDnDA8a6",
+    "mapUrl": "https://www.google.com/maps/search/?api=1&query=Dhancha%20Bhavan%2C%20Sai%20Mandir%2C%20Bhilai",
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
@@ -58,8 +58,7 @@
           "en": "Sai Mandir, Bhilai",
           "hi": "Sai Mandir, Bhilai"
         },
-        "mapUrl": "https://maps.app.goo.gl/2QZYwJohbQDnDA8a6",
-        "directionsTo": "21.238759,81.35969",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Dhancha%20Bhavan%2C%20Sai%20Mandir%2C%20Bhilai",
         "note": {
           "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
           "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
@@ -79,7 +78,7 @@
           "en": "Khairagarh",
           "hi": "खैरागढ़"
         },
-        "mapUrl": "https://maps.app.goo.gl/yJk7CSTDmKUtnr9o8",
+        "mapUrl": "https://www.google.com/maps/search/?api=1&query=Uttam%20Villa%2C%20Khairagarh",
         "note": {
           "en": "Thursday, 26 November 2026 · From 8:00 PM",
           "hi": "गुरुवार, 26 नवम्बर 2026 · शाम 8 बजे से"
