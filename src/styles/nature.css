@@ -322,7 +322,13 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
 .ns-story-copy { top: var(--ns-top); gap: .5rem; }
 .ns-keepsakes { position: absolute; inset-inline: 0; bottom: calc(var(--ns-bottom) + 34px); width: 100%; max-width: 960px; margin: 0 auto; gap: 1.5rem; }
 .ns-keepsake { min-width: 0; gap: .4rem; padding: .6rem .6rem .8rem; }
-.ns-photo { height: clamp(70px, 18svh, 190px); aspect-ratio: auto; }
+.ns-photo { height: auto; aspect-ratio: 4/3; }
+@media (min-width: 768px) {
+  .ns-photo .ns-art img { object-fit: contain; background: #ead8bf; }
+  .ns-photo .ns-art .ns-static { background-size: contain; background-repeat: no-repeat; background-color: #ead8bf; }
+}
+.ns-memory-mat .ns-art img { object-fit: contain; background: #ead8bf; }
+.ns-memory-mat .ns-art .ns-static { background-size: contain; background-repeat: no-repeat; background-color: #ead8bf; }
 .ns-keepsake-title { font-size: clamp(1.2rem, 2.2vw, 1.8rem); }
 .ns-keepsake-body { font-size: .8rem; line-height: 1.4; }
 .ns-keepsake-hint { position: absolute; inset-inline: 1rem; bottom: var(--ns-bottom); margin: 0; color: #fff3e4; text-shadow: 0 1px 5px #172e28; }
@@ -362,11 +368,15 @@ html[lang='en'] .ns-locales a[lang='hi'] { font-family: system-ui, sans-serif; }
   .ns-story-copy p:last-child { font-size: .8rem; }
   .ns-keepsake-title { font-size: 1.2rem; }
   .ns-keepsake-body { font-size: .75rem; }
-  .ns-photo { height: 65px; }
   .ns-section-head .ornament { display: none; }
   .ns-event-copy { gap: .25rem; padding-block: .5rem; }
   .ns-event-copy h3 { font-size: 1.4rem; }
   .ns-event-copy > p:last-of-type { font-size: .78rem; }
+}
+@media (min-width: 768px) and (max-height: 650px) {
+  /* Let short laptop/tablet viewports scroll the story card if its full photo and
+     caption need more room than one screen provides. */
+  .ns-home > .ns-story { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
 }
 
 /* Foreground atmosphere: bounded, non-interactive and quiet behind the copy. */
@@ -517,7 +527,7 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 .ns-memory-dialog[data-visible]::backdrop { opacity: 1; }
 .ns-memory-dialog[data-closing]::backdrop { opacity: 0; }
 .ns-memory-frame { position: relative; max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; padding: clamp(12px,2.5vw,22px); background: radial-gradient(at 0 0,#fffaf0,transparent 60%),#f1e0c7; border: 1px solid #d3b77c; box-shadow: inset 0 0 0 5px #f4e7d2,inset 0 0 0 6px #b08a5277,0 24px 90px #0008; transform-origin: center; }
-.ns-memory-mat { position: relative; height: min(46dvh,390px); overflow: hidden; border: 1px solid #9d7a49; box-shadow: 0 2px 9px #4b351e44; }
+.ns-memory-mat { position: relative; height: auto; aspect-ratio: 4/3; overflow: hidden; border: 1px solid #9d7a49; box-shadow: 0 2px 9px #4b351e44; }
 .ns-memory-caption { position: relative; display: grid; justify-items: center; gap: .4rem; padding: 1.2rem .8rem .4rem; text-align: center; }
 .ns-memory-caption::before,.ns-memory-caption::after { content: ''; position: absolute; top: 1.3rem; width: 20px; height: 20px; border-top: 1px solid #b08a52; }
 .ns-memory-caption::before { left: 0; border-left: 1px solid #b08a52; }
@@ -529,7 +539,7 @@ html[data-theme][data-memory-open]:has(.ns-home) { overflow: hidden; scroll-snap
 .ns-memory-close { position: absolute; top: .6rem; right: .6rem; z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; border-radius: 50%; border: 1px solid #dcc08b; background: #172e28ee; color: #fff3e4; cursor: pointer; }
 .ns-memory-close svg { width: 20px; height: 20px; }
 .ns-memory-close:focus-visible { outline: 2px solid #fff3e4; outline-offset: 3px; }
-@media (max-height: 650px) { .ns-memory-mat { height: 37dvh; } .ns-memory-caption { gap: .2rem; padding-top: .6rem; } .ns-memory-caption > p:last-of-type { font-size: .85rem; } }
+@media (max-height: 650px) { .ns-memory-mat { height: auto; aspect-ratio: 4/3; } .ns-memory-caption { gap: .2rem; padding-top: .6rem; } .ns-memory-caption > p:last-of-type { font-size: .85rem; } }
 @media (prefers-reduced-motion: reduce), (scripting: none) { .ns-keepsake-wind { animation: none; } .ns-keepsake { transition: none; } .ns-memory-dialog::backdrop { transition: none; } }
 
 /* Celebrations: framed ceremony portraits in a lantern-lit garden, matching
