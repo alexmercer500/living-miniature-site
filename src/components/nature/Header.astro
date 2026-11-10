@@ -15,7 +15,7 @@ const path = invitation ? '/invitation' : '';
       <a href={themeHref('en', theme, path || '/')} lang="en" aria-current={lang === 'en' ? 'page' : undefined} data-nature-locale>EN</a>
       <a href={themeHref('hi', theme, path || '/')} lang="hi" aria-current={lang === 'hi' ? 'page' : undefined} data-nature-locale>हिंदी</a>
     </nav>
-    {!invitation && content.music.enabled && <button class="ns-icon-button" type="button" data-nature-sound data-src={content.music.src} aria-label={t(lang, 'musicOn')} data-on={t(lang, 'musicOff')} data-off={t(lang, 'musicOn')} aria-pressed="false" hidden><Icon name="sound" /></button>}
+    {!invitation && content.music.enabled && <button class="ns-icon-button" type="button" data-nature-sound data-src={content.music.src} data-autoplay aria-label={t(lang, 'musicOn')} data-on={t(lang, 'musicOff')} data-off={t(lang, 'musicOn')} aria-pressed="false" hidden><Icon name="sound" /></button>}
     <details class="ns-menu">
       <summary aria-label={t(lang, 'menu')}><Icon name="menu" /></summary>
       <nav aria-label={t(lang, 'menu')}>

@@ -13,6 +13,8 @@ const c = themeCopy(theme, lang), p = content.invitation.placeholders;
 // A themed site's invitation is its printed card; the nature root keeps the written page.
 const card = themeConfig[theme].invitationCard;
 const events = eventsFor(theme);
+const eventMapUrl = (event: (typeof events)[number]) => 'mapUrl' in event ? event.mapUrl : '';
+const eventMobileMapUrl = (event: (typeof events)[number]) => 'mobileMapUrl' in event ? event.mobileMapUrl : '';
 const locations = locationsFor(theme);
 ---
 <Base lang={lang} theme={theme} routePath="/invitation" page="invitation">
@@ -37,13 +39,20 @@ const locations = locationsFor(theme);
         <h1 id="ns-invite-title">{coupleDisplay(lang, theme)}</h1><p class="ns-invite-tagline">{loc(content.couple.tagline, lang)}</p>
         <div class="ornament"><span></span></div>
         <section aria-labelledby="ns-invite-family"><h2 id="ns-invite-family">{t(lang, 'fromFamilies')}</h2><div class="ns-invite-family"><div class="ns-family-member"><span class="ns-family-name">{loc(p.familyOne.name, lang)}</span><p class="ns-invite-copy">{loc(p.familyOne.line, lang)}</p></div><div class="ns-family-member"><span class="ns-family-name">{loc(p.familyTwo.name, lang)}</span><p class="ns-invite-copy">{loc(p.familyTwo.line, lang)}</p></div></div></section>
-        <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{events.map(event => <li><h3>{loc(event.title, lang)} <span class="ns-invite-label">({loc(event.label, lang)})</span></h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p>{loc(event.venueName, lang) && <p>{loc(event.venueName, lang)}</p>}</li>)}</ol></section>
+      <section aria-labelledby="ns-invite-schedule"><h2 id="ns-invite-schedule">{t(lang, 'schedule')}</h2><ol>{events.map(event => <li><h3>{loc(event.title, lang)} <span class="ns-invite-label">({loc(event.label, lang)})</span></h3><p>{formatDate(event.date, lang, true) ?? t(lang, 'dateTbc')}{event.time && <> · {formatTime(event.time, lang)}</>}</p>{loc(event.venueName, lang) && <p>{eventMapUrl(event) ? <a href={eventMapUrl(event)} data-mobile-map-url={eventMobileMapUrl(event) || undefined} target="_blank" rel="noopener">{loc(event.venueName, lang)}</a> : loc(event.venueName, lang)}</p>}</li>)}</ol></section>
         <section aria-labelledby="ns-invite-venue"><h2 id="ns-invite-venue">{t(lang, 'venueHeading')}</h2><ol class:list={['ns-invite-locations', locations.length === 1 && 'ns-invite-locations-single']}>{locations.map(location => <li><h3>{loc(location.label, lang)}</h3><p>{loc(location.name, lang)}</p><address>{loc(location.address, lang)}</address><p>{loc(location.note, lang)}</p><a href={location.mapUrl} target="_blank" rel="noopener">{loc(content.venue.directionsLabel, lang)}</a></li>)}</ol></section>
         <p class="ns-invite-copy">{loc(p.hosts, lang)}</p><Contacts lang={lang} class="ns-invite-contacts" /><LotusMark class="ns-lotus" />
       </div>
     </article>
   </main>}
 </Base>
+<script>
+  const mobileMaps = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (mobileMaps) document.querySelectorAll<HTMLAnchorElement>('[data-mobile-map-url]').forEach(link => {
+    if (link.dataset.mobileMapUrl) link.href = link.dataset.mobileMapUrl;
+  });
+</script>
 <style>
   .ns-invite-page { min-height: 100svh; padding: 110px var(--gutter) 70px; background: radial-gradient(at 15% 0,#516c50,transparent 60%), #213b32; display: grid; justify-items: center; gap: 2rem; }
   /* A themed site's invitation is its printed card, shown at full size. */

@@ -95,20 +95,44 @@ export async function setupNature() {
     }), { rootMargin: '-50% 0px -49% 0px' });
     all(':scope > section[id]').forEach(section => chapters.observe(section));
     cleanups.push(() => chapters.disconnect());
+    const syncSound = () => {
+      const playing = player?.playing === true;
+      sound.setAttribute('aria-pressed', String(playing));
+      sound.setAttribute('aria-label', (playing ? sound.dataset.on : sound.dataset.off) ?? '');
+    };
+    const play = async () => {
+      player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
+      player.setChapter(chapter);
+      if (!player.playing) await player.play();
+      syncSound();
+    };
+    const autoplayEvents = ['pointerdown', 'touchstart', 'keydown'] as const;
+    const removeAutoplayListeners = () => autoplayEvents.forEach(type => document.removeEventListener(type, startOnFirstInteraction));
+    const startOnFirstInteraction = (event: Event) => {
+      if ((event.target as Element | null)?.closest?.('[data-nature-sound]')) return;
+      removeAutoplayListeners();
+      void play().catch(syncSound);
+    };
+    if (sound.hasAttribute('data-autoplay')) {
+      autoplayEvents.forEach(type => document.addEventListener(type, startOnFirstInteraction, { passive: true, once: false }));
+      // This succeeds for browsers/users that already allow autoplay. Otherwise the first
+      // interaction above starts the same soundtrack without requiring a second sound-button tap.
+      void play().then(removeAutoplayListeners).catch(syncSound);
+    }
     sound.addEventListener('click', async () => {
       sound.disabled = true;
       try {
         player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
         player.setChapter(chapter);
         if (player.playing) player.stop(); else await player.play();
-        sound.setAttribute('aria-pressed', String(player.playing));
-        sound.setAttribute('aria-label', (player.playing ? sound.dataset.on : sound.dataset.off) ?? '');
-      } catch { player?.stop(); sound.setAttribute('aria-pressed', 'false'); sound.setAttribute('aria-label', sound.dataset.off ?? ''); }
+        removeAutoplayListeners();
+        syncSound();
+      } catch { player?.stop(); syncSound(); }
       finally { sound.disabled = false; }
     });
     const stop = () => { if (document.hidden) { player?.stop(); sound.setAttribute('aria-pressed', 'false'); sound.setAttribute('aria-label', sound.dataset.off ?? ''); } };
     document.addEventListener('visibilitychange', stop);
-    cleanups.push(() => { player?.stop(); document.removeEventListener('visibilitychange', stop); });
+    cleanups.push(() => { removeAutoplayListeners(); player?.stop(); document.removeEventListener('visibilitychange', stop); });
   }
 
   // Chapter handoffs are native scrolling plus CSS scroll-driven animations (ScenePlate.astro),

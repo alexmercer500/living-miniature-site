@@ -49,7 +49,8 @@ export type ThemeId = 'nature' | 'amber-fort' | 'lake-city';
 /** Which of the two names is written first on this site (the bride's side puts her first). */
 export type CoupleFirst = 'one' | 'two';
 /** A per-theme change to one celebration, keyed by its id in site-content.json. */
-export type EventOverride = { date?: string; venueName?: Localized };
+export type EventOverride = { date?: string; time?: string; venueName?: Localized; shortDescription?: Localized; mapUrl?: string; mobileMapUrl?: string };
+export type VenueLocationOverride = { note?: Localized };
 
 /** The invitation keepsake a theme opens in place of the paper envelope: its 3D model's parts,
  *  rendered as layers (scripts/render-keepsake-standins.mjs), and their geometry in layer pixels. */
@@ -133,6 +134,7 @@ export const themeConfig = {
     coupleFirst: 'one' as CoupleFirst,
     invitationCard: null as ImageMetadata | null,
     events: {} as Record<string, EventOverride>,
+    venueLocations: {} as Record<string, VenueLocationOverride>,
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'amber-fort': {
@@ -155,7 +157,29 @@ export const themeConfig = {
     eventAssets: amberEventAssets,
     coupleFirst: 'one' as CoupleFirst,
     invitationCard: royalRatneshInvitation as ImageMetadata | null,
-    events: {} as Record<string, EventOverride>,
+    events: {
+      'event-one': {
+        time: '14:00',
+        venueName: { en: "Bride's Family Residence — Santoshi Para", hi: 'वधू पक्ष का निवास — संतोषी पारा' },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.217504109345974%2C81.37537329409955',
+        mobileMapUrl: 'https://maps.app.goo.gl/EnaNtTN31J6Mu6zy7',
+      },
+      'event-two': {
+        time: '10:00 AM onwards',
+        venueName: { en: 'At Our Home — Yashoda Sadan', hi: 'हमारा निवास — यशोदा सदन' },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.41494804809561%2C80.98376273224378',
+        mobileMapUrl: 'https://maps.app.goo.gl/CdY2YVNEHQ75XaE39',
+      },
+      'event-three': {
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+        mobileMapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+      },
+      'event-four': {
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=Uttam%20Villa%2C%20Main%20Road%2C%20Taurkaripara%20Road%2C%20Khairagarh%2C%20Chhattisgarh%20491881',
+        mobileMapUrl: 'https://maps.app.goo.gl/yJk7CSTDmKUtnr9o8',
+      },
+    } as Record<string, EventOverride>,
+    venueLocations: {} as Record<string, VenueLocationOverride>,
     venueLocationIds: undefined as readonly string[] | undefined,
   },
   'lake-city': {
@@ -180,7 +204,45 @@ export const themeConfig = {
     // the 26th to the wedding day, with no venue of its own), and only the wedding venue is shown.
     coupleFirst: 'two' as CoupleFirst,
     invitationCard: royalWeddingByTheLake as ImageMetadata | null,
-    events: { 'event-four': { date: '2026-11-25', venueName: { en: '', hi: '' } } } as Record<string, EventOverride>,
+    events: {
+      'event-one': {
+        time: '14:00',
+        venueName: { en: 'Our Family Home', hi: 'हमारा पारिवारिक निवास' },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.217504109345974%2C81.37537329409955',
+        mobileMapUrl: 'https://maps.app.goo.gl/EnaNtTN31J6Mu6zy7',
+      },
+      'event-two': {
+        time: '10:00 AM onwards',
+        venueName: { en: 'Our Family Home', hi: 'हमारा पारिवारिक निवास' },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.217504109345974%2C81.37537329409955',
+        mobileMapUrl: 'https://maps.app.goo.gl/EnaNtTN31J6Mu6zy7',
+      },
+      'event-three': {
+        time: '19:00',
+        venueName: { en: 'Dhancha Bhavan', hi: 'Dhancha Bhavan' },
+        shortDescription: {
+          en: 'Sacred vows, timeless traditions, and seven steps into a shared forever.',
+          hi: 'पवित्र वचन, कालातीत परंपराएँ और साथ भरे अनंत सफर की सात पगडंडियाँ।',
+        },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+        mobileMapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+      },
+      'event-four': {
+        date: '2026-11-25',
+        time: '20:00',
+        venueName: { en: 'Dhancha Bhavan', hi: 'Dhancha Bhavan' },
+        mapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+        mobileMapUrl: 'https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457',
+      },
+    } as Record<string, EventOverride>,
+    venueLocations: {
+      wedding: {
+        note: {
+          en: 'Wednesday, 25 November 2026 · Wedding ceremony and sacred pheras begin at 7:00 PM',
+          hi: 'बुधवार, 25 नवम्बर 2026 · विवाह समारोह एवं पवित्र फेरे शाम 7:00 बजे आरंभ होंगे',
+        },
+      },
+    } as Record<string, VenueLocationOverride>,
     venueLocationIds: ['wedding'] as readonly string[],
   },
 } as const;
@@ -257,5 +319,7 @@ export function eventsFor(theme: ThemeId) {
 export function locationsFor(theme: ThemeId) {
   const locations = content.venue.locations ?? [];
   const ids = themeConfig[theme].venueLocationIds;
-  return ids ? locations.filter(location => ids.includes(location.id)) : locations;
+  const visible = ids ? locations.filter(location => ids.includes(location.id)) : locations;
+  const changes = themeConfig[theme].venueLocations;
+  return visible.map(location => (changes[location.id] ? { ...location, ...changes[location.id] } : location));
 }

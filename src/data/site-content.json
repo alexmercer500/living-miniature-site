@@ -28,7 +28,7 @@
   "venue": {
     "name": "Dhancha Bhavan",
     "address": "Sai Mandir, Bhilai",
-    "mapUrl": "https://maps.app.goo.gl/2QZYwJohbQDnDA8a6",
+    "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457",
     "directionsLabel": {
       "en": "Get directions",
       "hi": "रास्ता देखें"
@@ -58,7 +58,8 @@
           "en": "Sai Mandir, Bhilai",
           "hi": "Sai Mandir, Bhilai"
         },
-        "mapUrl": "https://maps.app.goo.gl/2QZYwJohbQDnDA8a6",
+        "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=21.238496725360832%2C81.36248597818457",
+        "directionsTo": "21.238496725360832,81.36248597818457",
         "note": {
           "en": "Wednesday, 25 November 2026 · Baraat departs at 12:00 PM",
           "hi": "बुधवार, 25 नवम्बर 2026 · बारात दोपहर 12 बजे प्रस्थान करेगी"
@@ -79,6 +80,7 @@
           "hi": "खैरागढ़"
         },
         "mapUrl": "https://maps.app.goo.gl/yJk7CSTDmKUtnr9o8",
+        "directionsTo": "Uttam Villa, Main Road, Taurkaripara Road, Khairagarh, Chhattisgarh 491881",
         "note": {
           "en": "Thursday, 26 November 2026 · From 8:00 PM",
           "hi": "गुरुवार, 26 नवम्बर 2026 · शाम 8 बजे से"
@@ -362,7 +364,7 @@
       "en": "Play ambient music",
       "hi": "संगीत चलाएं"
     },
-    "_note": "src empty = music is synthesised in the browser (tanpura drone + reed melody). Set src to a file in /public (like /music/ambient.mp3) to loop that recording instead. Never autoplays: the guest taps the sound button."
+    "_note": "Music is enabled by default. Browsers that block audible autoplay start it on the guest's first interaction; the sound button can always mute or resume it."
   },
   "_placeholderNotice": "All names, dates, venues and links are placeholders from the design kit. Replace only with approved details.",
   "closing": {

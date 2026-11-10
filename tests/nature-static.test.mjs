@@ -150,7 +150,7 @@ test('each side lists its own venues, each with a map and exact directions', () 
     assert.ok(scene);
     assert.equal([...scene.matchAll(/class="ns-location-card"/g)].length, venues, `${route} venue count`);
     assert.equal([...scene.matchAll(/target="_blank"/g)].length, venues * 2, `${route}: a map and directions per venue`);
-    assert.ok(scene.includes('google.com/maps/dir/?api=1&amp;destination=21.238759%2C81.35969'), `${route}: directions go to the Dhancha Bhavan pin`);
+    assert.ok(scene.includes('google.com/maps/dir/?api=1&amp;destination=21.238496725360832%2C81.36248597818457'), `${route}: directions go to the Dhancha Bhavan pin`);
     for (const match of scene.matchAll(/(?:url\(#([^)]*)\)|href="#([^"]+)")/g)) assert.ok(html.includes(`id="${match[1] ?? match[2]}"`), 'Local SVG/anchor target exists');
   }
 });

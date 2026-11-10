@@ -275,7 +275,7 @@ function synthPlayer(): Player {
       await ctx!.resume();
       playing = true;
       master.gain.cancelScheduledValues(ctx!.currentTime);
-      master.gain.setTargetAtTime(0.9, ctx!.currentTime, 0.8);
+      master.gain.setTargetAtTime(0.5, ctx!.currentTime, 0.8);
       droneLoop();
       timers.push(window.setTimeout(melodyLoop, 2200));
       timers.push(window.setTimeout(pulseLoop, 1200));
@@ -302,7 +302,7 @@ function filePlayer(src: string): Player {
   const audio = new Audio(src);
   audio.loop = true;
   audio.preload = 'none';
-  audio.volume = 0.6;
+  audio.volume = 0.5;
   // A recording cannot change its arrangement, so chapters shape its tone and level.
   let mood = MOODS.welcome;
   let graph: { ctx: AudioContext; lp: BiquadFilterNode; gain: GainNode } | undefined;

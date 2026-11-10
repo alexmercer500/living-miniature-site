@@ -29,7 +29,7 @@ const directionsFor = (location: (typeof locations)[number]) =>
         <address>{loc(location.address, lang)}</address>
         <p class="ns-location-note">{loc(location.note, lang)}</p>
         <div class="ns-location-actions">
-          <a class="ns-wood-sign ns-wood-sign-compact" href={location.mapUrl} target="_blank" rel="noopener">
+          <a class="ns-wood-sign ns-wood-sign-compact" href={directionsFor(location)} data-mobile-map-url={location.mapUrl} target="_blank" rel="noopener">
             <span class="ns-sign-icon"><Icon name="pin" /></span><span>{t(lang, 'viewMap')}</span>
           </a>
           <a class="ns-wood-sign ns-wood-sign-compact" href={directionsFor(location)} target="_blank" rel="noopener">
@@ -40,3 +40,10 @@ const directionsFor = (location: (typeof locations)[number]) =>
     </div>
   </div>
 </section>
+<script>
+  const mobileVenueMaps = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (mobileVenueMaps) document.querySelectorAll<HTMLAnchorElement>('[data-mobile-map-url]').forEach(link => {
+    if (link.dataset.mobileMapUrl) link.href = link.dataset.mobileMapUrl;
+  });
+</script>

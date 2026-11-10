@@ -15,7 +15,7 @@ try {
   await command('Page.enable');await command('Runtime.enable');await command('Network.enable');await command('Page.bringToFront');
   // Each side's venue chapter: its own venues, a map and exact directions for each, all on one
   // screen above the dock, revealed once as the guest arrives.
-  const pin='destination=21.238759%2C81.35969';
+  const pin='destination=21.238496725360832%2C81.36248597818457';
   for(const view of [
     {name:'amber-desktop',site:'amber-fort',venues:2,width:1440,height:900},
     {name:'amber-mobile',site:'amber-fort',venues:2,width:390,height:844},
@@ -42,8 +42,8 @@ try {
     for(const card of layout.cards){assert.equal(card.opacity,'1');assert.ok(card.left>=0&&card.right<=view.width,`${view.name}: card fits ${JSON.stringify(card)}`);}
     assert.equal(layout.buttons.length,view.venues*2,`${view.name}: a map and directions per venue`);
     for(const button of layout.buttons){assert.ok(button.blank&&button.height>=44,`${view.name}: button ${JSON.stringify(button)}`);assert.ok(button.bottom<=view.height-65,`${view.name}: buttons stay above the dock ${JSON.stringify(button)}`);}
-    assert.equal(layout.buttons[0].href,'https://maps.app.goo.gl/2QZYwJohbQDnDA8a6','View map opens Dhancha Bhavan');
-    assert.ok(layout.buttons[1].href.endsWith(pin),'Directions go to the Dhancha Bhavan pin');
+    assert.ok(layout.buttons[0].href.endsWith(pin),'View map opens the exact Sai Mandir pin');
+    assert.ok(layout.buttons[1].href.endsWith(pin),'Directions go to the exact Sai Mandir pin');
     await shot(`${view.name}-settled`);count++;
   }
   assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);
