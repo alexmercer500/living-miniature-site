@@ -6,6 +6,7 @@ import { setupTiltParallax } from './tilt-parallax';
 import { setupCountdowns } from './countdown';
 import { setupReveal } from './reveal';
 import { setupBlessing } from './blessing';
+import { getPlayer, type Player } from './music';
 /** Nature & Stories only. Static HTML remains the complete fallback. */
 export async function setupNature() {
   const root = document.querySelector<HTMLElement>('[data-nature-root]');
@@ -85,7 +86,7 @@ export async function setupNature() {
   const sound = document.querySelector<HTMLButtonElement>('[data-nature-sound]');
   if (sound) {
     sound.hidden = false;
-    let player: import('./music').Player | undefined;
+    const player: Player = getPlayer(sound.dataset.src ?? '');
     // The chapter crossing the middle of the screen sets the music's mood.
     let chapter = 'welcome';
     const chapters = new IntersectionObserver(entries => entries.forEach(e => {
@@ -96,22 +97,20 @@ export async function setupNature() {
     all(':scope > section[id]').forEach(section => chapters.observe(section));
     cleanups.push(() => chapters.disconnect());
     const syncSound = () => {
-      const playing = player?.playing === true;
+      const playing = player.playing;
       sound.setAttribute('aria-pressed', String(playing));
       sound.setAttribute('aria-label', (playing ? sound.dataset.on : sound.dataset.off) ?? '');
     };
     const play = async () => {
-      player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
       player.setChapter(chapter);
       if (!player.playing) await player.play();
       syncSound();
     };
-    const autoplayEvents = ['pointerdown', 'touchstart', 'keydown'] as const;
+    const autoplayEvents = ['pointerdown', 'touchstart', 'keydown', 'wheel'] as const;
     const removeAutoplayListeners = () => autoplayEvents.forEach(type => document.removeEventListener(type, startOnFirstInteraction));
     const startOnFirstInteraction = (event: Event) => {
       if ((event.target as Element | null)?.closest?.('[data-nature-sound]')) return;
-      removeAutoplayListeners();
-      void play().catch(syncSound);
+      void play().then(removeAutoplayListeners).catch(syncSound);
     };
     if (sound.hasAttribute('data-autoplay')) {
       autoplayEvents.forEach(type => document.addEventListener(type, startOnFirstInteraction, { passive: true, once: false }));
@@ -122,17 +121,16 @@ export async function setupNature() {
     sound.addEventListener('click', async () => {
       sound.disabled = true;
       try {
-        player ??= (await import('./music')).getPlayer(sound.dataset.src ?? '');
         player.setChapter(chapter);
         if (player.playing) player.stop(); else await player.play();
         removeAutoplayListeners();
         syncSound();
-      } catch { player?.stop(); syncSound(); }
+      } catch { player.stop(); syncSound(); }
       finally { sound.disabled = false; }
     });
-    const stop = () => { if (document.hidden) { player?.stop(); sound.setAttribute('aria-pressed', 'false'); sound.setAttribute('aria-label', sound.dataset.off ?? ''); } };
+    const stop = () => { if (document.hidden) { player.stop(); sound.setAttribute('aria-pressed', 'false'); sound.setAttribute('aria-label', sound.dataset.off ?? ''); } };
     document.addEventListener('visibilitychange', stop);
-    cleanups.push(() => { removeAutoplayListeners(); player?.stop(); document.removeEventListener('visibilitychange', stop); });
+    cleanups.push(() => { removeAutoplayListeners(); player.stop(); document.removeEventListener('visibilitychange', stop); });
   }
 
   // Chapter handoffs are native scrolling plus CSS scroll-driven animations (ScenePlate.astro),

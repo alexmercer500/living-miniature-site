@@ -275,7 +275,7 @@ function synthPlayer(): Player {
       await ctx!.resume();
       playing = true;
       master.gain.cancelScheduledValues(ctx!.currentTime);
-      master.gain.setTargetAtTime(0.5, ctx!.currentTime, 0.8);
+      master.gain.setTargetAtTime(0.75, ctx!.currentTime, 0.8);
       droneLoop();
       timers.push(window.setTimeout(melodyLoop, 2200));
       timers.push(window.setTimeout(pulseLoop, 1200));
@@ -301,8 +301,8 @@ function synthPlayer(): Player {
 function filePlayer(src: string): Player {
   const audio = new Audio(src);
   audio.loop = true;
-  audio.preload = 'none';
-  audio.volume = 0.5;
+  audio.preload = 'auto';
+  audio.volume = 0.75;
   // A recording cannot change its arrangement, so chapters shape its tone and level.
   let mood = MOODS.welcome;
   let graph: { ctx: AudioContext; lp: BiquadFilterNode; gain: GainNode } | undefined;
@@ -320,7 +320,6 @@ function filePlayer(src: string): Player {
   return {
     get playing() { return playing; },
     async play() {
-      playing = true;
       if (!graph && typeof AudioContext === 'function') {
         const ctx = new AudioContext();
         const lp = ctx.createBiquadFilter();
@@ -330,8 +329,18 @@ function filePlayer(src: string): Player {
         graph = { ctx, lp, gain };
         applyMood();
       }
-      await graph?.ctx.resume();
-      await audio.play();
+      // Call both APIs during the same user-activation task. Awaiting AudioContext.resume()
+      // before audio.play() makes Safari consume the gesture and reject media playback.
+      const resume = graph?.ctx.resume();
+      const playback = audio.play();
+      try {
+        await Promise.all([resume, playback]);
+        playing = true;
+      } catch (error) {
+        playing = false;
+        audio.pause();
+        throw error;
+      }
     },
     stop() { playing = false; audio.pause(); },
     setChapter(chapter) {
