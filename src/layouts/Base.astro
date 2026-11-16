@@ -19,6 +19,7 @@ import greatVibes from '../../node_modules/@fontsource/great-vibes/files/great-v
 import tiro from '../../node_modules/@fontsource/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-normal.woff2?url';
 import muktaDevanagari from '../../node_modules/@fontsource/mukta/files/mukta-devanagari-400-normal.woff2?url';
 import { getImage } from 'astro:assets';
+import Analytics from '../components/Analytics.astro';
 import { type Lang, content, loc, t, href } from '../lib/content';
 import { coupleDisplay, themeConfig, themeRoute, type ThemeId } from '../lib/theme';
 
@@ -80,6 +81,7 @@ const preloads = lang === 'hi' ? [tiro, muktaDevanagari] : [fraunces, jost, grea
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(preview.src, Astro.site)} />
+    <Analytics />
     <slot name="head" />
   </head>
   <body>
